@@ -55,8 +55,10 @@ class _WidgetableCalendarState extends State<WidgetableCalendar>
   DateTime lastDay;
   List weekList = [];
   bool todayOrNot;
-
   DateTime selectDate = DateTime.now();
+
+  double startDXPoint = 0;
+  double endDXPoint = 0;
 
   @override
   void initState() {
@@ -106,19 +108,41 @@ class _WidgetableCalendarState extends State<WidgetableCalendar>
       return false;
   }
 
+  void _onHorizontalDragStartHandler(DragStartDetails details) {
+    setState(() {
+      startDXPoint = details.globalPosition.dx.floorToDouble();
+    });
+  }
+
+  void _onDragUpdateHandler(DragUpdateDetails details) {
+    setState(() {
+      endDXPoint = details.globalPosition.dx.floorToDouble();
+    });
+  }
+
+  void _onDragEnd(DragEndDetails details) {
+    setState(() {
+      if (startDXPoint > endDXPoint) changeMonth(1);
+      else changeMonth(-1);
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return ClipRect(
       child: GestureDetector(
-        onHorizontalDragUpdate: (details) {
-          if (details.primaryDelta < -30) {
-            changeMonth(1);
-          }
-          if (details.primaryDelta > 30) {
-            changeMonth(-1);
-          }
-        },
+//        onHorizontalDragUpdate: (details) {
+//          if (details.primaryDelta < -30) {
+//            changeMonth(1);
+//          }
+//          if (details.primaryDelta > 30) {
+//            changeMonth(-1);
+//          }
+//        },
+        onHorizontalDragStart: _onHorizontalDragStartHandler,
+        onHorizontalDragUpdate: _onDragUpdateHandler,
+        onHorizontalDragEnd: _onDragEnd,
         child: Container(
           color: widget.backgroundColor,
           child: Column(
