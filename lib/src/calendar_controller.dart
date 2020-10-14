@@ -8,14 +8,14 @@ class CalendarController {
   // 밖에서 읽기 위한.
   DateTime get selectDate => _selectDate;
 
-  Map<DateTime, List> get events => _events;
+  List get events => _events;
 
-  Map<DateTime, List> get holidays => _holidays;
+  List get holidays => _holidays;
 
   DateTime _selectDate;
 
-  Map<DateTime, List> _events;
-  Map<DateTime, List> _holidays;
+  List _events;
+  List _holidays;
   _SelectedDayCallback _selectedDayCallback;
 
   //------------------------------------------^ calendar 에서 받아온 값들
@@ -35,14 +35,14 @@ class CalendarController {
 
 
   void _init({
-    @required Map<DateTime, List> events,
-    @required Map<DateTime, List> holidays,
+    @required List events,
+    @required List holidays,
     @required OnCalendarCreated onCalendarCreated,
     @required _SelectedDayCallback selectedDayCallback,
     @required DateTime initialDay,
   }) {
-    _events = events;
-    _holidays = holidays;
+    _events = events??[];
+    _holidays = holidays??[];
     _selectedDayCallback = selectedDayCallback;
 
     final now = DateTime.now();
@@ -105,8 +105,9 @@ class CalendarController {
 
     _weekList = _makeWeekList(_firstDay, _lastDay);
   }
-  
-  void addEvent(MapEntry<DateTime,List> eventInfo){
-    _events.addEntries([eventInfo]);
+
+  void addEvent(Map eventInfo){
+    _events.add(eventInfo);
   }
+
 }

@@ -16,8 +16,8 @@ class WidgetableCalendar extends StatefulWidget {
   final Color backgroundColor;
   final Color lineColor;
 
-  final Map<DateTime, List> holidays;
-  final Map<DateTime, List> events;
+  final List holidays;
+  final List events;
 
   WidgetableCalendar(
       {Key key,
@@ -30,10 +30,9 @@ class WidgetableCalendar extends StatefulWidget {
       this.saturdayColor = Colors.blue,
       this.backgroundColor = Colors.white,
       this.lineColor = Colors.black,
-      this.holidays = const {},
-      this.events = const {}})
-      : assert(holidays != null),
-        assert(events != null),
+      this.holidays ,
+      this.events })
+      :
         super(key: key);
 
   _WidgetableCalendarState createState() => _WidgetableCalendarState();
@@ -41,8 +40,6 @@ class WidgetableCalendar extends StatefulWidget {
 
 class _WidgetableCalendarState extends State<WidgetableCalendar>
     with SingleTickerProviderStateMixin {
-
-
   double startDXPoint = 0;
   double endDXPoint = 0;
 
@@ -56,7 +53,6 @@ class _WidgetableCalendarState extends State<WidgetableCalendar>
         onCalendarCreated: widget.onCalendarCreated,
         selectedDayCallback: widget.onDaySelected,
         initialDay: widget.selectDate);
-
   }
 
   @override
@@ -71,7 +67,6 @@ class _WidgetableCalendarState extends State<WidgetableCalendar>
       widget.calendarController._holidays = widget.holidays;
     }
   }
-
 
   bool _isToday(int date) {
     DateTime today = DateTime.now();
@@ -119,9 +114,9 @@ class _WidgetableCalendarState extends State<WidgetableCalendar>
               _buildHeader(),
               _buildCalendarContent(),
               _buildTodayButton(),
+              _buildAddEventButton(),
               Container(
-                height: 30,
-                color: Colors.black,
+                child: Text("모든 events\n"+widget.calendarController.events.toString()),
               )
             ],
           ),
@@ -248,15 +243,20 @@ class _WidgetableCalendarState extends State<WidgetableCalendar>
                     weekList[i])))
                   widget.calendarController.setSelectDate(null, [], []);
                 else
+//                  widget.calendarController.setSelectDate(
+//                      DateTime(
+//                          widget.calendarController.focusDate.year,
+//                          widget.calendarController.focusDate.month,
+//                          weekList[i]),
+//                      widget.calendarController
+//                          .events[widget.calendarController.selectDate],
+//                      widget.calendarController
+//                          .holidays[widget.calendarController.selectDate]);
                   widget.calendarController.setSelectDate(
                       DateTime(
                           widget.calendarController.focusDate.year,
                           widget.calendarController.focusDate.month,
-                          weekList[i]),
-                      widget.calendarController
-                          .events[widget.calendarController.selectDate],
-                      widget.calendarController
-                          .holidays[widget.calendarController.selectDate]);
+                          weekList[i]), [], []);
               });
             },
             child: Container(
@@ -304,7 +304,27 @@ class _WidgetableCalendarState extends State<WidgetableCalendar>
           onPressed: () {
             setState(() {
               widget.calendarController.changeMonth(0);
-              print(widget.calendarController.weekList.toString());
+            });
+          },
+        ),
+      ),
+    ];
+
+    return Container(
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        children: children,
+      ),
+    );
+  }
+  Widget _buildAddEventButton() {
+    final children = [
+      Expanded(
+        child: FlatButton(
+          child: Text("라이브러리의 일정추가 기능"),
+          onPressed: () {
+            setState(() {
+              widget.calendarController.addEvent({DateTime.now():"라이브러리 기능 ~"});
             });
           },
         ),
