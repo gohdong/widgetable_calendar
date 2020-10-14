@@ -49,13 +49,11 @@ class WidgetableCalendar extends StatefulWidget {
 
 class _WidgetableCalendarState extends State<WidgetableCalendar>
     with SingleTickerProviderStateMixin {
-//  DateTime selectDate = DateTime.now();
+  DateTime selectDate = DateTime.now();
   DateTime focusDate = DateTime.now(); //달마다 selectDate 바뀌는 거 대신
   DateTime firstDay;
   DateTime lastDay;
   List weekList = [];
-  bool todayOrNot;
-  DateTime selectDate = DateTime.now();
 
   double startDXPoint = 0;
   double endDXPoint = 0;
@@ -123,7 +121,7 @@ class _WidgetableCalendarState extends State<WidgetableCalendar>
   void _onDragEnd(DragEndDetails details) {
     setState(() {
       if (startDXPoint > endDXPoint) changeMonth(1);
-      else changeMonth(-1);
+      else if (startDXPoint < endDXPoint) changeMonth(-1);
     });
   }
 
@@ -277,7 +275,7 @@ class _WidgetableCalendarState extends State<WidgetableCalendar>
                       DateTime(focusDate.year, focusDate.month, dateInt);
                   widget.calendarController.setSelectDate(selectDate);
                 });
-                print("selectDate: "+ selectDate.toString());
+                print("selectDate == "+ selectDate.toString());
               },
               child: Center(
 //                    child: Text(date)
@@ -341,7 +339,7 @@ class _WidgetableCalendarState extends State<WidgetableCalendar>
       weekList = _makeWeekList(firstDay, lastDay);
     });
 //    print(focusDate.toString());
-    print("controller's selectDate "+ widget.calendarController.selectDate.toString());
+    print("controller's selectDate == "+ widget.calendarController.selectDate.toString());
   }
 
 // sleep(Duration(seconds: 1));
