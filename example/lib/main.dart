@@ -81,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             });
           }, child: Text("앱의 일정추가 기능")),
           Divider(thickness: 5,),
-          Text("선택한 날짜의 일정 리스트"),
+          Text("현재 선택한 날짜의 일정 리스트"),
           Expanded(child:_buildEventList()),
         ],
       ),

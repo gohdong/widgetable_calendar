@@ -30,10 +30,9 @@ class WidgetableCalendar extends StatefulWidget {
       this.saturdayColor = Colors.blue,
       this.backgroundColor = Colors.white,
       this.lineColor = Colors.black,
-      this.holidays ,
-      this.events })
-      :
-        super(key: key);
+      this.holidays,
+      this.events})
+      : super(key: key);
 
   _WidgetableCalendarState createState() => _WidgetableCalendarState();
 }
@@ -42,6 +41,24 @@ class _WidgetableCalendarState extends State<WidgetableCalendar>
     with SingleTickerProviderStateMixin {
   double startDXPoint = 0;
   double endDXPoint = 0;
+
+  List yearList = ["2019", "2020", "2021"];
+  List monthList = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec"
+  ];
+  int selectYear;
+  int selectMonth;
 
   @override
   void initState() {
@@ -53,6 +70,12 @@ class _WidgetableCalendarState extends State<WidgetableCalendar>
         onCalendarCreated: widget.onCalendarCreated,
         selectedDayCallback: widget.onDaySelected,
         initialDay: widget.selectDate);
+
+//    selectYear = "2020";
+//    selectMonth = "Feb";
+
+    selectYear = widget.calendarController.selectDate.year;
+    selectMonth =widget.calendarController.selectDate.month;
   }
 
   @override
@@ -116,7 +139,8 @@ class _WidgetableCalendarState extends State<WidgetableCalendar>
               _buildTodayButton(),
               _buildAddEventButton(),
               Container(
-                child: Text("모든 events\n"+widget.calendarController.events.toString()),
+                child: Text("모든 events\n" +
+                    widget.calendarController.events.toString()),
               )
             ],
           ),
@@ -127,21 +151,6 @@ class _WidgetableCalendarState extends State<WidgetableCalendar>
 
   // This is Header (  <   2020 october   >  )
   Widget _buildHeader() {
-    List monthList = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec"
-    ];
-
     final children = [
       IconButton(
         icon: Icon(Icons.arrow_back_ios),
@@ -154,9 +163,13 @@ class _WidgetableCalendarState extends State<WidgetableCalendar>
       Expanded(
         child: Center(
           child: InkWell(
-            onTap: (){
+            onTap: () async{
+              await showDialog(
+                context: context,
+                builder: (BuildContext context) => _buildAboutDialog(context),
+              );
               setState(() {
-                widget.calendarController.changeMonthCompletely(2020,8);
+                widget.calendarController.changeMonthCompletely(selectYear, selectMonth);
               });
             },
             child: Row(
@@ -186,6 +199,70 @@ class _WidgetableCalendarState extends State<WidgetableCalendar>
         mainAxisSize: MainAxisSize.max,
         children: children,
       ),
+    );
+  }
+
+
+  int selectedIndex;
+  Widget _buildAboutDialog(BuildContext context) {
+    return AlertDialog(
+      content: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+              height: 150.0, // Change as per your requirement
+              width: 100,
+              child: ListView.builder(
+                shrinkWrap: true,
+                padding: const EdgeInsets.all(8),
+                itemCount: yearList.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Container(
+//                    decoration: new BoxDecoration (
+//                        color: selectYear == yearList[index].toString() ? Colors.grey[300] : Colors.white
+//                    ),
+
+                    child: ListTile(
+                        selected: index == selectedIndex,
+                        onTap: () {
+                          setState(() {
+                            selectYear = int.tryParse(yearList[index]) ?? 2020;
+                            selectedIndex = index;
+                          });
+                          print(selectYear);
+                        },
+                        title: Text(yearList[index].toString())),
+                  );
+                },
+              )),
+          Container(
+              height: 150.0, // Change as per your requirement
+              width: 100,
+              child: ListView.builder(
+                shrinkWrap: true,
+                padding: const EdgeInsets.all(8),
+                itemCount: monthList.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return ListTile(
+                      onTap: () {
+                        setState(() {
+                          selectMonth = index+1;
+                          print(selectMonth);
+                        });
+                      },
+                      title: Text(monthList[index].toString()));
+                },
+              )),
+        ],
+      ),
+      actions: <Widget>[
+        new FlatButton(
+          child: new Text("Done"),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ],
     );
   }
 
@@ -268,7 +345,9 @@ class _WidgetableCalendarState extends State<WidgetableCalendar>
                       DateTime(
                           widget.calendarController.focusDate.year,
                           widget.calendarController.focusDate.month,
-                          weekList[i]), [], []);
+                          weekList[i]),
+                      [],
+                      []);
               });
             },
             child: Container(
@@ -329,6 +408,7 @@ class _WidgetableCalendarState extends State<WidgetableCalendar>
       ),
     );
   }
+
   Widget _buildAddEventButton() {
     final children = [
       Expanded(
@@ -336,7 +416,8 @@ class _WidgetableCalendarState extends State<WidgetableCalendar>
           child: Text("라이브러리의 일정추가 기능"),
           onPressed: () {
             setState(() {
-              widget.calendarController.addEvent({widget.calendarController.selectDate:"라이브러리 기능 ~"});
+              widget.calendarController.addEvent(
+                  {widget.calendarController.selectDate: "라이브러리 기능 ~"});
             });
           },
         ),
