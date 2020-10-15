@@ -42,17 +42,17 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     final _selectedDay = DateTime.now();
 
     _events =  [];
-    _selectedEvents = findEvents(_events,_calendarController.selectDate);
+    _selectedEvents = _calendarController.findEvents(_events,_calendarController.selectDate);
   }
 
-  List findEvents(List events,DateTime selectDate){
-    List returnValue = [];
-    for (int i=0 ; i < events.length ; i++){
-      Map eachEvent = events[i];
-      if (eachEvent.containsKey(selectDate)) returnValue.add(eachEvent);
-    }
-    return returnValue;
-  }
+//  List findEvents(List events,DateTime selectDate){
+//    List returnValue = [];
+//    for (int i=0 ; i < events.length ; i++){
+//      Map eachEvent = events[i];
+//      if (eachEvent.containsKey(selectDate)) returnValue.add(eachEvent);
+//    }
+//    return returnValue;
+//  }
 
 
   @override
@@ -102,7 +102,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   void _onDaySelected(DateTime day, List events, List holidays) {
 //    print('CALLBACK: _onDaySelected');
     setState(() {
-      _selectedEvents = findEvents(_events,_calendarController.selectDate);
+      _selectedEvents = _calendarController.findEvents(_events,_calendarController.selectDate);
     });
   }
 

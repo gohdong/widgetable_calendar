@@ -110,4 +110,13 @@ class CalendarController {
     _events.add(eventInfo);
   }
 
+  List findEvents(List events,DateTime selectDate){
+    List returnValue = [];
+    for (int i=0 ; i < events.length ; i++){
+      Map eachEvent = events[i];
+      if (eachEvent.containsKey(selectDate)) returnValue.add(eachEvent);
+    }
+    return returnValue;
+  }
+
 }
