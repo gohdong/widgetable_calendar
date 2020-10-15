@@ -148,6 +148,14 @@ class _WidgetableCalendarState extends State<WidgetableCalendar>
       ),
     );
   }
+  
+  int findYear(int year){
+    int returnValue = 0;
+    for (int i=0 ; i<yearList.length ; i++){
+      if (yearList[i] == year.toString()) return i;
+    }
+    return returnValue;
+  }
 
   // This is Header (  <   2020 october   >  )
   Widget _buildHeader() {
@@ -166,7 +174,69 @@ class _WidgetableCalendarState extends State<WidgetableCalendar>
             onTap: () async{
               await showDialog(
                 context: context,
-                builder: (BuildContext context) => _buildAboutDialog(context),
+                builder: (BuildContext context) {
+                  int selectedYearIndex = findYear(selectYear);
+                  int selectedMonthIndex = selectMonth-1;
+                  return StatefulBuilder(
+                    builder: (context, setState) {
+                      return AlertDialog(
+                        content: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                                height: 160.0, // Change as per your requirement
+                                width: 100,
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  padding: const EdgeInsets.all(8),
+                                  itemCount: yearList.length,
+                                  itemBuilder: (BuildContext context, int index) {
+                                    return ListTile(
+                                        selected: index == selectedYearIndex,
+                                        onTap: () {
+                                          selectedYearIndex = index;
+                                          setState(() {
+                                            selectYear = int.tryParse(yearList[index]) ?? 2020;
+                                          });
+                                          print(selectYear);
+                                        },
+                                        title: Text(yearList[index].toString()));
+                                  },
+                                )),
+                            Container(
+                                height: 160.0, // Change as per your requirement
+                                width: 100,
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  padding: const EdgeInsets.all(8),
+                                  itemCount: monthList.length,
+                                  itemBuilder: (BuildContext context, int index) {
+                                    return ListTile(
+                                        selected: index == selectedMonthIndex,
+                                        onTap: () {
+                                          selectedMonthIndex = index;
+                                          setState(() {
+                                            selectMonth = index+1;
+                                            print(selectMonth);
+                                          });
+                                        },
+                                        title: Text(monthList[index].toString()));
+                                  },
+                                )),
+                          ],
+                        ),
+                        actions: <Widget>[
+                          new FlatButton(
+                            child: new Text("Done"),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
               );
               setState(() {
                 widget.calendarController.changeMonthCompletely(selectYear, selectMonth);
@@ -203,68 +273,10 @@ class _WidgetableCalendarState extends State<WidgetableCalendar>
   }
 
 
-  int selectedIndex;
-  Widget _buildAboutDialog(BuildContext context) {
-    return AlertDialog(
-      content: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-              height: 150.0, // Change as per your requirement
-              width: 100,
-              child: ListView.builder(
-                shrinkWrap: true,
-                padding: const EdgeInsets.all(8),
-                itemCount: yearList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Container(
-//                    decoration: new BoxDecoration (
-//                        color: selectYear == yearList[index].toString() ? Colors.grey[300] : Colors.white
-//                    ),
 
-                    child: ListTile(
-                        selected: index == selectedIndex,
-                        onTap: () {
-                          setState(() {
-                            selectYear = int.tryParse(yearList[index]) ?? 2020;
-                            selectedIndex = index;
-                          });
-                          print(selectYear);
-                        },
-                        title: Text(yearList[index].toString())),
-                  );
-                },
-              )),
-          Container(
-              height: 150.0, // Change as per your requirement
-              width: 100,
-              child: ListView.builder(
-                shrinkWrap: true,
-                padding: const EdgeInsets.all(8),
-                itemCount: monthList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return ListTile(
-                      onTap: () {
-                        setState(() {
-                          selectMonth = index+1;
-                          print(selectMonth);
-                        });
-                      },
-                      title: Text(monthList[index].toString()));
-                },
-              )),
-        ],
-      ),
-      actions: <Widget>[
-        new FlatButton(
-          child: new Text("Done"),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ],
-    );
-  }
+//  Widget _buildAboutDialog(BuildContext context) {
+//    return
+//  }
 
   Widget _buildCalendarContent() {
     final children = <TableRow>[_buildDaysOfWeek()];
