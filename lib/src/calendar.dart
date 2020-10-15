@@ -165,6 +165,11 @@ class _WidgetableCalendarState extends State<WidgetableCalendar>
         onPressed: () {
           setState(() {
             widget.calendarController.changeMonth(-1);
+            if (selectMonth != 1) selectMonth = selectMonth-1;
+            else {
+              selectYear = selectYear-1;
+              selectMonth = 12;
+            }
           });
         },
       ),
@@ -259,6 +264,11 @@ class _WidgetableCalendarState extends State<WidgetableCalendar>
         onPressed: () {
           setState(() {
             widget.calendarController.changeMonth(1);
+            if (selectMonth != 12) selectMonth = selectMonth+1;
+            else {
+              selectYear = selectYear+1;
+              selectMonth = 1;
+            }
           });
         },
       ),
