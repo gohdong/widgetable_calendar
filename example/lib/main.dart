@@ -65,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           _buildCalendar(),
           FlatButton(onPressed: () {
             setState(() {
-              _events.add({DateTime.now():"앱의 일정추가 기능~"});
+              _events.add({_calendarController.selectDate:"앱의 일정추가 기능~"});
             });
           }, child: Text("앱의 일정추가 기능"))
         ],
