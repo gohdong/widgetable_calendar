@@ -42,7 +42,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     final _selectedDay = DateTime.now();
 
     DateTime today = DateTime.now();
-    _events =  [{DateTime(today.year,today.month,today.day):"예시"}];
+    _events =  [{DateTime(today.year,today.month,today.day):"예시"},{DateTime(today.year,today.month,today.day+1):"예시2"}];
     _selectedEvents = _calendarController.findEvents(_events,DateTime(today.year,today.month,today.day));
   }
 
@@ -80,6 +80,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               _events.add({_calendarController.selectDate:"앱의 일정추가 기능~"});
             });
           }, child: Text("앱의 일정추가 기능")),
+          Divider(thickness: 5,),
+          Text("선택한 날짜의 일정 리스트"),
           Expanded(child:_buildEventList()),
         ],
       ),

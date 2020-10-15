@@ -106,6 +106,15 @@ class CalendarController {
     _weekList = _makeWeekList(_firstDay, _lastDay);
   }
 
+  void changeMonthCompletely(int year,int month) {
+    _focusDate = DateTime(year, month, 1);
+    _firstDay = DateTime(_focusDate.year, _focusDate.month, 1);
+    _lastDay = DateTime(_focusDate.year, _focusDate.month + 1, 1)
+        .subtract(new Duration(days: 1));
+
+    _weekList = _makeWeekList(_firstDay, _lastDay);
+  }
+
   void addEvent(Map eventInfo){
     _events.add(eventInfo);
   }

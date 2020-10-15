@@ -152,11 +152,23 @@ class _WidgetableCalendarState extends State<WidgetableCalendar>
         },
       ),
       Expanded(
-        child: Container(
-          child: Center(
-              child: Text(widget.calendarController.focusDate.year.toString() +
-                  " " +
-                  monthList[widget.calendarController.focusDate.month - 1])),
+        child: Center(
+          child: InkWell(
+            onTap: (){
+              setState(() {
+                widget.calendarController.changeMonthCompletely(2020,8);
+              });
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(widget.calendarController.focusDate.year.toString() +
+                    " " +
+                    monthList[widget.calendarController.focusDate.month - 1]),
+                Icon(Icons.arrow_drop_down),
+              ],
+            ),
+          ),
         ),
       ),
       IconButton(
