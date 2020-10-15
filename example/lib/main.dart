@@ -41,8 +41,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     _calendarController = CalendarController();
     final _selectedDay = DateTime.now();
 
-    _events =  [];
-    _selectedEvents = _calendarController.findEvents(_events,_calendarController.selectDate);
+    DateTime today = DateTime.now();
+    _events =  [{DateTime(today.year,today.month,today.day):"예시"}];
+    _selectedEvents = _calendarController.findEvents(_events,DateTime(today.year,today.month,today.day));
   }
 
 //  List findEvents(List events,DateTime selectDate){
