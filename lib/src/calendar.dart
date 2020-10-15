@@ -324,7 +324,7 @@ class _WidgetableCalendarState extends State<WidgetableCalendar>
           child: Text("라이브러리의 일정추가 기능"),
           onPressed: () {
             setState(() {
-              widget.calendarController.addEvent({DateTime.now():"라이브러리 기능 ~"});
+              widget.calendarController.addEvent({widget.calendarController.selectDate:"라이브러리 기능 ~"});
             });
           },
         ),
