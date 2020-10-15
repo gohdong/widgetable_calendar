@@ -87,7 +87,7 @@ class CalendarController {
   void setSelectDate(DateTime day, List events, List holidays) {
     _selectDate = day;
     if (_selectedDayCallback != null) {
-      _selectedDayCallback(day, events, holidays);
+      _selectedDayCallback(day, events,holidays);
     }
   }
 
