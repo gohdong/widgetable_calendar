@@ -21,7 +21,7 @@ class CalendarBloc {
         .subtract(new Duration(days: 1));
 
     data.weekList = _makeWeekList(data.firstDay, data.lastDay);
-    updateData();
+    streamSink();
   }
   void _init(){
 
@@ -82,10 +82,10 @@ class CalendarBloc {
         .subtract(new Duration(days: 1));
 
     data.weekList = _makeWeekList(data.firstDay, data.lastDay);
-    updateData();
+    streamSink();
   }
 
-  void updateData(){
+  void streamSink(){
     _controller.sink.add(data.getData());
   }
 }
