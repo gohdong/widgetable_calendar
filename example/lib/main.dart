@@ -5,6 +5,7 @@ void main() {
   runApp(MyApp());
 }
 
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -31,12 +32,17 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   CalendarController _calendarController;
+  List<Map> _events;
 
   @override
   void initState() {
     super.initState();
     _calendarController = CalendarController();
+    final _selectedDay = DateTime.now();
+
+    _events =  [];
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +63,11 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
           _buildCalendar(),
+          FlatButton(onPressed: () {
+            setState(() {
+              _events.add({_calendarController.selectDate:"앱의 일정추가 기능~"});
+            });
+          }, child: Text("앱의 일정추가 기능"))
         ],
       ),
     );
@@ -68,6 +79,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       saturdayColor: Colors.green,
       weekDayColor: Colors.purple,
       backgroundColor: Colors.white.withOpacity(0),
+      events: _events,
 
 //      calendarController: _calendarController,
 //      initialSelectedDay: DateTime.now(),
