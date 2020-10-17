@@ -36,8 +36,8 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     return StreamBuilder(
       stream: _calendarController.stream,
       builder: (context, snapshot) {
-        if (!snapshot.hasData || snapshot.data.keys == []) {
-          Center(
+        if (!snapshot.hasData) {
+          return Center(
             child: CircularProgressIndicator(),
           );
         }
@@ -55,6 +55,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   }
 
   Widget _buildHeader(Map snapshot) {
+    // print(snapshot==null);
     List monthList = [
       "Jan",
       "Feb",
