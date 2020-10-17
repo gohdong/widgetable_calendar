@@ -66,14 +66,14 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     ];
 
     final children = [
-      // IconButton(
-      //   icon: Icon(Icons.arrow_back_ios),
-      //   onPressed: () {
-      //     setState(() {
-      //       widget.calendarController.changeMonth(-1);
-      //     });
-      //   },
-      // ),
+      IconButton(
+        icon: Icon(Icons.arrow_back_ios),
+        onPressed: () {
+          setState(() {
+            calendarBloc.changeMonth(-1);
+          });
+        },
+      ),
       Expanded(
         child: Container(
           child: Center(
@@ -82,14 +82,14 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                   monthList[snapshot['focusDate'].month - 1])),
         ),
       ),
-      // IconButton(
-      //   icon: Icon(Icons.arrow_forward_ios),
-      //   onPressed: () {
-      //     setState(() {
-      //       widget.calendarController.changeMonth(1);
-      //     });
-      //   },
-      // ),
+      IconButton(
+        icon: Icon(Icons.arrow_forward_ios),
+        onPressed: () {
+          setState(() {
+            calendarBloc.changeMonth(1);
+          });
+        },
+      ),
     ];
 
     return Container(

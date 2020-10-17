@@ -79,5 +79,6 @@ class CalendarBloc {
         .subtract(new Duration(days: 1));
 
     data.weekList = _makeWeekList(data.firstDay, data.lastDay);
+    _controller.sink.add(data.getData());
   }
 }
