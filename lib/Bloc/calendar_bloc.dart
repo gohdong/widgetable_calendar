@@ -6,7 +6,6 @@ class WidgetableCalendarBloc {
   StreamController<Map> _controller = StreamController();
   WidgetableCalendarData data = WidgetableCalendarData();
 
-  List test = List();
   WidgetableCalendarBloc(){
     print("init");
     data.events = [];
@@ -24,7 +23,7 @@ class WidgetableCalendarBloc {
     streamSink();
   }
   void _init(){
-
+    streamSink();
   }
 
 
@@ -37,8 +36,8 @@ class WidgetableCalendarBloc {
   }
 
   void addEvents() {
-    print(test);
-    test.add("asd");
+    data.events.add(Map());
+    streamSink();
   }
 
   List _makeWeekList(DateTime firstDay, DateTime lastDay) {
@@ -89,4 +88,5 @@ class WidgetableCalendarBloc {
   void streamSink(){
     _controller.sink.add(data.getData());
   }
+
 }

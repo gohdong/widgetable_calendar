@@ -44,7 +44,10 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
         return Column(
           children: [
             _buildHeader(snapshot.data),
-            _buildCalendarContent(snapshot.data)
+            _buildCalendarContent(snapshot.data),
+            FlatButton(
+                onPressed: () => calendarBloc.addEvents(),
+                child: Text("ADD EVENTS"))
           ],
         );
       },
