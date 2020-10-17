@@ -31,13 +31,11 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
-  CalendarController _calendarController;
   List<Map> _events;
 
   @override
   void initState() {
     super.initState();
-    _calendarController = CalendarController();
     final _selectedDay = DateTime.now();
 
     _events =  [];
@@ -59,30 +57,16 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 //           width: MediaQuery.of(context).size.width,
 //         ),
 // =======
-      body: Column(
-        mainAxisSize: MainAxisSize.max,
-        children: <Widget>[
-          _buildCalendar(),
-          FlatButton(onPressed: () {
-            setState(() {
-              _events.add({_calendarController.selectDate:"앱의 일정추가 기능~"});
-            });
-          }, child: Text("앱의 일정추가 기능"))
-        ],
-      ),
+      body: _buildCalendar(),
     );
   }
 
   Widget _buildCalendar() {
     return WidgetableCalendar(
-      calendarController: _calendarController,
-      saturdayColor: Colors.green,
-      weekDayColor: Colors.purple,
+      // calendarController: _calendarController,
+      saturdayColor: Colors.red,
+      weekDayColor: Colors.black,
       backgroundColor: Colors.white.withOpacity(0),
-      events: _events,
-
-//      calendarController: _calendarController,
-//      initialSelectedDay: DateTime.now(),
     );
   }
 }
