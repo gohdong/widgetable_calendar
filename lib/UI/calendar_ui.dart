@@ -29,14 +29,14 @@ class WidgetableCalendarUI extends StatefulWidget {
 
 class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     with SingleTickerProviderStateMixin {
-  final WidgetableCalendarBloc calendarBloc = WidgetableCalendarBloc();
+  final WidgetableCalendarController _calendarController = WidgetableCalendarController();
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: calendarBloc.streams,
+      stream: _calendarController.stream,
       builder: (context, snapshot) {
-        if (!snapshot.hasData || snapshot.data == null) {
+        if (!snapshot.hasData || snapshot.data.keys == []) {
           Center(
             child: CircularProgressIndicator(),
           );
@@ -46,7 +46,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
             _buildHeader(snapshot.data),
             _buildCalendarContent(snapshot.data),
             FlatButton(
-                onPressed: () => calendarBloc.addEvents(),
+                onPressed: () => _calendarController.addEvents(),
                 child: Text("ADD EVENTS"))
           ],
         );
@@ -74,7 +74,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
       IconButton(
         icon: Icon(Icons.arrow_back_ios),
         onPressed: () {
-          calendarBloc.changeMonth(-1);
+          _calendarController.changeMonth(-1);
         },
       ),
       Expanded(
@@ -88,7 +88,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
       IconButton(
         icon: Icon(Icons.arrow_forward_ios),
         onPressed: () {
-          calendarBloc.changeMonth(1);
+          _calendarController.changeMonth(1);
         },
       ),
     ];
@@ -121,11 +121,11 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
         TableCell(
           child: InkWell(
             onTap: () {
-              if (calendarBloc.isSelectedDate(DateTime(
+              if (_calendarController.isSelectedDate(DateTime(
                   snapshot['focusDate'].year,
                   snapshot['focusDate'].month,
                   weekList[i])))
-                calendarBloc.setSelectDate(null, [], []);
+                _calendarController.setSelectDate(null, [], []);
               else
 //                  widget.calendarController.setSelectDate(
 //                      DateTime(
@@ -136,7 +136,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
 //                          .events[widget.calendarController.selectDate],
 //                      widget.calendarController
 //                          .holidays[widget.calendarController.selectDate]);
-                calendarBloc.setSelectDate(
+                _calendarController.setSelectDate(
                     DateTime(snapshot['focusDate'].year,
                         snapshot['focusDate'].month, weekList[i]),
                     [],
@@ -146,7 +146,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
               width: double.infinity,
               color: _isToday(weekList[i], snapshot['focusDate'])
                   ? Colors.grey[300]
-                  : calendarBloc.isSelectedDate(
+                  : _calendarController.isSelectedDate(
                       DateTime(snapshot['focusDate'].year,
                           snapshot['focusDate'].month, weekList[i]),
                     )
