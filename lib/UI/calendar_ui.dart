@@ -36,8 +36,10 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     return StreamBuilder(
       stream: calendarBloc.streams,
       builder: (context, snapshot) {
-        if (!snapshot.hasData || snapshot.data==null) {
-          Center(child: CircularProgressIndicator(),);
+        if (!snapshot.hasData || snapshot.data == null) {
+          Center(
+            child: CircularProgressIndicator(),
+          );
         }
         return Column(
           children: [
@@ -69,9 +71,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
       IconButton(
         icon: Icon(Icons.arrow_back_ios),
         onPressed: () {
-          setState(() {
-            calendarBloc.changeMonth(-1);
-          });
+          calendarBloc.changeMonth(-1);
         },
       ),
       Expanded(
@@ -85,9 +85,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
       IconButton(
         icon: Icon(Icons.arrow_forward_ios),
         onPressed: () {
-          setState(() {
-            calendarBloc.changeMonth(1);
-          });
+          calendarBloc.changeMonth(1);
         },
       ),
     ];
@@ -104,14 +102,14 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     final children = <TableRow>[_buildDaysOfWeek()];
 
     for (int i = 0; i < snapshot['weekList'].length; i++) {
-      children.add(_buildEachWeek(snapshot,snapshot['weekList'][i]));
+      children.add(_buildEachWeek(snapshot, snapshot['weekList'][i]));
     }
     return Table(
       children: children,
     );
   }
 
-  TableRow _buildEachWeek(Map snapshot,List weekList) {
+  TableRow _buildEachWeek(Map snapshot, List weekList) {
     final children = <TableCell>[];
 
     for (int i = 0; i < weekList.length; i++) {
@@ -120,13 +118,12 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
         TableCell(
           child: InkWell(
             onTap: () {
-              setState(() {
-                if (calendarBloc.isSelectedDate(DateTime(
-                    snapshot['focusDate'].year,
-                    snapshot['focusDate'].month,
-                    weekList[i])))
-                  calendarBloc.setSelectDate(null, [], []);
-                else
+              if (calendarBloc.isSelectedDate(DateTime(
+                  snapshot['focusDate'].year,
+                  snapshot['focusDate'].month,
+                  weekList[i])))
+                calendarBloc.setSelectDate(null, [], []);
+              else
 //                  widget.calendarController.setSelectDate(
 //                      DateTime(
 //                          widget.calendarController.focusDate.year,
@@ -136,24 +133,19 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
 //                          .events[widget.calendarController.selectDate],
 //                      widget.calendarController
 //                          .holidays[widget.calendarController.selectDate]);
-                  calendarBloc.setSelectDate(
-                      DateTime(
-                          snapshot['focusDate'].year,
-                          snapshot['focusDate'].month,
-                          weekList[i]),
-                      [],
-                      []);
-              });
+                calendarBloc.setSelectDate(
+                    DateTime(snapshot['focusDate'].year,
+                        snapshot['focusDate'].month, weekList[i]),
+                    [],
+                    []);
             },
             child: Container(
               width: double.infinity,
-              color: _isToday(weekList[i],snapshot['focusDate'])
+              color: _isToday(weekList[i], snapshot['focusDate'])
                   ? Colors.grey[300]
                   : calendarBloc.isSelectedDate(
-                      DateTime(
-                          snapshot['focusDate'].year,
-                          snapshot['focusDate'].month,
-                          weekList[i]),
+                      DateTime(snapshot['focusDate'].year,
+                          snapshot['focusDate'].month, weekList[i]),
                     )
                       ? Colors.red
                       : null,

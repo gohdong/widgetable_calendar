@@ -67,6 +67,7 @@ class WidgetableCalendarBloc {
 
   void setSelectDate(DateTime day, List events, List holidays) {
     data.selectDate = day;
+    streamSink();
   }
 
   bool isSelectedDate(DateTime day) {
