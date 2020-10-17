@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'package:widgetable_calendar/Data/calendar_data.dart';
 
-class CalendarBloc {
+class WidgetableCalendarBloc {
   // WidgetableCalendarData calendar = WidgetableCalendarData(calendarController: null);
   StreamController<Map> _controller = StreamController();
   WidgetableCalendarData data = WidgetableCalendarData();
 
   List test = List();
-  CalendarBloc(){
+  WidgetableCalendarBloc(){
     print("init");
     data.events = [];
     data.holidays = [];

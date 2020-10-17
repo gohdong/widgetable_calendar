@@ -29,7 +29,7 @@ class WidgetableCalendarUI extends StatefulWidget {
 
 class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     with SingleTickerProviderStateMixin {
-  final CalendarBloc calendarBloc = CalendarBloc();
+  final WidgetableCalendarBloc calendarBloc = WidgetableCalendarBloc();
 
   @override
   Widget build(BuildContext context) {

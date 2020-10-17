@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:widgetable_calendar/Bloc/calendar_bloc.dart';
 
-class CalendarProvider extends InheritedWidget {
-  final CalendarBloc calendarBloc;
+class WidgetableCalendarProvider extends InheritedWidget {
+  final WidgetableCalendarBloc calendarBloc;
 
   @override
   bool updateShouldNotify(InheritedWidget oldWidget) {
     return true;
   }
 
-  static CalendarBloc of(BuildContext context) =>
-      (context.dependOnInheritedWidgetOfExactType() as CalendarProvider)
+  static WidgetableCalendarBloc of(BuildContext context) =>
+      (context.dependOnInheritedWidgetOfExactType() as WidgetableCalendarProvider)
           .calendarBloc;
 
-  CalendarProvider({Key key, this.calendarBloc, Widget child})
+  WidgetableCalendarProvider({Key key, this.calendarBloc, Widget child})
       : super(child: child, key: key);
 }

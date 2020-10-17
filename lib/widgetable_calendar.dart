@@ -43,7 +43,7 @@ class WidgetableCalendar extends StatefulWidget {
 class _WidgetableCalendarState extends State<WidgetableCalendar> {
   @override
   Widget build(BuildContext context) {
-    return CalendarProvider(
+    return WidgetableCalendarProvider(
       child: WidgetableCalendarUI(
         saturdayColor: widget.saturdayColor,
         weekDayColor: widget.weekDayColor,
