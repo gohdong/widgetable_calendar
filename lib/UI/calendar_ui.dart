@@ -17,7 +17,7 @@ class WidgetableCalendarUI extends StatefulWidget {
 
   WidgetableCalendarUI(
       {Key key,
-        @required this.calendarController,
+      @required this.calendarController,
       this.weekDayColor = Colors.black,
       this.sundayColor = Colors.red,
       this.saturdayColor = Colors.blue,
@@ -32,8 +32,6 @@ class WidgetableCalendarUI extends StatefulWidget {
 
 class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     with SingleTickerProviderStateMixin {
-
-
   @override
   void initState() {
     widget.calendarController.init();
@@ -125,8 +123,15 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   TableRow _buildEachWeek(Map snapshot, List weekList) {
     final children = <TableCell>[];
 
+    DateTime lastDay =
+        DateTime(snapshot['focusDate'].year, snapshot['focusDate'].month + 1, 1)
+            .subtract(new Duration(days: 1));
+
     for (int i = 0; i < weekList.length; i++) {
-      String date = weekList[i] != 0 ? weekList[i].toString() : "";
+      //    DateTime someDate = DateTime(snapshot['focusDate'].year, snapshot['focusDate'].month, weekList[i]);   // 정확한 날짜
+      String date = weekList[i] > 0 && weekList[i] <= lastDay.day
+          ? weekList[i].toString()
+          : "";
       children.add(
         TableCell(
           child: InkWell(

@@ -39,12 +39,12 @@ class WidgetableCalendarController extends WidgetableCalendarBloc{
     int firstDayWeekday = firstDay.weekday == 7 ? 0 : firstDay.weekday;
     int lastDayWeekday = lastDay.weekday == 7 ? 0 : lastDay.weekday;
 
-    // make long date list ( ex. [0,0,0,0,1,2,3,...,31]
-    for (int i = 0; firstDayWeekday != i; i++) dateList.add(0);
+    // make long date list ( ex. [-3,-2,-1,0,1,2,3,...,31]
+    for (int i = firstDayWeekday; i!=0 ; i--) dateList.add(-i+1);
     for (int i = 0; lastDay.day != i; i++) dateList.add(i + 1);
-    for (int i = lastDayWeekday; i != 6; i++) dateList.add(0);
+    for (int i = 1; lastDayWeekday != 6; i++,lastDayWeekday++) dateList.add(i+lastDay.day);
 
-    // split with 7 ( make it to week! )  ( ex. [ [0,0,0,0,1,2,3], [4,5,...], ... ] )
+    // split with 7 ( make it to week! )  ( ex. [ [-3,-2,-1,0,1,2,3], [4,5,...], ... ] )
     List weekList = [];
     for (var i = 0; i < dateList.length; i += 7) {
       weekList.add(dateList.sublist(
