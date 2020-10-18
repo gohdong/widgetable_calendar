@@ -123,15 +123,11 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   TableRow _buildEachWeek(Map snapshot, List weekList) {
     final children = <TableCell>[];
 
-    DateTime lastDay =
-        DateTime(snapshot['focusDate'].year, snapshot['focusDate'].month + 1, 1)
-            .subtract(new Duration(days: 1));
-
     for (int i = 0; i < weekList.length; i++) {
-      //    DateTime someDate = DateTime(snapshot['focusDate'].year, snapshot['focusDate'].month, weekList[i]);   // 정확한 날짜
-      String date = weekList[i] > 0 && weekList[i] <= lastDay.day
-          ? weekList[i].toString()
-          : "";
+      DateTime eachDate = DateTime(snapshot['focusDate'].year, snapshot['focusDate'].month, weekList[i]);   // 정확한 날짜
+      bool thisMonth = _isThisMonth(snapshot, weekList, eachDate);
+      String date = eachDate.day.toString();
+
       children.add(
         TableCell(
           child: InkWell(
@@ -156,6 +152,9 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                         snapshot['focusDate'].month, weekList[i]),
                     [],
                     []);
+
+              if (!thisMonth && weekList[i] <= 0) widget.calendarController.changeMonth(-1);
+              if (!thisMonth && weekList[i] > 0) widget.calendarController.changeMonth(1);
             },
             child: Container(
               width: double.infinity,
@@ -172,16 +171,16 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                   child: i == 0
                       ? Text(
                           date,
-                          style: TextStyle(color: widget.sundayColor),
+                          style: thisMonth ? TextStyle(color: widget.sundayColor) : TextStyle(color: Colors.grey),
                         )
                       : i == 6
                           ? Text(
                               date,
-                              style: TextStyle(color: widget.saturdayColor),
+                              style: thisMonth ? TextStyle(color: widget.saturdayColor) : TextStyle(color: Colors.grey),
                             )
                           : Text(
                               date,
-                              style: TextStyle(color: widget.weekDayColor),
+                              style: thisMonth ? TextStyle(color: widget.weekDayColor) : TextStyle(color: Colors.grey),
                             )),
             ),
           ),
@@ -201,6 +200,14 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
       return true;
     } else
       return false;
+  }
+
+  bool _isThisMonth(Map snapshot, List weekList,DateTime eachDate){
+    bool result = true;
+    if (eachDate.month != snapshot['focusDate'].month){
+      result = false;
+    }
+    return result;
   }
 
 //
