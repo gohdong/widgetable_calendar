@@ -13,6 +13,8 @@ class WidgetableCalendarUI extends StatefulWidget {
   final List holidays;
   final List events;
 
+  final DateTime initialDate;
+
   final WidgetableCalendarController calendarController;
 
   WidgetableCalendarUI(
@@ -24,7 +26,9 @@ class WidgetableCalendarUI extends StatefulWidget {
       this.backgroundColor = Colors.white,
       this.lineColor = Colors.black,
       this.holidays,
-      this.events})
+      this.events,
+      this.initialDate
+      })
       : super(key: key);
 
   _WidgetableCalendarUIState createState() => _WidgetableCalendarUIState();
@@ -34,7 +38,11 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     with SingleTickerProviderStateMixin {
   @override
   void initState() {
-    widget.calendarController.init();
+    widget.calendarController.init(
+      events: widget.events,
+      holidays: widget.holidays,
+      initialDay: widget.initialDate
+    );
     super.initState();
   }
 
