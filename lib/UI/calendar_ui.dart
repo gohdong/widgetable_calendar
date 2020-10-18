@@ -120,12 +120,16 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
         },
       ),
       Expanded(
-        child: Container(
-          child: Center(
-              child: Text(snapshot['focusDate'].year.toString() +
-                  " " +
-                  monthList[snapshot['focusDate'].month - 1])),
-        ),
+        child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(snapshot['focusDate'].year.toString() +
+                    " " +
+                    monthList[snapshot['focusDate'].month - 1]),
+                Icon(Icons.arrow_drop_down),
+              ],
+            )),
       ),
       IconButton(
         icon: Icon(Icons.arrow_forward_ios),
