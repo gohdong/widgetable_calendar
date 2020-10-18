@@ -10,7 +10,9 @@ class WidgetableCalendarController extends WidgetableCalendarBloc{
     return super.streams;
   }
 
-  WidgetableCalendarController() {
+  WidgetableCalendarController() ;
+
+  void init(){
     super.data.events = [];
     super.data.holidays = [];
 

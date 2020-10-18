@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:widgetable_calendar/widgetable_calendar.dart';
+import 'package:widgetable_calendar/Bloc/calendar_controller.dart';
 
 void main() {
   runApp(MyApp());
@@ -30,6 +31,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
+  WidgetableCalendarController calendarController = WidgetableCalendarController();
 
   List<Map> _events;
 
@@ -64,6 +66,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   Widget _buildCalendar() {
     return WidgetableCalendar(
       // calendarController: _calendarController,
+      calendarController: calendarController,
       saturdayColor: Colors.red,
       weekDayColor: Colors.black,
       backgroundColor: Colors.white.withOpacity(0),
