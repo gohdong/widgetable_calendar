@@ -54,7 +54,8 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
             _buildCalendarContent(snapshot.data),
             FlatButton(
                 onPressed: () => widget.calendarController.addEvents(),
-                child: Text("ADD EVENTS"))
+                child: Text("ADD EVENTS")),
+            _buildEvents(snapshot.data)
           ],
         );
       },
@@ -191,7 +192,41 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     return TableRow(children: children);
   }
 
-//
+  Widget _buildEvents(Map snapshot) {
+    final children = <Widget>[
+//      Text(snapshot['events'].toString()),
+      Divider(thickness: 5,),
+//      Text(widget.calendarController.findEvents().toString()),
+      Expanded(child:_buildEventList(widget.calendarController.findEvents())),
+    ];
+
+    return Expanded(
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        children: children,
+      ),
+    );
+  }
+
+  Widget _buildEventList(List eventList) {
+    return ListView(
+      children: eventList != null ? eventList
+          .map((event) => Container(
+        decoration: BoxDecoration(
+          border: Border.all(width: 0.8),
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+        child: ListTile(
+          title: Text(event.toString()),
+//          onTap: () => print('$event tapped!'),
+        ),
+      ))
+          .toList() : Container(),
+    );
+  }
+
+
   bool _isToday(int date, DateTime focusDate) {
     DateTime today = DateTime.now();
     if (focusDate.year == today.year &&

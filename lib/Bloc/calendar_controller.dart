@@ -29,8 +29,19 @@ class WidgetableCalendarController extends WidgetableCalendarBloc{
   }
 
   void addEvents() {
-    super.data.events.add(Map());
+    //TODO change testMap
+    Map testMap = {data.selectDate : "test"};
+    super.data.events.add(testMap);
     super.streamSink();
+  }
+
+  List findEvents(){
+    List returnValue = [];
+    for (int i=0 ; i < super.data.events.length ; i++){
+      Map eachEvent = super.data.events[i];
+      if (eachEvent.containsKey(super.data.selectDate)) returnValue.add(eachEvent);
+    }
+    return returnValue;
   }
 
   List _makeWeekList(DateTime firstDay, DateTime lastDay) {
