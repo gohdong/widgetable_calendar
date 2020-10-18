@@ -38,6 +38,30 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     super.initState();
   }
 
+  double startDXPoint = 0;
+  double endDXPoint = 0;
+
+  void _onHorizontalDragStartHandler(DragStartDetails details) {
+    setState(() {
+      startDXPoint = details.globalPosition.dx.floorToDouble();
+    });
+  }
+
+  void _onDragUpdateHandler(DragUpdateDetails details) {
+    setState(() {
+      endDXPoint = details.globalPosition.dx.floorToDouble();
+    });
+  }
+
+  void _onDragEnd(DragEndDetails details) {
+    setState(() {
+      if (startDXPoint > endDXPoint)
+        widget.calendarController.changeMonth(1);
+      else if (startDXPoint < endDXPoint)
+        widget.calendarController.changeMonth(-1);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
@@ -48,15 +72,24 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
             child: CircularProgressIndicator(),
           );
         }
-        return Column(
-          children: [
-            _buildHeader(snapshot.data),
-            _buildCalendarContent(snapshot.data),
-            FlatButton(
-                onPressed: () => widget.calendarController.addEvents(),
-                child: Text("ADD EVENTS")),
-            _buildEvents(snapshot.data)
-          ],
+        return ClipRect(
+          child: GestureDetector(
+            onHorizontalDragStart: _onHorizontalDragStartHandler,
+            onHorizontalDragUpdate: _onDragUpdateHandler,
+            onHorizontalDragEnd: _onDragEnd,
+            child: Container(
+              child: Column(
+                children: [
+                  _buildHeader(snapshot.data),
+                  _buildCalendarContent(snapshot.data),
+                  FlatButton(
+                      onPressed: () => widget.calendarController.addEvents(),
+                      child: Text("ADD EVENTS")),
+                  _buildEvents(snapshot.data)
+                ],
+              ),
+            ),
+          ),
         );
       },
     );
