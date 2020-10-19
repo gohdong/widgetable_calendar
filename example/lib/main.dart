@@ -67,9 +67,14 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     return WidgetableCalendar(
       // calendarController: _calendarController,
       calendarController: calendarController,
+      sundayColor: Colors.teal,
       saturdayColor: Colors.red,
       weekDayColor: Colors.black,
       backgroundColor: Colors.white.withOpacity(0),
+      todayBackgroundColor: Colors.yellow,
+      todayTextColor: Colors.greenAccent,
+      highlightBackgroundColor: Colors.pink,
+      highlightTextColor: Colors.deepOrangeAccent,
     );
   }
 }

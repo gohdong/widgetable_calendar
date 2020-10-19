@@ -9,6 +9,10 @@ class WidgetableCalendarUI extends StatefulWidget {
   final Color saturdayColor;
   final Color backgroundColor;
   final Color lineColor;
+  final Color todayBackgroundColor;
+  final Color todayTextColor;
+  final Color highlightBackgroundColor;
+  final Color highlightTextColor;
 
   final List holidays;
   final List events;
@@ -24,7 +28,11 @@ class WidgetableCalendarUI extends StatefulWidget {
       this.backgroundColor = Colors.white,
       this.lineColor = Colors.black,
       this.holidays,
-      this.events})
+      this.events,
+      this.todayBackgroundColor = Colors.black26,
+      this.todayTextColor = Colors.white,
+      this.highlightBackgroundColor = Colors.red,
+      this.highlightTextColor = Colors.white})
       : super(key: key);
 
   _WidgetableCalendarUIState createState() => _WidgetableCalendarUIState();
@@ -290,35 +298,70 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
             child: Container(
               width: double.infinity,
               color: _isToday(weekList[i], snapshot['focusDate'])
-                  ? Colors.grey[300]
+                  ? widget.todayBackgroundColor
                   : widget.calendarController.isSelectedDate(
                       DateTime(snapshot['focusDate'].year,
                           snapshot['focusDate'].month, weekList[i]),
                     )
-                      ? Colors.red
+                      ? widget.highlightBackgroundColor
                       : null,
               height: 50,
               child: Center(
-                  child: i == 0
-                      ? Text(
-                          date,
-                          style: thisMonth
-                              ? TextStyle(color: widget.sundayColor)
-                              : TextStyle(color: Colors.grey),
-                        )
-                      : i == 6
-                          ? Text(
-                              date,
-                              style: thisMonth
-                                  ? TextStyle(color: widget.saturdayColor)
-                                  : TextStyle(color: Colors.grey),
-                            )
-                          : Text(
-                              date,
-                              style: thisMonth
-                                  ? TextStyle(color: widget.weekDayColor)
-                                  : TextStyle(color: Colors.grey),
-                            )),
+                child: i == 0
+                    ? Text(
+                        date,
+                        style: TextStyle(
+                            color: thisMonth
+                                ? _isToday(weekList[i], snapshot['focusDate'])
+                                    ? widget.todayTextColor
+                                    : widget.calendarController.isSelectedDate(
+                                        DateTime(
+                                            snapshot['focusDate'].year,
+                                            snapshot['focusDate'].month,
+                                            weekList[i]),
+                                      )
+                                        ? widget.highlightTextColor
+                                        : widget.sundayColor
+                                : Colors.grey),
+                      )
+                    : i == 6
+                        ? Text(
+                            date,
+                            style: TextStyle(
+                                color: thisMonth
+                                    ? _isToday(
+                                            weekList[i], snapshot['focusDate'])
+                                        ? widget.todayTextColor
+                                        : widget.calendarController
+                                                .isSelectedDate(
+                                            DateTime(
+                                                snapshot['focusDate'].year,
+                                                snapshot['focusDate'].month,
+                                                weekList[i]),
+                                          )
+                                            ? widget.highlightTextColor
+                                            : widget.saturdayColor
+                                    : Colors.grey),
+                          )
+                        : Text(
+                            date,
+                            style: TextStyle(
+                                color: thisMonth
+                                    ? _isToday(
+                                            weekList[i], snapshot['focusDate'])
+                                        ? widget.todayTextColor
+                                        : widget.calendarController
+                                                .isSelectedDate(
+                                            DateTime(
+                                                snapshot['focusDate'].year,
+                                                snapshot['focusDate'].month,
+                                                weekList[i]),
+                                          )
+                                            ? widget.highlightTextColor
+                                            : widget.weekDayColor
+                                    : Colors.grey),
+                          ),
+              ),
             ),
           ),
         ),
@@ -420,7 +463,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                       )),
       )));
     }
-
+    // return Calendar
     return TableRow(children: children);
   }
 }
