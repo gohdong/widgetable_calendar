@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:widgetable_calendar/widgetable_calendar.dart';
+import 'package:widgetable_calendar/Bloc/calendar_controller.dart';
 
 void main() {
   runApp(MyApp());
@@ -30,14 +31,13 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
+  WidgetableCalendarController calendarController = WidgetableCalendarController();
 
-  CalendarController _calendarController;
   List<Map> _events;
 
   @override
   void initState() {
     super.initState();
-    _calendarController = CalendarController();
     final _selectedDay = DateTime.now();
 
     _events =  [];
@@ -59,30 +59,22 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 //           width: MediaQuery.of(context).size.width,
 //         ),
 // =======
-      body: Column(
-        mainAxisSize: MainAxisSize.max,
-        children: <Widget>[
-          _buildCalendar(),
-          FlatButton(onPressed: () {
-            setState(() {
-              _events.add({_calendarController.selectDate:"앱의 일정추가 기능~"});
-            });
-          }, child: Text("앱의 일정추가 기능"))
-        ],
-      ),
+      body: _buildCalendar(),
     );
   }
 
   Widget _buildCalendar() {
     return WidgetableCalendar(
-      calendarController: _calendarController,
-      saturdayColor: Colors.green,
-      weekDayColor: Colors.purple,
+      // calendarController: _calendarController,
+      calendarController: calendarController,
+      sundayColor: Colors.teal,
+      saturdayColor: Colors.red,
+      weekDayColor: Colors.black,
       backgroundColor: Colors.white.withOpacity(0),
-      events: _events,
-
-//      calendarController: _calendarController,
-//      initialSelectedDay: DateTime.now(),
+      todayBackgroundColor: Colors.yellow,
+      todayTextColor: Colors.greenAccent,
+      highlightBackgroundColor: Colors.pink,
+      highlightTextColor: Colors.deepOrangeAccent,
     );
   }
 }
