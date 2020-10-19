@@ -70,6 +70,8 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   int selectYear = 0;
   int selectMonth = 0;
 
+  final PageController pageController = PageController( initialPage: 1, );
+
   void _onHorizontalDragStartHandler(DragStartDetails details) {
     setState(() {
       startDXPoint = details.globalPosition.dx.floorToDouble();
@@ -102,22 +104,75 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
             child: CircularProgressIndicator(),
           );
         }
+//        return ClipRect(
+//          child: GestureDetector(
+//            onHorizontalDragStart: _onHorizontalDragStartHandler,
+//            onHorizontalDragUpdate: _onDragUpdateHandler,
+//            onHorizontalDragEnd: _onDragEnd,
+//            child: Container(
+//              child: Column(
+//                children: [
+//                  _buildHeader(snapshot.data),
+//                  _buildCalendarContent(snapshot.data),
+//                  FlatButton(
+//                      onPressed: () => widget.calendarController.addEvents(),
+//                      child: Text("ADD EVENTS")),
+//                  _buildEvents(snapshot.data)
+//                ],
+//              ),
+//            ),
+//          ),
+//        );
+
         return ClipRect(
           child: GestureDetector(
             onHorizontalDragStart: _onHorizontalDragStartHandler,
             onHorizontalDragUpdate: _onDragUpdateHandler,
             onHorizontalDragEnd: _onDragEnd,
-            child: Container(
-              child: Column(
-                children: [
-                  _buildHeader(snapshot.data),
-                  _buildCalendarContent(snapshot.data),
-                  FlatButton(
-                      onPressed: () => widget.calendarController.addEvents(),
-                      child: Text("ADD EVENTS")),
-                  _buildEvents(snapshot.data)
-                ],
-              ),
+            child: Column(
+              children: [
+                Expanded(
+                  child: PageView(
+                    controller: pageController,
+                    children: [
+                      SizedBox.expand(
+                        child: Container(
+                          child: Column(
+                            children: [
+                              _buildHeader(snapshot.data),
+                              _buildCalendarContent(snapshot.data),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox.expand(
+                        child: Container(
+                          child: Column(
+                            children: [
+                              _buildHeader(snapshot.data),
+                              _buildCalendarContent(snapshot.data),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox.expand(
+                        child: Container(
+                          child: Column(
+                            children: [
+                              _buildHeader(snapshot.data),
+                              _buildCalendarContent(snapshot.data),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                FlatButton(
+                    onPressed: () => widget.calendarController.addEvents(),
+                    child: Text("ADD EVENTS")),
+                _buildEvents(snapshot.data),
+              ],
             ),
           ),
         );
