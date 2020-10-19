@@ -71,8 +71,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       saturdayColor: Colors.red,
       weekDayColor: Colors.black,
       backgroundColor: Colors.white.withOpacity(0),
-      todayBackgroundColor: Colors.greenAccent,
-      todayTextColor: Colors.yellow,
+      todayBackgroundColor: Colors.yellow,
+      todayTextColor: Colors.greenAccent,
       highlightBackgroundColor: Colors.pink,
       highlightTextColor: Colors.deepOrangeAccent,
     );
