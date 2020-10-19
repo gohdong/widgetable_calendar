@@ -70,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       saturdayColor: Colors.red,
       weekDayColor: Colors.black,
       backgroundColor: Colors.white.withOpacity(0),
-      initialDate: DateTime(2020,1,1),
+      initialDate: DateTime(2020,9,1),
     );
   }
 }
