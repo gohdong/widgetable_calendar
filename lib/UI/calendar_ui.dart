@@ -57,8 +57,10 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     "Nov",
     "Dec"
   ];
-  int selectYear = 2020;
-  int selectMonth = 10;
+
+  // Complete Month Changer
+  int selectYear = 0;
+  int selectMonth = 0;
 
   void _onHorizontalDragStartHandler(DragStartDetails details) {
     setState(() {
@@ -75,25 +77,12 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   void _onDragEnd(DragEndDetails details) {
     if (startDXPoint > endDXPoint) {
       widget.calendarController.changeMonth(1);
-      setState(() {
-        if (selectMonth != 12) selectMonth = selectMonth+1;
-        else {
-          selectYear = selectYear+1;
-          selectMonth = 1;
-        }
-      });
     }
     else if (startDXPoint < endDXPoint) {
       widget.calendarController.changeMonth(-1);
-      setState(() {
-        if (selectMonth != 1) selectMonth = selectMonth-1;
-        else {
-          selectYear = selectYear-1;
-          selectMonth = 12;
-        }
-      });
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -142,32 +131,16 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
         icon: Icon(Icons.arrow_back_ios),
         onPressed: () {
           widget.calendarController.changeMonth(-1);
-          setState(() {
-            if (selectMonth != 1) selectMonth = selectMonth-1;
-            else {
-              selectYear = selectYear-1;
-              selectMonth = 12;
-            }
-          });
         },
       ),
-//      Expanded(
-//        child: Center(
-//            child: Row(
-//          mainAxisAlignment: MainAxisAlignment.center,
-//          children: [
-//            Text(snapshot['focusDate'].year.toString() +
-//                " " +
-//                monthList[snapshot['focusDate'].month - 1]),
-//            Icon(Icons.arrow_drop_down),
-//          ],
-//        )),
-//      ),
-
       Expanded(
         child: Center(
           child: InkWell(
             onTap: () async{
+              setState(() {
+                selectYear = snapshot["focusDate"].year;
+                selectMonth = snapshot["focusDate"].month;
+              });
               await showDialog(
                 context: context,
                 builder: (BuildContext context) {
@@ -252,13 +225,6 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
         icon: Icon(Icons.arrow_forward_ios),
         onPressed: () {
           widget.calendarController.changeMonth(1);
-          setState(() {
-            if (selectMonth != 12) selectMonth = selectMonth+1;
-            else {
-              selectYear = selectYear+1;
-              selectMonth = 1;
-            }
-          });
         },
       ),
     ];
