@@ -49,6 +49,24 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   double startDXPoint = 0;
   double endDXPoint = 0;
 
+  List yearList = ["2019", "2020", "2021"];
+  List monthList = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec"
+  ];
+  int selectYear = 2020;
+  int selectMonth = 10;
+
   void _onHorizontalDragStartHandler(DragStartDetails details) {
     setState(() {
       startDXPoint = details.globalPosition.dx.floorToDouble();
@@ -62,12 +80,26 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   }
 
   void _onDragEnd(DragEndDetails details) {
-    setState(() {
-      if (startDXPoint > endDXPoint)
-        widget.calendarController.changeMonth(1);
-      else if (startDXPoint < endDXPoint)
-        widget.calendarController.changeMonth(-1);
-    });
+    if (startDXPoint > endDXPoint) {
+      widget.calendarController.changeMonth(1);
+      setState(() {
+        if (selectMonth != 12) selectMonth = selectMonth+1;
+        else {
+          selectYear = selectYear+1;
+          selectMonth = 1;
+        }
+      });
+    }
+    else if (startDXPoint < endDXPoint) {
+      widget.calendarController.changeMonth(-1);
+      setState(() {
+        if (selectMonth != 1) selectMonth = selectMonth-1;
+        else {
+          selectYear = selectYear-1;
+          selectMonth = 12;
+        }
+      });
+    }
   }
 
   @override
@@ -103,32 +135,114 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     );
   }
 
-  Widget _buildHeader(Map snapshot) {
-    // print(snapshot==null);
-    List monthList = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec"
-    ];
+  int findYear(int year){
+    int returnValue = 0;
+    for (int i=0 ; i<yearList.length ; i++){
+      if (yearList[i] == year.toString()) return i;
+    }
+    return returnValue;
+  }
 
+  Widget _buildHeader(Map snapshot) {
     final children = [
       IconButton(
         icon: Icon(Icons.arrow_back_ios),
         onPressed: () {
           widget.calendarController.changeMonth(-1);
+          setState(() {
+            if (selectMonth != 1) selectMonth = selectMonth-1;
+            else {
+              selectYear = selectYear-1;
+              selectMonth = 12;
+            }
+          });
         },
       ),
+//      Expanded(
+//        child: Center(
+//            child: Row(
+//          mainAxisAlignment: MainAxisAlignment.center,
+//          children: [
+//            Text(snapshot['focusDate'].year.toString() +
+//                " " +
+//                monthList[snapshot['focusDate'].month - 1]),
+//            Icon(Icons.arrow_drop_down),
+//          ],
+//        )),
+//      ),
+
       Expanded(
         child: Center(
+          child: InkWell(
+            onTap: () async{
+              await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  int selectedYearIndex = findYear(selectYear);
+                  int selectedMonthIndex = selectMonth-1;
+                  return StatefulBuilder(
+                    builder: (context, setState) {
+                      return AlertDialog(
+                        content: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                                height: 160.0, // Change as per your requirement
+                                width: 100,
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  padding: const EdgeInsets.all(8),
+                                  itemCount: yearList.length,
+                                  itemBuilder: (BuildContext context, int index) {
+                                    return ListTile(
+                                        selected: index == selectedYearIndex,
+                                        onTap: () {
+                                          selectedYearIndex = index;
+                                          setState(() {
+                                            selectYear = int.tryParse(yearList[index]) ?? 2020;
+                                          });
+                                          print(selectYear);
+                                        },
+                                        title: Text(yearList[index].toString()));
+                                  },
+                                )),
+                            Container(
+                                height: 160.0, // Change as per your requirement
+                                width: 100,
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  padding: const EdgeInsets.all(8),
+                                  itemCount: monthList.length,
+                                  itemBuilder: (BuildContext context, int index) {
+                                    return ListTile(
+                                        selected: index == selectedMonthIndex,
+                                        onTap: () {
+                                          selectedMonthIndex = index;
+                                          setState(() {
+                                            selectMonth = index+1;
+                                            print(selectMonth);
+                                          });
+                                        },
+                                        title: Text(monthList[index].toString()));
+                                  },
+                                )),
+                          ],
+                        ),
+                        actions: <Widget>[
+                          new FlatButton(
+                            child: new Text("Done"),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+              );
+              widget.calendarController.changeMonthCompletely(selectYear, selectMonth);
+            },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -137,12 +251,21 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                     monthList[snapshot['focusDate'].month - 1]),
                 Icon(Icons.arrow_drop_down),
               ],
-            )),
+            ),
+          ),
+        ),
       ),
       IconButton(
         icon: Icon(Icons.arrow_forward_ios),
         onPressed: () {
           widget.calendarController.changeMonth(1);
+          setState(() {
+            if (selectMonth != 12) selectMonth = selectMonth+1;
+            else {
+              selectYear = selectYear+1;
+              selectMonth = 1;
+            }
+          });
         },
       ),
     ];
@@ -170,7 +293,8 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     final children = <TableCell>[];
 
     for (int i = 0; i < weekList.length; i++) {
-      DateTime eachDate = DateTime(snapshot['focusDate'].year, snapshot['focusDate'].month, weekList[i]);   // 정확한 날짜
+      DateTime eachDate = DateTime(snapshot['focusDate'].year,
+          snapshot['focusDate'].month, weekList[i]); // 정확한 날짜
       bool thisMonth = _isThisMonth(snapshot, weekList, eachDate);
       String date = eachDate.day.toString();
 
@@ -199,8 +323,10 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                     [],
                     []);
 
-              if (!thisMonth && weekList[i] <= 0) widget.calendarController.changeMonth(-1);
-              if (!thisMonth && weekList[i] > 0) widget.calendarController.changeMonth(1);
+              if (!thisMonth && weekList[i] <= 0)
+                widget.calendarController.changeMonth(-1);
+              if (!thisMonth && weekList[i] > 0)
+                widget.calendarController.changeMonth(1);
             },
             child: Container(
               width: double.infinity,
@@ -217,16 +343,22 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                   child: i == 0
                       ? Text(
                           date,
-                          style: thisMonth ? TextStyle(color: widget.sundayColor) : TextStyle(color: Colors.grey),
+                          style: thisMonth
+                              ? TextStyle(color: widget.sundayColor)
+                              : TextStyle(color: Colors.grey),
                         )
                       : i == 6
                           ? Text(
                               date,
-                              style: thisMonth ? TextStyle(color: widget.saturdayColor) : TextStyle(color: Colors.grey),
+                              style: thisMonth
+                                  ? TextStyle(color: widget.saturdayColor)
+                                  : TextStyle(color: Colors.grey),
                             )
                           : Text(
                               date,
-                              style: thisMonth ? TextStyle(color: widget.weekDayColor) : TextStyle(color: Colors.grey),
+                              style: thisMonth
+                                  ? TextStyle(color: widget.weekDayColor)
+                                  : TextStyle(color: Colors.grey),
                             )),
             ),
           ),
@@ -240,9 +372,11 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   Widget _buildEvents(Map snapshot) {
     final children = <Widget>[
 //      Text(snapshot['events'].toString()),
-      Divider(thickness: 5,),
+      Divider(
+        thickness: 5,
+      ),
 //      Text(widget.calendarController.findEvents().toString()),
-      Expanded(child:_buildEventList(widget.calendarController.findEvents())),
+      Expanded(child: _buildEventList(widget.calendarController.findEvents())),
     ];
 
     return Expanded(
@@ -255,22 +389,24 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
 
   Widget _buildEventList(List eventList) {
     return ListView(
-      children: eventList != null ? eventList
-          .map((event) => Container(
-        decoration: BoxDecoration(
-          border: Border.all(width: 0.8),
-          borderRadius: BorderRadius.circular(12.0),
-        ),
-        margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-        child: ListTile(
-          title: Text(event.toString()),
+      children: eventList != null
+          ? eventList
+              .map((event) => Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(width: 0.8),
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 8.0, vertical: 4.0),
+                    child: ListTile(
+                      title: Text(event.toString()),
 //          onTap: () => print('$event tapped!'),
-        ),
-      ))
-          .toList() : Container(),
+                    ),
+                  ))
+              .toList()
+          : Container(),
     );
   }
-
 
   bool _isToday(int date, DateTime focusDate) {
     DateTime today = DateTime.now();
@@ -282,9 +418,9 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
       return false;
   }
 
-  bool _isThisMonth(Map snapshot, List weekList,DateTime eachDate){
+  bool _isThisMonth(Map snapshot, List weekList, DateTime eachDate) {
     bool result = true;
-    if (eachDate.month != snapshot['focusDate'].month){
+    if (eachDate.month != snapshot['focusDate'].month) {
       result = false;
     }
     return result;

@@ -100,4 +100,14 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
         _makeWeekList(super.data.firstDay, super.data.lastDay);
     super.streamSink();
   }
+
+  void changeMonthCompletely(int year,int month) {
+    super.data.focusDate = DateTime(year, month, 1);
+    super.data.firstDay = DateTime(super.data.focusDate.year, super.data.focusDate.month, 1);
+    super.data.lastDay = DateTime(super.data.focusDate.year, super.data.focusDate.month + 1, 1)
+        .subtract(new Duration(days: 1));
+
+    super.data.weekList = _makeWeekList(super.data.firstDay, super.data.lastDay);
+    super.streamSink();
+  }
 }
