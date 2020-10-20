@@ -124,72 +124,52 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
 //          ),
 //        );
 
-        return ClipRect(
-          child: GestureDetector(
-            onHorizontalDragStart: _onHorizontalDragStartHandler,
-            onHorizontalDragUpdate: _onDragUpdateHandler,
-            onHorizontalDragEnd: _onDragEnd,
-            child: Column(
-              children: [
-                Expanded(
-                  child: PageView(
-                    controller: pageController,
-                    onPageChanged: (pageId) {
-                      if (pageId == 2) {
-                        print("Last page, add page to end");
-                        widget.calendarController.changeMonth(1);
-                        pageController.jumpToPage(1);
-                      }
-                      if (pageId == 0) {
-                        print("First page, add page to start");
-                        widget.calendarController.changeMonth(-1);
-                        pageController.jumpToPage(1);
-                      }
-                    },
-                    children: [
-                      SizedBox.expand(
-                        child: Container(
-                          child: Column(
-                            children: [
-                              _buildHeader(snapshot.data, -1),
-                              _buildCalendarContent(snapshot.data, -1),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox.expand(
-                        child: Container(
-                          child: Column(
-                            children: [
-                              _buildHeader(snapshot.data, 0),
-                              _buildCalendarContent(snapshot.data, 0),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox.expand(
-                        child: Container(
-                          child: Column(
-                            children: [
-                              _buildHeader(snapshot.data, 1),
-                              _buildCalendarContent(snapshot.data, 1),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                FlatButton(
-                    onPressed: () => widget.calendarController.addEvents(),
-                    child: Text("ADD EVENTS")),
-                _buildEvents(snapshot.data),
-              ],
+        final children = <Widget>[];
+
+        for (int i=-1 ; i<2 ; i++){
+          children.add(
+            Container(
+              child: Column(
+                children: [
+                  _buildHeader(snapshot.data, i),
+                  Expanded(child: _buildCalendarContent(snapshot.data, i)),
+                ],
+              ),
             ),
-          ),
+          );
+        }
+
+        return Column(
+          children: [
+            Expanded(
+              child: PageView(
+                controller: pageController,
+                onPageChanged: (pageId) {
+                  if (pageId == 2) {
+//                        print("Last page, add page to end");
+                    widget.calendarController.changeMonth(1);
+                    pageController.jumpToPage(1);
+                  }
+                  if (pageId == 0) {
+//                        print("First page, add page to start");
+                    widget.calendarController.changeMonth(-1);
+                    pageController.jumpToPage(1);
+                  }
+                },
+                children: children,
+              ),
+            ),
+            Center(
+              child: FlatButton(
+                  onPressed: () => widget.calendarController.addEvents(),
+                  child: Text("ADD EVENTS")),
+            ),
+            _buildEvents(snapshot.data),
+          ],
         );
       },
     );
+
   }
 
   int findYear(int year){
