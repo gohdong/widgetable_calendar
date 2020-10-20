@@ -149,12 +149,11 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                 controller: pageController,
                 onPageChanged: (pageId) {
                   if (pageId == 2) {
-//                        print("Last page, add page to end");
+//                    pageController.animateToPage(1, duration: const Duration(milliseconds: 1000), curve: Curves.ease,);
                     widget.calendarController.changeMonth(1);
                     pageController.jumpToPage(1);
                   }
                   if (pageId == 0) {
-//                        print("First page, add page to start");
                     widget.calendarController.changeMonth(-1);
                     pageController.jumpToPage(1);
                   }
@@ -270,7 +269,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                HeaderText(snapshot['focusDate'].year, snapshot['focusDate'].month),
+                headerText(snapshot['focusDate'].year, snapshot['focusDate'].month),
 //                Text(snapshot['focusDate'].year.toString() +
 //                    " " +
 //                    monthList[snapshot['focusDate'].month - 1 + type]),
@@ -296,7 +295,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     );
   }
 
-  Widget HeaderText(int focusYear,int focusMonth){
+  Widget headerText(int focusYear,int focusMonth){
     int monthListIndex = focusMonth - 1;
     if (monthListIndex > 11){
       monthListIndex  = monthListIndex - 12;
@@ -493,7 +492,10 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
 
   bool _isThisMonth(Map snapshot, List weekList, DateTime eachDate, int type) {
     bool result = true;
-    if (eachDate.month != snapshot['focusDate'].month + type) {
+    int focusMonth = snapshot['focusDate'].month + type;
+    if (focusMonth > 12) focusMonth -= 12;
+    if (focusMonth < 1) focusMonth += 12;
+    if (eachDate.month != focusMonth) {
       result = false;
     }
     return result;
