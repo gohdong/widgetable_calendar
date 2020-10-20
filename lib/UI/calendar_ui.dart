@@ -139,8 +139,8 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                         child: Container(
                           child: Column(
                             children: [
-                              _buildHeader(snapshot.data),
-                              _buildCalendarContent(snapshot.data),
+                              _buildHeader(snapshot.data, -1),
+                              _buildCalendarContent(snapshot.data, -1),
                             ],
                           ),
                         ),
@@ -149,8 +149,8 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                         child: Container(
                           child: Column(
                             children: [
-                              _buildHeader(snapshot.data),
-                              _buildCalendarContent(snapshot.data),
+                              _buildHeader(snapshot.data, 0),
+                              _buildCalendarContent(snapshot.data, 0),
                             ],
                           ),
                         ),
@@ -159,8 +159,8 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                         child: Container(
                           child: Column(
                             children: [
-                              _buildHeader(snapshot.data),
-                              _buildCalendarContent(snapshot.data),
+                              _buildHeader(snapshot.data, 1),
+                              _buildCalendarContent(snapshot.data, 1),
                             ],
                           ),
                         ),
@@ -188,12 +188,12 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     return returnValue;
   }
 
-  Widget _buildHeader(Map snapshot) {
+  Widget _buildHeader(Map snapshot, int type) {
     final children = [
       IconButton(
         icon: Icon(Icons.arrow_back_ios),
         onPressed: () {
-          widget.calendarController.changeMonth(-1);
+//          widget.calendarController.changeMonth(-1);
         },
       ),
       Expanded(
@@ -275,9 +275,10 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(snapshot['focusDate'].year.toString() +
-                    " " +
-                    monthList[snapshot['focusDate'].month - 1]),
+                HeaderText(snapshot['focusDate'].year, snapshot['focusDate'].month, type),
+//                Text(snapshot['focusDate'].year.toString() +
+//                    " " +
+//                    monthList[snapshot['focusDate'].month - 1 + type]),
                 Icon(Icons.arrow_drop_down),
               ],
             ),
@@ -287,7 +288,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
       IconButton(
         icon: Icon(Icons.arrow_forward_ios),
         onPressed: () {
-          widget.calendarController.changeMonth(1);
+//          widget.calendarController.changeMonth(1);
         },
       ),
     ];
@@ -300,24 +301,44 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     );
   }
 
-  Widget _buildCalendarContent(Map snapshot) {
-    final children = <TableRow>[_buildDaysOfWeek()];
+  Widget HeaderText(int focusYear,int focusMonth,int type){
+    int monthListIndex = focusMonth - 1 + type;
+    if (monthListIndex > 11){
+      monthListIndex  = monthListIndex - 12;
+      focusYear++;
+    } else if (monthListIndex < 0){
+      monthListIndex  = monthListIndex + 12;
+      focusYear--;
+    }
+    return Text(focusYear.toString() +
+        " " +
+        monthList[monthListIndex]);
+  }
 
-    for (int i = 0; i < snapshot['weekList'].length; i++) {
-      children.add(_buildEachWeek(snapshot, snapshot['weekList'][i]));
+
+  Widget _buildCalendarContent(Map snapshot, int type) {
+    final children = <TableRow>[_buildDaysOfWeek()];
+    List weekList = [];
+
+    if (type == -1) weekList = snapshot['prevWeekList'];
+    else if (type == 0) weekList = snapshot['weekList'];
+    else if (type == 1) weekList = snapshot['nextWeekList'];
+
+    for (int i = 0; i < weekList.length; i++) {
+      children.add(_buildEachWeek(snapshot, weekList[i],type));
     }
     return Table(
       children: children,
     );
   }
 
-  TableRow _buildEachWeek(Map snapshot, List weekList) {
+  TableRow _buildEachWeek(Map snapshot, List weekList, int type) {
     final children = <TableCell>[];
 
     for (int i = 0; i < weekList.length; i++) {
       DateTime eachDate = DateTime(snapshot['focusDate'].year,
-          snapshot['focusDate'].month, weekList[i]); // 정확한 날짜
-      bool thisMonth = _isThisMonth(snapshot, weekList, eachDate);
+          snapshot['focusDate'].month + type, weekList[i]); // 정확한 날짜
+      bool thisMonth = _isThisMonth(snapshot, weekList, eachDate, type);
       String date = eachDate.day.toString();
 
       children.add(
@@ -345,18 +366,18 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                     [],
                     []);
 
-              if (!thisMonth && weekList[i] <= 0)
-                widget.calendarController.changeMonth(-1);
-              if (!thisMonth && weekList[i] > 0)
-                widget.calendarController.changeMonth(1);
+//              if (!thisMonth && weekList[i] <= 0)
+//                widget.calendarController.changeMonth(-1);
+//              if (!thisMonth && weekList[i] > 0)
+//                widget.calendarController.changeMonth(1);
             },
             child: Container(
               width: double.infinity,
-              color: _isToday(weekList[i], snapshot['focusDate'])
+              color: _isToday(weekList[i], snapshot['focusDate'], type)
                   ? widget.todayBackgroundColor
                   : widget.calendarController.isSelectedDate(
                       DateTime(snapshot['focusDate'].year,
-                          snapshot['focusDate'].month, weekList[i]),
+                          snapshot['focusDate'].month + type, weekList[i]),
                     )
                       ? widget.highlightBackgroundColor
                       : null,
@@ -367,12 +388,12 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                         date,
                         style: TextStyle(
                             color: thisMonth
-                                ? _isToday(weekList[i], snapshot['focusDate'])
+                                ? _isToday(weekList[i], snapshot['focusDate'], type)
                                     ? widget.todayTextColor
                                     : widget.calendarController.isSelectedDate(
                                         DateTime(
                                             snapshot['focusDate'].year,
-                                            snapshot['focusDate'].month,
+                                            snapshot['focusDate'].month + type,
                                             weekList[i]),
                                       )
                                         ? widget.highlightTextColor
@@ -385,13 +406,13 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                             style: TextStyle(
                                 color: thisMonth
                                     ? _isToday(
-                                            weekList[i], snapshot['focusDate'])
+                                            weekList[i], snapshot['focusDate'], type)
                                         ? widget.todayTextColor
                                         : widget.calendarController
                                                 .isSelectedDate(
                                             DateTime(
                                                 snapshot['focusDate'].year,
-                                                snapshot['focusDate'].month,
+                                                snapshot['focusDate'].month + type,
                                                 weekList[i]),
                                           )
                                             ? widget.highlightTextColor
@@ -403,13 +424,13 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                             style: TextStyle(
                                 color: thisMonth
                                     ? _isToday(
-                                            weekList[i], snapshot['focusDate'])
+                                            weekList[i], snapshot['focusDate'], type)
                                         ? widget.todayTextColor
                                         : widget.calendarController
                                                 .isSelectedDate(
                                             DateTime(
                                                 snapshot['focusDate'].year,
-                                                snapshot['focusDate'].month,
+                                                snapshot['focusDate'].month + type,
                                                 weekList[i]),
                                           )
                                             ? widget.highlightTextColor
@@ -465,19 +486,19 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     );
   }
 
-  bool _isToday(int date, DateTime focusDate) {
+  bool _isToday(int date, DateTime focusDate, int type) {
     DateTime today = DateTime.now();
     if (focusDate.year == today.year &&
-        focusDate.month == today.month &&
+        focusDate.month + type == today.month &&
         date == today.day) {
       return true;
     } else
       return false;
   }
 
-  bool _isThisMonth(Map snapshot, List weekList, DateTime eachDate) {
+  bool _isThisMonth(Map snapshot, List weekList, DateTime eachDate, int type) {
     bool result = true;
-    if (eachDate.month != snapshot['focusDate'].month) {
+    if (eachDate.month != snapshot['focusDate'].month + type) {
       result = false;
     }
     return result;
