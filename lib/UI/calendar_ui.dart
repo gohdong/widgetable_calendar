@@ -161,13 +161,14 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
             Expanded(
               child: PageView(
                 controller: pageController,
-                onPageChanged: (pageId) {
+                onPageChanged: (pageId) async {
                   if (pageId == 2) {
-//                    pageController.animateToPage(1, duration: const Duration(milliseconds: 1000), curve: Curves.ease,);
+                    await pageController.animateToPage(2, duration: const Duration(milliseconds: 250), curve: Curves.ease,);
                     widget.calendarController.changeMonth(1);
                     pageController.jumpToPage(1);
                   }
                   if (pageId == 0) {
+                    await pageController.animateToPage(0, duration: const Duration(milliseconds: 250), curve: Curves.ease,);
                     widget.calendarController.changeMonth(-1);
                     pageController.jumpToPage(1);
                   }
