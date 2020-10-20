@@ -134,6 +134,18 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                 Expanded(
                   child: PageView(
                     controller: pageController,
+                    onPageChanged: (pageId) {
+                      if (pageId == 2) {
+                        print("Last page, add page to end");
+                        widget.calendarController.changeMonth(1);
+                        pageController.jumpToPage(1);
+                      }
+                      if (pageId == 0) {
+                        print("First page, add page to start");
+                        widget.calendarController.changeMonth(-1);
+                        pageController.jumpToPage(1);
+                      }
+                    },
                     children: [
                       SizedBox.expand(
                         child: Container(
