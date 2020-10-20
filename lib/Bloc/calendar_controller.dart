@@ -28,19 +28,25 @@ class WidgetableCalendarController extends WidgetableCalendarBloc{
     super.streamSink();
   }
 
-  void addEvents() {
+  void addEvents(Map eventData) {
     //TODO change testMap
-    Map testMap = {data.selectDate : "test"};
-    super.data.events.add(testMap);
+    print(super.data.events);
+    super.data.events.add(eventData);
     super.streamSink();
   }
 
   List findEvents(){
+    print(super.data.events);
     List returnValue = [];
-    for (int i=0 ; i < super.data.events.length ; i++){
-      Map eachEvent = super.data.events[i];
-      if (eachEvent.containsKey(super.data.selectDate)) returnValue.add(eachEvent);
-    }
+    // for (int i=0 ; i < super.data.events.length ; i++){
+    //   Map eachEvent = super.data.events[i];
+    //   if (eachEvent.containsKey(super.data.selectDate)) returnValue.add(eachEvent);
+    // }
+    super.data.events.forEach((element) {
+      if(element['time'] == super.data.selectDate){
+        returnValue.add(element);
+      }
+    });
     return returnValue;
   }
 

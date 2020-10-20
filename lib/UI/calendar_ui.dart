@@ -91,7 +91,10 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                   _buildHeader(snapshot.data),
                   _buildCalendarContent(snapshot.data),
                   FlatButton(
-                      onPressed: () => widget.calendarController.addEvents(),
+                      onPressed: () => widget.calendarController.addEvents({
+                            "time": snapshot.data['selectDate'],
+                            "title": "test"
+                          }),
                       child: Text("ADD EVENTS")),
                   _buildEvents(snapshot.data)
                 ],
@@ -185,15 +188,6 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                   weekList[i])))
                 widget.calendarController.setSelectDate(null, [], []);
               else
-//                  widget.calendarController.setSelectDate(
-//                      DateTime(
-//                          widget.calendarController.focusDate.year,
-//                          widget.calendarController.focusDate.month,
-//                          weekList[i]),
-//                      widget.calendarController
-//                          .events[widget.calendarController.selectDate],
-//                      widget.calendarController
-//                          .holidays[widget.calendarController.selectDate]);
                 widget.calendarController.setSelectDate(
                     DateTime(snapshot['focusDate'].year,
                         snapshot['focusDate'].month, weekList[i]),
@@ -352,26 +346,30 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     final children = <TableCell>[];
 
     for (int i = 0; i < dayList.length; i++) {
-      children.add(TableCell(
+      children.add(
+        TableCell(
           child: Container(
-        width: double.infinity,
-        height: 50,
-        child: Center(
-            child: i == 0
-                ? Text(
-                    dayList[i],
-                    style: TextStyle(color: widget.sundayColor),
-                  )
-                : i == 6
-                    ? Text(
-                        dayList[i],
-                        style: TextStyle(color: widget.saturdayColor),
-                      )
-                    : Text(
-                        dayList[i],
-                        style: TextStyle(color: widget.weekDayColor),
-                      )),
-      )));
+            width: double.infinity,
+            height: 50,
+            child: Center(
+              child: i == 0
+                  ? Text(
+                      dayList[i],
+                      style: TextStyle(color: widget.sundayColor),
+                    )
+                  : i == 6
+                      ? Text(
+                          dayList[i],
+                          style: TextStyle(color: widget.saturdayColor),
+                        )
+                      : Text(
+                          dayList[i],
+                          style: TextStyle(color: widget.weekDayColor),
+                        ),
+            ),
+          ),
+        ),
+      );
     }
     // return Calendar
     return TableRow(children: children);

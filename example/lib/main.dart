@@ -19,28 +19,6 @@ final _credentials = new ServiceAccountCredentials.fromJson(r'''
 final _SCOPES = const [Gcal.CalendarApi.CalendarScope];
 
 void main() {
-  clientViaUserConsent(
-          ClientId(
-              "364414010667-vkomcbi60k5glgt7bo5ntig2f18ikhcm.apps.googleusercontent.com",
-              ""),
-          _SCOPES,
-          prompt)
-      .then((AuthClient client) {
-    var calendar = Gcal.CalendarApi(client);
-    calendar.calendarList.list().then((value) {
-      value.items.forEach((element) {
-        calendar.events.list(element.id).then((value1) {
-          value1.items.forEach((element1) {
-            print(element1.toJson());
-          });
-        });
-        // calendar.calendars.get(element.id).then((value1) {
-        //   print(value1.toJson());
-        // });
-        // print(element.);
-      });
-    });
-  });
 
   runApp(MyApp());
 }
@@ -95,6 +73,32 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        actions: [
+          IconButton(icon: Icon(Icons.add), onPressed: (){
+            clientViaUserConsent(
+                ClientId(
+                    "364414010667-vkomcbi60k5glgt7bo5ntig2f18ikhcm.apps.googleusercontent.com",
+                    ""),
+                _SCOPES,
+                prompt)
+                .then((AuthClient client) {
+              var calendar = Gcal.CalendarApi(client);
+              calendar.calendarList.list().then((value) {
+                value.items.forEach((element) {
+                  calendar.events.list(element.id).then((value1) {
+                    value1.items.forEach((element1) {
+                      // print(element1.toJson());
+                      calendarController.addEvents({
+                        "time" : element1.toJson()['start'],
+                        "title" : element1.toJson()['summary']
+                      });
+                    });
+                  });
+                });
+              });
+            });
+          })
+        ],
       ),
 // <<<<<<< HEAD
 //       body: Center(
