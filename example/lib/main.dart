@@ -19,26 +19,39 @@ final _credentials = new ServiceAccountCredentials.fromJson(r'''
 final _SCOPES = const [Gcal.CalendarApi.CalendarScope];
 
 void main() {
-  clientViaUserConsent(ClientId("364414010667-vkomcbi60k5glgt7bo5ntig2f18ikhcm.apps.googleusercontent.com", ""), _SCOPES, prompt).then((AuthClient client){
+  clientViaUserConsent(
+          ClientId(
+              "364414010667-vkomcbi60k5glgt7bo5ntig2f18ikhcm.apps.googleusercontent.com",
+              ""),
+          _SCOPES,
+          prompt)
+      .then((AuthClient client) {
     var calendar = Gcal.CalendarApi(client);
     calendar.calendarList.list().then((value) {
       value.items.forEach((element) {
-        print(element.id);
+        calendar.events.list(element.id).then((value1) {
+          value1.items.forEach((element1) {
+            print(element1.toJson());
+          });
+        });
+        // calendar.calendars.get(element.id).then((value1) {
+        //   print(value1.toJson());
+        // });
+        // print(element.);
       });
     });
   });
 
   runApp(MyApp());
 }
-void prompt(String url) async {
 
+void prompt(String url) async {
   if (await canLaunch(url)) {
     await launch(url);
   } else {
     throw 'Could not launch $url';
   }
 }
-
 
 class MyApp extends StatelessWidget {
   @override
