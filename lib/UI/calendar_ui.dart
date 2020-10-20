@@ -362,7 +362,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
 //                          .holidays[widget.calendarController.selectDate]);
                 widget.calendarController.setSelectDate(
                     DateTime(snapshot['focusDate'].year,
-                        snapshot['focusDate'].month, weekList[i]),
+                        snapshot['focusDate'].month + type, weekList[i]),
                     [],
                     []);
 
