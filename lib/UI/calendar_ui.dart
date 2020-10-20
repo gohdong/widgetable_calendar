@@ -44,14 +44,27 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   void initState() {
     widget.calendarController.init();
 
+    scrollController = ScrollController();
+//    scrollController.addListener(() {
+////      print('offset = ${scrollController.offset}');
+//      if (scrollController.offset == 0.0){
+//        scrollController.jumpTo(50.0);
+//      }
+//    });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
   }
 
   double startDXPoint = 0;
   double endDXPoint = 0;
 
-  List yearList = ["2019", "2020", "2021"];
-  List monthList = [
+  static List yearList = ["2019", "2020", "2021"];
+  static List monthList = [
     "Jan",
     "Feb",
     "Mar",
@@ -71,6 +84,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   int selectMonth = 0;
 
   final PageController pageController = PageController( initialPage: 1, );
+  ScrollController scrollController;
 
   void _onHorizontalDragStartHandler(DragStartDetails details) {
     setState(() {
@@ -183,6 +197,9 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   }
 
   Widget _buildHeader(Map snapshot) {
+//    initialScrollOffset: scrollController.position.minScrollExtent
+
+//    print(scrollController.offset.toString());
     final children = [
       IconButton(
         icon: Icon(Icons.arrow_back_ios),
@@ -190,6 +207,100 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
           widget.calendarController.changeMonth(-1);
         },
       ),
+//      Expanded(
+//        child: Center(
+//          child: InkWell(
+//            onTap: () async{
+//              setState(() {
+//                selectYear = snapshot["focusDate"].year;
+//                selectMonth = snapshot["focusDate"].month;
+//              });
+//              await showDialog(
+//                context: context,
+//                builder: (BuildContext context) {
+//                  int selectedYearIndex = findYear(selectYear);
+//                  int selectedMonthIndex = selectMonth-1;
+//                  return StatefulBuilder(
+//                    builder: (context, setState) {
+//                      return AlertDialog(
+//                        content: Row(
+//                          mainAxisAlignment: MainAxisAlignment.center,
+//                          children: [
+//                            Container(
+//                                height: 160.0, // Change as per your requirement
+//                                width: 100,
+//                                child: ListView.builder(
+//                                  shrinkWrap: true,
+//                                  padding: const EdgeInsets.all(8),
+//                                  itemCount: yearList.length,
+//                                  itemBuilder: (BuildContext context, int index) {
+//                                    return ListTile(
+//                                        selected: index == selectedYearIndex,
+//                                        onTap: () {
+//                                          selectedYearIndex = index;
+//                                          setState(() {
+//                                            selectYear = int.tryParse(yearList[index]) ?? 2020;
+//                                          });
+//                                          print(selectYear);
+//                                        },
+//                                        title: Text(yearList[index].toString()));
+//                                  },
+//                                )),
+//                            Container(
+//                                height: 160.0, // Change as per your requirement
+//                                width: 100,
+//                                child: ListView.builder(
+//                                  controller: scrollController,
+//                                  shrinkWrap: true,
+//                                  padding: const EdgeInsets.all(8),
+//                                  itemCount: monthList.length,
+//                                  itemBuilder: (BuildContext context, int index) {
+////                                    setState((){
+////                                      scrollController.animateTo(scrollController.offset - 50,
+////                                          curve: Curves.linear, duration: Duration(milliseconds: 500));
+////                                    });
+//                                    return ListTile(
+//                                        selected: index == selectedMonthIndex,
+//                                        onTap: () {
+//                                          selectedMonthIndex = index;
+//                                          setState(() {
+//                                            selectMonth = index+1;
+//                                            print(selectMonth);
+//                                          });
+//                                        },
+//                                        title: Text(monthList[index].toString()));
+//                                  },
+//                                )),
+//                          ],
+//                        ),
+//                        actions: <Widget>[
+//                          new FlatButton(
+//                            child: new Text("Done"),
+//                            onPressed: () {
+//                              Navigator.pop(context);
+//                            },
+//                          ),
+//                        ],
+//                      );
+//                    },
+//                  );
+//                },
+//              );
+//              widget.calendarController.changeMonthCompletely(selectYear, selectMonth);
+//            },
+//            child: Row(
+//              mainAxisAlignment: MainAxisAlignment.center,
+//              children: [
+//                headerText(snapshot['focusDate'].year, snapshot['focusDate'].month),
+////                Text(snapshot['focusDate'].year.toString() +
+////                    " " +
+////                    monthList[snapshot['focusDate'].month - 1 + type]),
+//                Icon(Icons.arrow_drop_down),
+//              ],
+//            ),
+//          ),
+//        ),
+//      ),
       Expanded(
         child: Center(
           child: InkWell(
@@ -201,8 +312,6 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
               await showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  int selectedYearIndex = findYear(selectYear);
-                  int selectedMonthIndex = selectMonth-1;
                   return StatefulBuilder(
                     builder: (context, setState) {
                       return AlertDialog(
@@ -210,45 +319,25 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Container(
-                                height: 160.0, // Change as per your requirement
-                                width: 100,
-                                child: ListView.builder(
-                                  shrinkWrap: true,
-                                  padding: const EdgeInsets.all(8),
-                                  itemCount: yearList.length,
-                                  itemBuilder: (BuildContext context, int index) {
-                                    return ListTile(
-                                        selected: index == selectedYearIndex,
-                                        onTap: () {
-                                          selectedYearIndex = index;
-                                          setState(() {
-                                            selectYear = int.tryParse(yearList[index]) ?? 2020;
-                                          });
-                                          print(selectYear);
-                                        },
-                                        title: Text(yearList[index].toString()));
-                                  },
-                                )),
+//                              height: 100.0, // Change as per your requirement
+                              width: 100,
+                              child: RollerList(
+                                initialIndex: 1,
+                                items: years,
+                                onSelectedIndexChanged: _changeYears,
+                                dividerColor: Colors.grey,
+                              ),
+                            ),
                             Container(
-                                height: 160.0, // Change as per your requirement
-                                width: 100,
-                                child: ListView.builder(
-                                  shrinkWrap: true,
-                                  padding: const EdgeInsets.all(8),
-                                  itemCount: monthList.length,
-                                  itemBuilder: (BuildContext context, int index) {
-                                    return ListTile(
-                                        selected: index == selectedMonthIndex,
-                                        onTap: () {
-                                          selectedMonthIndex = index;
-                                          setState(() {
-                                            selectMonth = index+1;
-                                            print(selectMonth);
-                                          });
-                                        },
-                                        title: Text(monthList[index].toString()));
-                                  },
-                                )),
+//                              height: 100.0, // Change as per your requirement
+                              width: 100,
+                              child: RollerList(
+                                initialIndex: selectMonth-1,
+                                items: months,
+                                onSelectedIndexChanged: _changeMonths,
+                                dividerColor: Colors.grey,
+                              ),
+                            ),
                           ],
                         ),
                         actions: <Widget>[
@@ -293,6 +382,40 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
         children: children,
       ),
     );
+  }
+
+  final List<Widget> months = monthList
+      .map((month) => Padding(
+    padding: EdgeInsets.all(12.0),
+    child: Text(
+      month,
+      textScaleFactor: 1.3,
+      textAlign: TextAlign.center,
+    ),
+  ))
+      .toList();
+
+  final List<Widget> years = yearList
+      .map((year) => Padding(
+    padding: EdgeInsets.all(12.0),
+    child: Text(
+      year,
+      textScaleFactor: 1.3,
+      textAlign: TextAlign.center,
+    ),
+  ))
+      .toList();
+
+  void _changeMonths(int value) {
+    setState(() {
+      selectMonth = value + 1;
+    });
+  }
+
+  void _changeYears(int value) {
+    setState(() {
+      selectYear = int.tryParse(yearList[value]) ?? 2020;
+    });
   }
 
   Widget headerText(int focusYear,int focusMonth){
