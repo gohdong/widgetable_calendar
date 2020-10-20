@@ -131,7 +131,6 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
             Container(
               child: Column(
                 children: [
-                  _buildHeader(snapshot.data, i),
                   Expanded(child: _buildCalendarContent(snapshot.data, i)),
                 ],
               ),
@@ -141,6 +140,10 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
 
         return Column(
           children: [
+            _buildHeader(snapshot.data),
+            Table(
+              children: [_buildDaysOfWeek(),],
+            ),
             Expanded(
               child: PageView(
                 controller: pageController,
@@ -180,7 +183,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     return returnValue;
   }
 
-  Widget _buildHeader(Map snapshot, int type) {
+  Widget _buildHeader(Map snapshot) {
     final children = [
       IconButton(
         icon: Icon(Icons.arrow_back_ios),
@@ -267,7 +270,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                HeaderText(snapshot['focusDate'].year, snapshot['focusDate'].month, type),
+                HeaderText(snapshot['focusDate'].year, snapshot['focusDate'].month),
 //                Text(snapshot['focusDate'].year.toString() +
 //                    " " +
 //                    monthList[snapshot['focusDate'].month - 1 + type]),
@@ -293,8 +296,8 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     );
   }
 
-  Widget HeaderText(int focusYear,int focusMonth,int type){
-    int monthListIndex = focusMonth - 1 + type;
+  Widget HeaderText(int focusYear,int focusMonth){
+    int monthListIndex = focusMonth - 1;
     if (monthListIndex > 11){
       monthListIndex  = monthListIndex - 12;
       focusYear++;
@@ -309,7 +312,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
 
 
   Widget _buildCalendarContent(Map snapshot, int type) {
-    final children = <TableRow>[_buildDaysOfWeek()];
+    final children = <TableRow>[];
     List weekList = [];
 
     if (type == -1) weekList = snapshot['prevWeekList'];
