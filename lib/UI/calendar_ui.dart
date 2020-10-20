@@ -188,7 +188,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
       IconButton(
         icon: Icon(Icons.arrow_back_ios),
         onPressed: () {
-//          widget.calendarController.changeMonth(-1);
+          widget.calendarController.changeMonth(-1);
         },
       ),
       Expanded(
@@ -283,7 +283,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
       IconButton(
         icon: Icon(Icons.arrow_forward_ios),
         onPressed: () {
-//          widget.calendarController.changeMonth(1);
+          widget.calendarController.changeMonth(1);
         },
       ),
     ];
@@ -361,10 +361,10 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                     [],
                     []);
 
-//              if (!thisMonth && weekList[i] <= 0)
-//                widget.calendarController.changeMonth(-1);
-//              if (!thisMonth && weekList[i] > 0)
-//                widget.calendarController.changeMonth(1);
+              if (!thisMonth && weekList[i] <= 0)
+                widget.calendarController.changeMonth(-1);
+              if (!thisMonth && weekList[i] > 0)
+                widget.calendarController.changeMonth(1);
             },
             child: Container(
               width: double.infinity,
