@@ -173,6 +173,7 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
         throw 'Could not launch $url';
       }
     }
+    DateTime roundDown(DateTime date)=> DateTime(date.year,date.month,date.day);
 
     final _scopes = const [GoogleCalendar.CalendarApi.CalendarScope];
     clientViaUserConsent(ClientId(clientID, ""), _scopes, prompt).then(
@@ -189,9 +190,9 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
                         Map temp = Map.from(eachEvent.toJson());
                         this.addEvents(
                           {
-                            temp['start'].containsKey('date')
+                            roundDown(temp['start'].containsKey('date')
                                 ? DateTime.parse(temp['start']['date'])
-                                : DateTime.parse(temp['start']['dateTime']): {
+                                : DateTime.parse(temp['start']['dateTime'])): {
                               'summary': temp['summary'],
                               'start': temp['start'].containsKey('date')
                                   ? DateTime.parse(temp['start']['date'])
