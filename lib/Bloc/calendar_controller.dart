@@ -175,41 +175,45 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     }
 
     final _scopes = const [GoogleCalendar.CalendarApi.CalendarScope];
-    // print(DateTime.parse(googleCalendarList[0]['start']['date']));
-    clientViaUserConsent(ClientId(clientID, ""), _scopes, prompt)
-        .then((AuthClient client) {
-      var calendar = GoogleCalendar.CalendarApi(client);
-      calendar.calendarList.list().then((value) {
-        value.items.forEach((element) {
-          calendar.events.list(element.id).then((value1) {
-            value1.items.forEach((element1) {
-              // googleCalendarList.add(element1.toJson());
-              Map temp = Map.from(element1.toJson());
-              print(Map.from(element1.toJson()));
-              // print(element1.toJson());
-              this.addEvents(
-                {
-                  temp['start'].containsKey('date')
-                      ? DateTime.parse(temp['start']['date'])
-                      : DateTime.parse(temp['start']['dateTime']): {
-                    'summary': temp['summary'],
-                    'start': temp['start'].containsKey('date')
-                        ? DateTime.parse(temp['start']['date'])
-                        : DateTime.parse(temp['start']['dateTime']),
-                    'end': temp['start'].containsKey('date')
-                        ? DateTime.parse(temp['end']['date'])
-                        : DateTime.parse(temp['end']['dateTime']),
-                    'recurrence': temp.containsKey('recurrence')
-                        ? temp['recurrence']
-                        : null
-                  }
-                },
-              );
-            });
-          });
-        });
-      });
-    });
-    print(super.data.events);
+    clientViaUserConsent(ClientId(clientID, ""), _scopes, prompt).then(
+      (AuthClient client) {
+        var calendar = GoogleCalendar.CalendarApi(client);
+        calendar.calendarList.list().then(
+          (value) {
+            value.items.forEach(
+              (element) {
+                calendar.events.list(element.id).then(
+                  (value1) {
+                    value1.items.forEach(
+                      (element1) {
+                        Map temp = Map.from(element1.toJson());
+                        this.addEvents(
+                          {
+                            temp['start'].containsKey('date')
+                                ? DateTime.parse(temp['start']['date'])
+                                : DateTime.parse(temp['start']['dateTime']): {
+                              'summary': temp['summary'],
+                              'start': temp['start'].containsKey('date')
+                                  ? DateTime.parse(temp['start']['date'])
+                                  : DateTime.parse(temp['start']['dateTime']),
+                              'end': temp['start'].containsKey('date')
+                                  ? DateTime.parse(temp['end']['date'])
+                                  : DateTime.parse(temp['end']['dateTime']),
+                              'recurrence': temp.containsKey('recurrence')
+                                  ? temp['recurrence']
+                                  : null
+                            }
+                          },
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+            );
+          },
+        );
+      },
+    );
   }
 }
