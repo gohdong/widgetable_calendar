@@ -189,10 +189,10 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
             FlatButton(
                 onPressed: () => widget.calendarController.addEvents(
                       {
-                        snapshot.data['selectDate']: {
+                        DateTime.now().microsecondsSinceEpoch.toString(): {
                           'summary': 'TEST',
                           'start': snapshot.data['selectDate'],
-                          'end': snapshot.data['selectDate'],
+                          'end': snapshot.data['selectDate'].add(Duration(days: 1)),
                           'recurrence': null
                         }
                       },
@@ -503,10 +503,11 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   }
 
   Widget _buildEventList(Map snapshot) {
-    List selectDateEvent = snapshot['events'][snapshot['selectDate']];
+    List selectDateEvent = snapshot['eventsByDate'][snapshot['selectDate']];
     return ListView.builder(
       itemCount: selectDateEvent != null ? selectDateEvent.length : 0,
       itemBuilder: (context, index) {
+        Map eventInfo = snapshot['eachEvent'][selectDateEvent[index]];
         return Container(
           decoration: BoxDecoration(
             border: Border.all(width: 0.8),
@@ -514,8 +515,8 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
           ),
           margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
           child: ListTile(
-            title: Text(selectDateEvent[index].toString()),
-            onTap: () => print('${selectDateEvent[index]['summary']} tapped!'),
+            title: Text("$eventInfo"),
+            onTap: () => print('${eventInfo['summary']} tapped!'),
           ),
         );
       },

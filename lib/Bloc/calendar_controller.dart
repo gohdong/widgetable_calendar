@@ -17,8 +17,9 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
   WidgetableCalendarController();
 
   void init() {
-    super.data.events = {};
     super.data.holidays = [];
+    super.data.eventsByDate = {};
+    super.data.eachEvent = {};
 
     final now = DateTime.now();
     super.data.selectDate = _normalizeDate(now);
@@ -50,18 +51,36 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
   }
 
   void addEvents(Map eventData) {
-    if (super.data.events[eventData.keys.first] == null) {
-      super.data.events[eventData.keys.first] = [eventData.values.first];
-    } else {
-      super.data.events[eventData.keys.first].add(eventData.values.first);
+    DateTime roundDown(DateTime date) =>
+        DateTime(date.year, date.month, date.day);
+    print(eventData);
+
+    super.data.eachEvent.addAll(Map.from(eventData));
+    String eid = eventData.keys.first;
+    DateTime start = super.data.eachEvent[eid]['start'];
+    DateTime end = super.data.eachEvent[eid]['end'];
+    DateTime temp = roundDown(start);
+    while (true) {
+      if (super.data.eventsByDate[temp] == null) {
+        super.data.eventsByDate[temp] = [eid];
+      } else {
+        super.data.eventsByDate[temp].add(eid);
+      }
+
+      temp = temp.add(Duration(days: 1));
+
+      if (temp.isAfter(roundDown(end.subtract(Duration(microseconds: 1))))) {
+        break;
+      }
     }
+
     super.streamSink();
   }
 
   List findEvents() {
-    print(super.data.events);
+    print(super.data.eventsByDate);
     List returnValue = [];
-    super.data.events.forEach((key, value) {
+    super.data.eventsByDate.forEach((key, value) {
       if (key == super.data.selectDate) {
         returnValue.add(value);
       }
@@ -173,7 +192,6 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
         throw 'Could not launch $url';
       }
     }
-    DateTime roundDown(DateTime date)=> DateTime(date.year,date.month,date.day);
 
     final _scopes = const [GoogleCalendar.CalendarApi.CalendarScope];
     clientViaUserConsent(ClientId(clientID, ""), _scopes, prompt).then(
@@ -187,25 +205,27 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
                   (getEvents) {
                     getEvents.items.forEach(
                       (eachEvent) {
-                        Map temp = Map.from(eachEvent.toJson());
-                        this.addEvents(
-                          {
-                            roundDown(temp['start'].containsKey('date')
-                                ? DateTime.parse(temp['start']['date'])
-                                : DateTime.parse(temp['start']['dateTime'])): {
-                              'summary': temp['summary'],
-                              'start': temp['start'].containsKey('date')
-                                  ? DateTime.parse(temp['start']['date'])
-                                  : DateTime.parse(temp['start']['dateTime']),
-                              'end': temp['start'].containsKey('date')
-                                  ? DateTime.parse(temp['end']['date'])
-                                  : DateTime.parse(temp['end']['dateTime']),
-                              'recurrence': temp.containsKey('recurrence')
-                                  ? temp['recurrence']
-                                  : null
-                            }
-                          },
-                        );
+                        Map eachEventToMap = Map.from(eachEvent.toJson());
+                        Map temp = {
+                          eachEvent.id: {
+                            'summary': eachEventToMap['summary'],
+                            'start': eachEventToMap['start'].containsKey('date')
+                                ? DateTime.parse(
+                                    eachEventToMap['start']['date'])
+                                : DateTime.parse(
+                                    eachEventToMap['start']['dateTime']),
+                            'end': eachEventToMap['start'].containsKey('date')
+                                ? DateTime.parse(eachEventToMap['end']['date'])
+                                : DateTime.parse(
+                                    eachEventToMap['end']['dateTime']),
+                            'recurrence':
+                                eachEventToMap.containsKey('recurrence')
+                                    ? eachEventToMap['recurrence']
+                                    : null
+                          }
+                        };
+
+                        this.addEvents(temp);
                       },
                     );
                   },
