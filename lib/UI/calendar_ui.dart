@@ -503,10 +503,9 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   }
 
   Widget _buildEventList(Map snapshot) {
+    List selectDateEvent = snapshot['events'][snapshot['selectDate']];
     return ListView.builder(
-      itemCount: snapshot['events'][snapshot['selectDate']] != null
-          ? (snapshot['events'][snapshot['selectDate']]).length
-          : 0,
+      itemCount: selectDateEvent != null ? selectDateEvent.length : 0,
       itemBuilder: (context, index) {
         return Container(
           decoration: BoxDecoration(
@@ -515,28 +514,11 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
           ),
           margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
           child: ListTile(
-            title: Text((snapshot['events'][snapshot['selectDate']])[index].toString()),
-            onTap: () => print(
-                '${(snapshot['events'][snapshot['selectDate']])[index]['summary']} tapped!'),
+            title: Text(selectDateEvent[index].toString()),
+            onTap: () => print('${selectDateEvent[index]['summary']} tapped!'),
           ),
         );
       },
-//       children: eventList != null
-//           ? eventList
-//               .map((event) => Container(
-//                     decoration: BoxDecoration(
-//                       border: Border.all(width: 0.8),
-//                       borderRadius: BorderRadius.circular(12.0),
-//                     ),
-//                     margin: const EdgeInsets.symmetric(
-//                         horizontal: 8.0, vertical: 4.0),
-//                     child: ListTile(
-//                       title: Text(event.toString()),
-// //          onTap: () => print('$event tapped!'),
-//                     ),
-//                   ))
-//               .toList()
-//           : Container(),
     );
   }
 

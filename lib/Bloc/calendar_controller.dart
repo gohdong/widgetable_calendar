@@ -1,10 +1,15 @@
 // import 'package:widgetable_calendar/widgetable_calendar.dart';
 
 import 'package:flutter/material.dart';
+import 'package:googleapis/calendar/v3.dart' as GoogleCalendar;
+import 'package:googleapis_auth/auth_io.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:widgetable_calendar/Bloc/calendar_bloc.dart';
 import 'package:widgetable_calendar/Data/calendar_data.dart';
 
 class WidgetableCalendarController extends WidgetableCalendarBloc {
+  List googleCalendarList = [];
+
   get stream {
     return super.streams;
   }
@@ -45,10 +50,9 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
   }
 
   void addEvents(Map eventData) {
-    if(super.data.events[eventData.keys.first] == null){
+    if (super.data.events[eventData.keys.first] == null) {
       super.data.events[eventData.keys.first] = [eventData.values.first];
-    }
-    else{
+    } else {
       super.data.events[eventData.keys.first].add(eventData.values.first);
     }
     super.streamSink();
@@ -58,7 +62,7 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     print(super.data.events);
     List returnValue = [];
     super.data.events.forEach((key, value) {
-      if(key == super.data.selectDate){
+      if (key == super.data.selectDate) {
         returnValue.add(value);
       }
     });
@@ -159,5 +163,53 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     super.data.prevWeekList = _makeWeekList(prevFirstDay, prevLastDay);
     super.data.nextWeekList = _makeWeekList(nextFirstDay, nextLastDay);
     super.streamSink();
+  }
+
+  void sinkWithGoogleCalendar(String clientID) {
+    void prompt(String url) async {
+      if (await canLaunch(url)) {
+        await launch(url);
+      } else {
+        throw 'Could not launch $url';
+      }
+    }
+
+    final _scopes = const [GoogleCalendar.CalendarApi.CalendarScope];
+    // print(DateTime.parse(googleCalendarList[0]['start']['date']));
+    clientViaUserConsent(ClientId(clientID, ""), _scopes, prompt)
+        .then((AuthClient client) {
+      var calendar = GoogleCalendar.CalendarApi(client);
+      calendar.calendarList.list().then((value) {
+        value.items.forEach((element) {
+          calendar.events.list(element.id).then((value1) {
+            value1.items.forEach((element1) {
+              // googleCalendarList.add(element1.toJson());
+              Map temp = Map.from(element1.toJson());
+              print(Map.from(element1.toJson()));
+              // print(element1.toJson());
+              this.addEvents(
+                {
+                  temp['start'].containsKey('date')
+                      ? DateTime.parse(temp['start']['date'])
+                      : DateTime.parse(temp['start']['dateTime']): {
+                    'summary': temp['summary'],
+                    'start': temp['start'].containsKey('date')
+                        ? DateTime.parse(temp['start']['date'])
+                        : DateTime.parse(temp['start']['dateTime']),
+                    'end': temp['start'].containsKey('date')
+                        ? DateTime.parse(temp['end']['date'])
+                        : DateTime.parse(temp['end']['dateTime']),
+                    'recurrence': temp.containsKey('recurrence')
+                        ? temp['recurrence']
+                        : null
+                  }
+                },
+              );
+            });
+          });
+        });
+      });
+    });
+    print(super.data.events);
   }
 }

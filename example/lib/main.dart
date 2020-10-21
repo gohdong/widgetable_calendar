@@ -16,19 +16,8 @@ final _credentials = new ServiceAccountCredentials.fromJson(r'''
 }
 ''');
 
-final _SCOPES = const [Gcal.CalendarApi.CalendarScope];
-
 void main() {
-
   runApp(MyApp());
-}
-
-void prompt(String url) async {
-  if (await canLaunch(url)) {
-    await launch(url);
-  } else {
-    throw 'Could not launch $url';
-  }
 }
 
 class MyApp extends StatelessWidget {
@@ -74,41 +63,14 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       appBar: AppBar(
         title: Text(widget.title),
         actions: [
-          IconButton(icon: Icon(Icons.add), onPressed: (){
-            clientViaUserConsent(
-                ClientId(
-                    "364414010667-vkomcbi60k5glgt7bo5ntig2f18ikhcm.apps.googleusercontent.com",
-                    ""),
-                _SCOPES,
-                prompt)
-                .then((AuthClient client) {
-              var calendar = Gcal.CalendarApi(client);
-              calendar.calendarList.list().then((value) {
-                value.items.forEach((element) {
-                  calendar.events.list(element.id).then((value1) {
-                    value1.items.forEach((element1) {
-                      // print(element1.toJson());
-                      calendarController.addEvents({
-                        "time" : element1.toJson()['start'],
-                        "title" : element1.toJson()['summary']
-                      });
-                    });
-                  });
-                });
-              });
-            });
-          })
+          IconButton(
+              icon: Icon(Icons.add),
+              onPressed: () {
+                calendarController.sinkWithGoogleCalendar(
+                    "364414010667-vkomcbi60k5glgt7bo5ntig2f18ikhcm.apps.googleusercontent.com");
+              })
         ],
       ),
-// <<<<<<< HEAD
-//       body: Center(
-//         child: WidgetableCalendar(
-//           holidays: [],
-//           backgroundColor: Colors.greenAccent,
-//           height: MediaQuery.of(context).size.height * 0.5,
-//           width: MediaQuery.of(context).size.width,
-//         ),
-// =======
       body: _buildCalendar(),
     );
   }
