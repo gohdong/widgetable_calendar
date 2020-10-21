@@ -192,7 +192,8 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                         DateTime.now().microsecondsSinceEpoch.toString(): {
                           'summary': 'TEST',
                           'start': snapshot.data['selectDate'],
-                          'end': snapshot.data['selectDate'].add(Duration(days: 1)),
+                          'end': snapshot.data['selectDate']
+                              .add(Duration(days: 1)),
                           'recurrence': null
                         }
                       },

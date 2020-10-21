@@ -8,8 +8,8 @@ class WidgetableCalendarData {
   OnDaySelected onDaySelected;
   DateTime focusDate;
   List holidays;
-  Map<DateTime,List<String>> eventsByDate;
-  Map<String,Map> eachEvent;
+  Map<DateTime, List<String>> eventsByDate;
+  Map<String, Map> eachEvent;
   DateTime firstDay;
   DateTime lastDay;
   List weekList;
@@ -42,6 +42,7 @@ class WidgetableCalendarData {
   //       holidays = json['holidays'],
   //       events = json['events'];
   DateTime get getSelectDate => selectDate;
+
   set setSelectDate(DateTime date) => selectDate = date;
 
   Map getData() {
@@ -50,14 +51,14 @@ class WidgetableCalendarData {
       "onDaySelected": onDaySelected,
       "selectDate": selectDate,
       "holidays": holidays,
-      "focusDate" : focusDate,
-      "firstDay" :  firstDay,
-      "lastDay" :  lastDay,
-      "weekList" :  weekList,
-      "eventsByDate" : eventsByDate,
-      "eachEvent" : eachEvent,
-      "prevWeekList" : prevWeekList,
-      "nextWeekList" : nextWeekList,
+      "focusDate": focusDate,
+      "firstDay": firstDay,
+      "lastDay": lastDay,
+      "weekList": weekList,
+      "eventsByDate": eventsByDate,
+      "eachEvent": eachEvent,
+      "prevWeekList": prevWeekList,
+      "nextWeekList": nextWeekList,
     };
   }
 }
