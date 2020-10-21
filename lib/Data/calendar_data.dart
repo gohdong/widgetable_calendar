@@ -12,6 +12,8 @@ class WidgetableCalendarData {
   DateTime firstDay;
   DateTime lastDay;
   List weekList;
+  List prevWeekList;
+  List nextWeekList;
 
   double startDXPoint = 0;
   double endDXPoint = 0;
@@ -27,7 +29,9 @@ class WidgetableCalendarData {
       this.firstDay,
       this.focusDate,
       this.lastDay,
-      this.weekList});
+      this.weekList,
+      this.prevWeekList,
+      this.nextWeekList});
 
   // WidgetableCalendarData.fromJson(Map json)
   //     :
@@ -51,6 +55,8 @@ class WidgetableCalendarData {
       "firstDay" :  firstDay,
       "lastDay" :  lastDay,
       "weekList" :  weekList,
+      "prevWeekList" : prevWeekList,
+      "nextWeekList" : nextWeekList,
     };
   }
 }
