@@ -179,14 +179,14 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
       (AuthClient client) {
         var calendar = GoogleCalendar.CalendarApi(client);
         calendar.calendarList.list().then(
-          (value) {
-            value.items.forEach(
-              (element) {
-                calendar.events.list(element.id).then(
-                  (value1) {
-                    value1.items.forEach(
-                      (element1) {
-                        Map temp = Map.from(element1.toJson());
+          (calendars) {
+            calendars.items.forEach(
+              (eachCalendar) {
+                calendar.events.list(eachCalendar.id).then(
+                  (getEvents) {
+                    getEvents.items.forEach(
+                      (eachEvent) {
+                        Map temp = Map.from(eachEvent.toJson());
                         this.addEvents(
                           {
                             temp['start'].containsKey('date')
