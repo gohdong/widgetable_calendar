@@ -67,8 +67,7 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
         super.data.eventsByDate[temp].add(eid);
       }
 
-      print(temp.toString());
-      if (temp.compareTo(end) == 0) {
+      if (temp.isAfter(roundDown(end.subtract(Duration(microseconds: 1))))) {
         break;
       }
 
@@ -89,7 +88,7 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
 //      }
 //    });
 
-    if (super.data.eventsByDate.containsKey(date)){
+    if (super.data.eventsByDate.containsKey(date)) {
       List temp = super.data.eventsByDate[date];
       temp.forEach((element) {
         returnValue.add(element);
