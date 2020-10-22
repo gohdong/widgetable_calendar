@@ -708,9 +708,11 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
         break;
       }
       print(eventList.first);
+      //TODO 가장긴거 밖으로 빼기
       for (int j = (eventList.first['start'].weekday % 7);
           j < 7;
           j += eventList.first['length']) {
+        //TODO 뒤에 붙일수 있는거 찾기 events.foreach
         //가장 긴 것 추가
         rowChildren[i].add(Container(
           margin: EdgeInsets.only(
