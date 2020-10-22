@@ -316,8 +316,8 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
           child: InkWell(
             onTap: () {
               setState(() {
-                selectYear = snapshot["focusDate"].year;
-                selectMonth = snapshot["focusDate"].month;
+                selectYear = snapshot["selectDate"].year;
+                selectMonth = snapshot["selectDate"].month;
               });
               showModalBottomSheet(
                   context: context,
@@ -352,7 +352,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                           Expanded(
                             flex: 7,
                             child: CupertinoDatePicker(
-                              initialDateTime: snapshot["focusDate"],
+                              initialDateTime: snapshot["selectDate"],
                               onDateTimeChanged: (DateTime time) {
                                 setState(() {
                                   selectYear = time.year;
@@ -371,7 +371,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 headerText(
-                    snapshot['focusDate'].year, snapshot['focusDate'].month),
+                    snapshot['selectDate'].year, snapshot['selectDate'].month),
                 Icon(Icons.arrow_drop_down),
               ],
             ),
@@ -409,7 +409,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   Widget _buildCalendarContent(Map snapshot, int type) {
     final children = <TableRow>[];
     DateTime thisMonthFirstDate = DateTime(
-        snapshot['focusDate'].year, snapshot['focusDate'].month + type);
+        snapshot['selectDate'].year, snapshot['selectDate'].month + type);
 
     for (int i = 0; i < 6; i++) {
       children.add(_buildEachWeek(
@@ -431,23 +431,17 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
         TableCell(
           child: InkWell(
             onTap: () {
-              if (widget.calendarController.isSelectedDate(DateTime(
-                  snapshot['focusDate'].year,
-                  snapshot['focusDate'].month,
-                  eachDate.day)))
-                widget.calendarController.setSelectDate(null, [], []);
-              else
                 widget.calendarController.setSelectDate(
-                    DateTime(snapshot['focusDate'].year,
-                        snapshot['focusDate'].month + type, eachDate.day),
+                    DateTime(snapshot['selectDate'].year,
+                        snapshot['selectDate'].month + type, eachDate.day),
                     [],
                     []);
               // print(thisMonth);
 
-              if (snapshot['focusDate'].month > eachDate.month) {
+              if (snapshot['selectDate'].month > eachDate.month) {
                 widget.calendarController.changeMonth(-1);
               }
-              if (snapshot['focusDate'].month < eachDate.month) {
+              if (snapshot['selectDate'].month < eachDate.month) {
                 widget.calendarController.changeMonth(1);
               }
             },
@@ -575,26 +569,26 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     );
   }
 
-  bool _isToday(int date, DateTime focusDate, int type) {
-    DateTime today = DateTime.now();
-    if (focusDate.year == today.year &&
-        focusDate.month + type == today.month &&
-        date == today.day) {
-      return true;
-    } else
-      return false;
-  }
+//  bool _isToday(int date, DateTime focusDate, int type) {
+//    DateTime today = DateTime.now();
+//    if (focusDate.year == today.year &&
+//        focusDate.month + type == today.month &&
+//        date == today.day) {
+//      return true;
+//    } else
+//      return false;
+//  }
 
-  bool _isThisMonth(Map snapshot, DateTime eachDate, int type) {
-    bool result = true;
-    int focusMonth = snapshot['focusDate'].month + type;
-    if (focusMonth > 12) focusMonth -= 12;
-    if (focusMonth < 1) focusMonth += 12;
-    if (eachDate.month != focusMonth) {
-      result = false;
-    }
-    return result;
-  }
+//  bool _isThisMonth(Map snapshot, DateTime eachDate, int type) {
+//    bool result = true;
+//    int focusMonth = snapshot['focusDate'].month + type;
+//    if (focusMonth > 12) focusMonth -= 12;
+//    if (focusMonth < 1) focusMonth += 12;
+//    if (eachDate.month != focusMonth) {
+//      result = false;
+//    }
+//    return result;
+//  }
 
 //
   TableRow _buildDaysOfWeek() {
@@ -640,7 +634,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   }
 
   Color dateColor(Map snapshot, DateTime eachDate) {
-    if (snapshot['focusDate'].month != eachDate.month) {
+    if (snapshot['selectDate'].month != eachDate.month) {
       return Colors.grey;
     } else if (eachDate == snapshot['selectDate']) {
       return widget.highlightTextColor;
