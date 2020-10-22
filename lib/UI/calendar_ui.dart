@@ -157,37 +157,74 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
               ),
             ),
             FlatButton(
-                onPressed: () => widget.calendarController.addEvents(
-                  {
-                    DateTime.now().microsecondsSinceEpoch.toString(): {
-                      'summary': 'TEST',
-                      'start': snapshot.data['selectDate'],
-                      'end': snapshot.data['selectDate']
-                          .add(Duration(days: 2)),
-                      'recurrence': null,
-                      'labelColor': "0"
-                    }
-                  },
-                ),
-                child: Text("ADD EVENTS - RED")),
+                onPressed: () {
+                  showModalBottomSheet(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Container(
+                          height: MediaQuery.of(context).size.height * 0.25,
+                          child: Column(
+                            children: <Widget>[
+                              Expanded(
+                                flex: 1,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    _buildColorFlatButton(snapshot.data, "0",0),
+                                    _buildColorFlatButton(snapshot.data, "1",0),
+                                    _buildColorFlatButton(snapshot.data, "2",0),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      });
+                },
+                child: Text("ADD EVENTS - Color")),
             FlatButton(
-                onPressed: () => widget.calendarController.addEvents(
-                  {
-                    DateTime.now().microsecondsSinceEpoch.toString(): {
-                      'summary': 'TEST',
-                      'start': snapshot.data['selectDate'],
-                      'end': snapshot.data['selectDate']
-                          .add(Duration(days: 2)),
-                      'recurrence': null,
-                      'labelColor': "1"
-                    }
-                  },
-                ),
-                child: Text("ADD EVENTS - GREEN")),
+                onPressed: () => widget.calendarController.changeEachLabelColor("0", Colors.black),
+                child: Text("Color Red to Black")),
+            FlatButton(
+                onPressed: () => widget.calendarController.changeEachLabelColor("0", Colors.red),
+                child: Text("Color Black to Red")),
             _buildEvents(snapshot.data),
           ],
         );
       },
+    );
+  }
+
+  Widget _buildColorFlatButton(Map snapshot, String colorKey, int type, {String key}){
+    return FlatButton(
+      onPressed: (){
+        if (type == 0) {
+          widget.calendarController.addEvents(
+            {
+              DateTime
+                  .now()
+                  .microsecondsSinceEpoch
+                  .toString(): {
+                'summary': 'TEST',
+                'start': snapshot['selectDate'],
+                'end': snapshot['selectDate']
+                    .add(Duration(days: 2)),
+                'recurrence': null,
+                'labelColor': colorKey
+              }
+            },
+          );
+        } else {
+          widget.calendarController
+              .changeEventsLabelColor(colorKey, key);
+        }
+        Navigator.of(context).pop();
+      },
+      child: Container(
+        height: 50,
+        width: 50,
+        color: widget.calendarController.getLabelColor(colorKey),
+      ),
     );
   }
 
@@ -426,8 +463,6 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     return TableRow(children: children);
   }
 
-  List<Color> testColorList = [Colors.red, Colors.blue, Colors.green];
-
   Widget _buildEventDot(List events) {
 //    String eventsCountString = events.length == 0 ? "" : events.length.toString();
 //    print(events.toString());
@@ -526,8 +561,30 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
             title: Text("$eventInfo"),
             onTap: () {
               print('${eventInfo['summary']} tapped! Label Color Change!');
-              widget.calendarController
-                  .changeEventsLabelColor("2", keyValue);
+              showModalBottomSheet(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return Container(
+                      height: MediaQuery.of(context).size.height * 0.25,
+                      child: Column(
+                        children: <Widget>[
+                          Expanded(
+                            flex: 1,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                _buildColorFlatButton(snapshot, "0",1,key: keyValue),
+                                _buildColorFlatButton(snapshot, "1",1,key: keyValue),
+                                _buildColorFlatButton(snapshot, "2",1,key: keyValue),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  });
+//              widget.calendarController
+//                  .changeEventsLabelColor("2", keyValue);
             },
           ),
         );

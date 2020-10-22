@@ -48,12 +48,14 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     super.data.prevWeekList = _makeWeekList(prevFirstDay, prevLastDay);
     super.data.nextWeekList = _makeWeekList(nextFirstDay, nextLastDay);
 
+    //TODO Change labelColorMap ( key values )
     super.data.labelColorMap = {
       "0" : Colors.red,
       "1" : Colors.green,
-      "2" : Colors.yellow,
+      "2" : Colors.yellowAccent,
       "3" : Colors.black,
       "empty" : Colors.grey,
+      "google" : Colors.blue
     };
     super.streamSink();
   }
@@ -105,6 +107,13 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
   void changeEventsLabelColor(String colorKey, String key) {
     if (super.data.eachEvent.containsKey(key)) {
       super.data.eachEvent[key]["labelColor"] = colorKey;
+    }
+    super.streamSink();
+  }
+
+  void changeEachLabelColor(String colorKey, Color color){
+    if (super.data.labelColorMap.containsKey(colorKey)){
+      super.data.labelColorMap[colorKey] = color;
     }
     super.streamSink();
   }
@@ -242,7 +251,8 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
                             'recurrence':
                                 eachEventToMap.containsKey('recurrence')
                                     ? eachEventToMap['recurrence']
-                                    : null
+                                    : null,
+                            'labelColor' : "google"
                           }
                         };
 
