@@ -75,11 +75,10 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
         super.data.eventsByDate[temp].add(eid);
       }
 
+      temp = temp.add(Duration(days: 1));
       if (temp.isAfter(roundDown(end.subtract(Duration(microseconds: 1))))) {
         break;
       }
-
-      temp = temp.add(Duration(days: 1));
     }
 
     super.streamSink();
