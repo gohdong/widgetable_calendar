@@ -53,7 +53,7 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
   void addEvents(Map eventData) {
     DateTime roundDown(DateTime date) =>
         DateTime(date.year, date.month, date.day);
-    print(eventData);
+//    print(eventData);
 
     super.data.eachEvent.addAll(Map.from(eventData));
     String eid = eventData.keys.first;
@@ -67,22 +67,25 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
         super.data.eventsByDate[temp].add(eid);
       }
 
-      temp = temp.add(Duration(days: 1));
-
-      if (temp.isAfter(roundDown(end.subtract(Duration(microseconds: 1))))) {
+      print(temp.toString());
+      if (temp.compareTo(end) == 0) {
         break;
       }
+
+      temp = temp.add(Duration(days: 1));
     }
 
     super.streamSink();
   }
 
-  List findEvents() {
-    print(super.data.eventsByDate);
+  List findEvents(DateTime date) {
+//    print(super.data.eventsByDate);
     List returnValue = [];
     super.data.eventsByDate.forEach((key, value) {
-      if (key == super.data.selectDate) {
-        returnValue.add(value);
+      if (key == date) {
+        value.forEach((element) {
+          returnValue.add(element);
+        });
       }
     });
     return returnValue;

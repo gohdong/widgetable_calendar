@@ -504,7 +504,8 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   }
 
   Widget _buildEventList(Map snapshot) {
-    List selectDateEvent = snapshot['eventsByDate'][snapshot['selectDate']];
+//    List selectDateEvent = snapshot['eventsByDate'][snapshot['selectDate']];
+    List selectDateEvent = widget.calendarController.findEvents(snapshot['selectDate']);
     return ListView.builder(
       itemCount: selectDateEvent != null ? selectDateEvent.length : 0,
       itemBuilder: (context, index) {
