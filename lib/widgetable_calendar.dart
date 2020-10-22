@@ -11,6 +11,7 @@ import 'package:widgetable_calendar/Bloc/calendar_provider.dart';
 import 'dart:core';
 import 'package:roller_list/roller_list.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 import 'package:widgetable_calendar/Data/calendar_data.dart';
 

@@ -161,6 +161,16 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                   showModalBottomSheet(
                       context: context,
                       builder: (BuildContext context) {
+                        Map entireColorMap = widget.calendarController.getLabelColorMap();
+                        final children = <Widget>[];
+
+                        entireColorMap.forEach((key,value){
+                          if (key != "empty"){
+                            children.add(
+                              _buildColorFlatButton(snapshot.data, key,0),
+                            );
+                          }
+                        });
                         return Container(
                           height: MediaQuery.of(context).size.height * 0.25,
                           child: Column(
@@ -169,11 +179,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                                 flex: 1,
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    _buildColorFlatButton(snapshot.data, "0",0),
-                                    _buildColorFlatButton(snapshot.data, "1",0),
-                                    _buildColorFlatButton(snapshot.data, "2",0),
-                                  ],
+                                  children: children,
                                 ),
                               ),
                             ],
@@ -183,11 +189,39 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                 },
                 child: Text("ADD EVENTS - Color")),
             FlatButton(
-                onPressed: () => widget.calendarController.changeEachLabelColor("0", Colors.black),
-                child: Text("Color Red to Black")),
-            FlatButton(
-                onPressed: () => widget.calendarController.changeEachLabelColor("0", Colors.red),
-                child: Text("Color Black to Red")),
+                onPressed: () {
+                  showModalBottomSheet(
+                      context: context,
+                      builder: (BuildContext context) {
+                        Map entireColorMap = widget.calendarController.getLabelColorMap();
+                        final children = <Widget>[];
+
+                        entireColorMap.forEach((key,value){
+                          if (key != "empty"){
+                            children.add(
+                              _buildColorFlatButton(snapshot.data, key,2),
+                            );
+                          }
+                        });
+                        return Container(
+                          height: MediaQuery.of(context).size.height * 0.25,
+                          child: Column(
+                            children: <Widget>[
+                              Expanded(
+                                flex: 1,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: children,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      });
+
+        },
+//                => widget.calendarController.changeEntireLabelColor("0", Colors.black),
+                child: Text("Label Color Change")),
             _buildEvents(snapshot.data),
           ],
         );
@@ -195,7 +229,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     );
   }
 
-  Widget _buildColorFlatButton(Map snapshot, String colorKey, int type, {String key}){
+  Widget _buildColorFlatButton(Map snapshot, String colorKey, int type, {String eventKey}){
     return FlatButton(
       onPressed: (){
         if (type == 0) {
@@ -214,15 +248,55 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
               }
             },
           );
-        } else {
+          Navigator.of(context).pop();
+        } else if (type == 1){
           widget.calendarController
-              .changeEventsLabelColor(colorKey, key);
+              .changeEventsLabelColor(colorKey, eventKey);
+          Navigator.of(context).pop();
+        } else {
+          Navigator.of(context).pop();
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              Color resultColor;
+              return AlertDialog(
+                titlePadding: const EdgeInsets.all(0.0),
+                contentPadding: const EdgeInsets.all(0.0),
+                content: SingleChildScrollView(
+                  child: SlidePicker(
+                    pickerColor: widget.calendarController.getLabelColor(colorKey),
+                    onColorChanged: (Color change){
+                      resultColor = change;
+                    },
+                    paletteType: PaletteType.rgb,
+                    enableAlpha: false,
+                    displayThumbColor: true,
+                    showLabel: false,
+                    showIndicator: true,
+                    indicatorBorderRadius:
+                    const BorderRadius.vertical(
+                      top: const Radius.circular(25.0),
+                    ),
+                  ),
+                ),
+                actions: [
+                  FlatButton(
+                    child: Text('Ok'),
+                    onPressed: () {
+                      widget.calendarController.changeEntireLabelColor(colorKey, resultColor);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
         }
-        Navigator.of(context).pop();
+
       },
       child: Container(
-        height: 50,
-        width: 50,
+        height: 25,
+        width: 25,
         color: widget.calendarController.getLabelColor(colorKey),
       ),
     );
@@ -464,8 +538,6 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   }
 
   Widget _buildEventDot(List events) {
-//    String eventsCountString = events.length == 0 ? "" : events.length.toString();
-//    print(events.toString());
     final children = <Widget>[];
     for (int i = 0; i < events.length && i < 3; i++) {
       Map eventMap = events[i]["content"];
@@ -478,7 +550,6 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     }
     return Column(
       children: [
-//        Text(eventsCountString, style: TextStyle(color: Colors.grey[500]), textScaleFactor: 0.8,),
         SizedBox(
           height: 5,
         ),
@@ -489,12 +560,9 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
 
   Widget _buildEvents(Map snapshot) {
     final children = <Widget>[
-//      Text(snapshot['events'].toString()),
       Divider(
         thickness: 5,
       ),
-//      Text(widget.calendarController.findEvents().toString()),
-//      Expanded(child: _buildEventList(snapshot[])),
       Expanded(child: _buildEventList(snapshot)),
     ];
 
@@ -506,51 +574,15 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     );
   }
 
-//<<<<<<< HEAD
-//  Widget _buildEventList(List eventList) {
-//    return ListView(
-//      children: eventList != null
-//          ? eventList
-//          .map((event) =>
-//          Container(
-//            decoration: BoxDecoration(
-//              border: Border.all(width: 0.8),
-//              borderRadius: BorderRadius.circular(12.0),
-//              color: event["labelColor"],
-//            ),
-//            margin: const EdgeInsets.symmetric(
-//                horizontal: 8.0, vertical: 4.0),
-//            child: ListTile(
-//              title: Text(event.toString()),
-//              trailing: FlatButton(
-//                color: Colors.white,
-//                child: Text("change to yellow"),
-//                onPressed: () {
-////                  widget.calendarController.changeEventsLabelColor(
-////                      Colors.yellow, event["id"]);
-//                },
-//              ),
-//            ),
-//          ))
-//          .toList()
-//          : Container(),
-//    );
-//  }
-//=======
   Widget _buildEventList(Map snapshot) {
-//    List selectDateEvent = snapshot['eventsByDate'][snapshot['selectDate']];
     List selectDateEvent =
     widget.calendarController.findEvents(snapshot['selectDate']);
+    Map entireColorMap = widget.calendarController.getLabelColorMap();
     return ListView.builder(
       itemCount: selectDateEvent != null ? selectDateEvent.length : 0,
       itemBuilder: (context, index) {
-//        Map eventInfo = snapshot['eachEvent'][selectDateEvent[index]];
         Map eventInfo = selectDateEvent[index]["content"];
-        String keyValue = selectDateEvent[index]["id"];
-//        String keyValue = "";
-//        eventInfo.forEach((key, value) {
-//          keyValue = key;
-//        });
+        String eventKeyValue = selectDateEvent[index]["id"];
         return Container(
           decoration: BoxDecoration(
             border: Border.all(width: 0.8),
@@ -561,6 +593,15 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
             title: Text("$eventInfo"),
             onTap: () {
               print('${eventInfo['summary']} tapped! Label Color Change!');
+              final children = <Widget>[];
+
+             entireColorMap.forEach((key,value){
+                if (key != "empty"){
+                  children.add(
+                    _buildColorFlatButton(snapshot, key,1,eventKey: eventKeyValue),
+                  );
+                }
+              });
               showModalBottomSheet(
                   context: context,
                   builder: (BuildContext context) {
@@ -572,11 +613,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                             flex: 1,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                _buildColorFlatButton(snapshot, "0",1,key: keyValue),
-                                _buildColorFlatButton(snapshot, "1",1,key: keyValue),
-                                _buildColorFlatButton(snapshot, "2",1,key: keyValue),
-                              ],
+                              children: children,
                             ),
                           ),
                         ],

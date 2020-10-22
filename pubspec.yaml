@@ -15,6 +15,7 @@ dependencies:
   googleapis: ^0.56.1
   googleapis_auth: ^0.2.12
   url_launcher: ^5.7.5
+  flutter_colorpicker: ^0.3.4
 
 
 dev_dependencies:
