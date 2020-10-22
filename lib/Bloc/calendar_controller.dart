@@ -81,13 +81,20 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
   List findEvents(DateTime date) {
 //    print(super.data.eventsByDate);
     List returnValue = [];
-    super.data.eventsByDate.forEach((key, value) {
-      if (key == date) {
-        value.forEach((element) {
-          returnValue.add(element);
-        });
-      }
-    });
+//    super.data.eventsByDate.forEach((key, value) {
+//      if (key == date) {
+//        value.forEach((element) {
+//          returnValue.add(element);
+//        });
+//      }
+//    });
+
+    if (super.data.eventsByDate.containsKey(date)){
+      List temp = super.data.eventsByDate[date];
+      temp.forEach((element) {
+        returnValue.add(element);
+      });
+    }
     return returnValue;
   }
 
