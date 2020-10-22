@@ -15,7 +15,8 @@ import 'package:widgetable_calendar/Data/calendar_data.dart';
 
 part 'UI/calendar_ui.dart';
 
-/// A Calculator.
+
+
 class WidgetableCalendar extends StatefulWidget {
   final WidgetableCalendarController calendarController;
   final Color weekDayColor;
