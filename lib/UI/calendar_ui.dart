@@ -163,7 +163,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                       'summary': 'TEST',
                       'start': snapshot.data['selectDate'],
                       'end': snapshot.data['selectDate']
-                          .add(Duration(days: 1)),
+                          .add(Duration(days: 2)),
                       'recurrence': null,
                       'labelColor': "0"
                     }
@@ -177,7 +177,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                       'summary': 'TEST',
                       'start': snapshot.data['selectDate'],
                       'end': snapshot.data['selectDate']
-                          .add(Duration(days: 1)),
+                          .add(Duration(days: 2)),
                       'recurrence': null,
                       'labelColor': "1"
                     }

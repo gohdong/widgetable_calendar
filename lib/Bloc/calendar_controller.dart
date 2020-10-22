@@ -136,7 +136,7 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
   }
 
   DateTime _normalizeDate(DateTime value) {
-    return DateTime.utc(value.year, value.month, value.day, 0);
+    return DateTime(value.year, value.month, value.day);
   }
 
   void setSelectDate(DateTime day, List events, List holidays) {
