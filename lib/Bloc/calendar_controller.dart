@@ -163,6 +163,13 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     return day == super.data.getSelectDate;
   }
 
+  void changeWeek(int i) {
+    super.data.selectDate = i == 0
+        ? _normalizeDate(DateTime.now())
+        : super.data.selectDate.add(Duration(days: 7*i));
+    super.streamSink();
+  }
+
   void changeMonth(int i) {
     super.data.selectDate = i == 0
         ? _normalizeDate(DateTime.now())
