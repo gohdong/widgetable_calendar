@@ -78,23 +78,23 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
   }
 
   List findEvents(DateTime date) {
-//    print(super.data.eventsByDate);
     List returnValue = [];
-//    super.data.eventsByDate.forEach((key, value) {
-//      if (key == date) {
-//        value.forEach((element) {
-//          returnValue.add(element);
-//        });
-//      }
-//    });
 
     if (super.data.eventsByDate.containsKey(date)) {
       List temp = super.data.eventsByDate[date];
       temp.forEach((element) {
-        returnValue.add(element);
+//        returnValue.add(element);
+        returnValue.add({"id":element,"content":super.data.eachEvent[element]});
       });
     }
     return returnValue;
+  }
+
+  void changeEventsLabelColor(Color labelColor, String key) {
+    if (super.data.eachEvent.containsKey(key)) {
+      super.data.eachEvent[key]["labelColor"] = labelColor;
+    }
+    super.streamSink();
   }
 
   List _makeWeekList(DateTime firstDay, DateTime lastDay) {
