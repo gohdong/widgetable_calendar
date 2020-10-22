@@ -15,6 +15,7 @@ class WidgetableCalendarData {
   List weekList;
   List prevWeekList;
   List nextWeekList;
+  Map<String, Color> labelColorMap;
 
   double startDXPoint = 0;
   double endDXPoint = 0;
@@ -31,7 +32,8 @@ class WidgetableCalendarData {
       this.lastDay,
       this.weekList,
       this.prevWeekList,
-      this.nextWeekList});
+      this.nextWeekList,
+      this.labelColorMap});
 
   // WidgetableCalendarData.fromJson(Map json)
   //     :

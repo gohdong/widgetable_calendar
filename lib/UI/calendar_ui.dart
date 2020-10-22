@@ -165,7 +165,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                       'end': snapshot.data['selectDate']
                           .add(Duration(days: 1)),
                       'recurrence': null,
-                      'labelColor': Colors.red
+                      'labelColor': "0"
                     }
                   },
                 ),
@@ -179,7 +179,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                       'end': snapshot.data['selectDate']
                           .add(Duration(days: 1)),
                       'recurrence': null,
-                      'labelColor': Colors.green
+                      'labelColor': "1"
                     }
                   },
                 ),
@@ -434,10 +434,11 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     final children = <Widget>[];
     for (int i = 0; i < events.length && i < 3; i++) {
       Map eventMap = events[i]["content"];
+      Color labelColor = widget.calendarController.getLabelColor(eventMap["labelColor"]);
       children.add(Icon(
         Icons.lens,
         size: 7,
-        color: eventMap["labelColor"] ?? Colors.grey,
+        color: labelColor ?? Colors.grey,
       ));
     }
     return Column(
@@ -524,9 +525,9 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
           child: ListTile(
             title: Text("$eventInfo"),
             onTap: () {
-              print('${eventInfo['summary']} tapped!');
+              print('${eventInfo['summary']} tapped! Label Color Change!');
               widget.calendarController
-                  .changeEventsLabelColor(Colors.yellow, keyValue);
+                  .changeEventsLabelColor("2", keyValue);
             },
           ),
         );
