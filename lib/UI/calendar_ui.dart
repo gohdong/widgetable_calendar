@@ -42,6 +42,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     with SingleTickerProviderStateMixin {
   @override
   void initState() {
+    // _buildEachWeek2(DateTime.now().add(Duration(days: 3)));
     widget.calendarController.init();
 
     scrollController = ScrollController();
@@ -359,31 +360,24 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
 
   Widget _buildCalendarContent(Map snapshot, int type) {
     final children = <TableRow>[];
-    List weekList = [];
+    DateTime thisMonthFirstDate = DateTime(
+        snapshot['focusDate'].year, snapshot['focusDate'].month + type);
 
-    if (type == -1)
-      weekList = snapshot['prevWeekList'];
-    else if (type == 0)
-      weekList = snapshot['weekList'];
-    else if (type == 1) weekList = snapshot['nextWeekList'];
-
-    for (int i = 0; i < weekList.length; i++) {
-      children.add(_buildEachWeek(snapshot, weekList[i], type));
+    for (int i = 0; i < 6; i++) {
+      children.add(_buildEachWeek(
+          snapshot, thisMonthFirstDate.add(Duration(days: i * 7)), type));
     }
     return Table(
       children: children,
     );
   }
 
-  TableRow _buildEachWeek(Map snapshot, List weekList, int type) {
+  TableRow _buildEachWeek(Map snapshot, DateTime baseDate, int type) {
     final children = <TableCell>[];
-
-    for (int i = 0; i < weekList.length; i++) {
-      DateTime eachDate = DateTime(snapshot['focusDate'].year,
-          snapshot['focusDate'].month + type, weekList[i]); // 정확한 날짜
-      bool thisMonth = _isThisMonth(snapshot, weekList, eachDate, type);
-      String date = eachDate.day.toString();
-
+    int baseDay = (baseDate.weekday) % 7;
+    DateTime tempDate = baseDate.subtract(Duration(days: baseDay));
+    for (int i = 0; i < 7; i++) {
+      DateTime eachDate = tempDate.add(Duration(days: i));
       children.add(
         TableCell(
           child: InkWell(
@@ -391,89 +385,38 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
               if (widget.calendarController.isSelectedDate(DateTime(
                   snapshot['focusDate'].year,
                   snapshot['focusDate'].month,
-                  weekList[i])))
+                  eachDate.day)))
                 widget.calendarController.setSelectDate(null, [], []);
               else
                 widget.calendarController.setSelectDate(
                     DateTime(snapshot['focusDate'].year,
-                        snapshot['focusDate'].month + type, weekList[i]),
+                        snapshot['focusDate'].month + type, eachDate.day),
                     [],
                     []);
+              // print(thisMonth);
 
-              if (!thisMonth && weekList[i] <= 0)
+              if (snapshot['focusDate'].month > eachDate.month) {
                 widget.calendarController.changeMonth(-1);
-              if (!thisMonth && weekList[i] > 0)
+              }
+              if (snapshot['focusDate'].month < eachDate.month) {
                 widget.calendarController.changeMonth(1);
+              }
             },
             child: Container(
               width: double.infinity,
-              color: _isToday(weekList[i], snapshot['focusDate'], type)
-                  ? widget.todayBackgroundColor
-                  : widget.calendarController.isSelectedDate(
-                      DateTime(snapshot['focusDate'].year,
-                          snapshot['focusDate'].month + type, weekList[i]),
-                    )
-                      ? widget.highlightBackgroundColor
+              color: snapshot['selectDate'] == eachDate
+                  ? widget.highlightBackgroundColor
+                  : eachDate ==
+                          DateTime(DateTime.now().year, DateTime.now().month,
+                              DateTime.now().day)
+                      ? widget.todayBackgroundColor
                       : null,
               height: 50,
               child: Center(
-                child: i == 0
-                    ? Text(
-                        date,
-                        style: TextStyle(
-                            color: thisMonth
-                                ? _isToday(weekList[i], snapshot['focusDate'],
-                                        type)
-                                    ? widget.todayTextColor
-                                    : widget.calendarController.isSelectedDate(
-                                        DateTime(
-                                            snapshot['focusDate'].year,
-                                            snapshot['focusDate'].month + type,
-                                            weekList[i]),
-                                      )
-                                        ? widget.highlightTextColor
-                                        : widget.sundayColor
-                                : Colors.grey),
-                      )
-                    : i == 6
-                        ? Text(
-                            date,
-                            style: TextStyle(
-                                color: thisMonth
-                                    ? _isToday(weekList[i],
-                                            snapshot['focusDate'], type)
-                                        ? widget.todayTextColor
-                                        : widget.calendarController
-                                                .isSelectedDate(
-                                            DateTime(
-                                                snapshot['focusDate'].year,
-                                                snapshot['focusDate'].month +
-                                                    type,
-                                                weekList[i]),
-                                          )
-                                            ? widget.highlightTextColor
-                                            : widget.saturdayColor
-                                    : Colors.grey),
-                          )
-                        : Text(
-                            date,
-                            style: TextStyle(
-                                color: thisMonth
-                                    ? _isToday(weekList[i],
-                                            snapshot['focusDate'], type)
-                                        ? widget.todayTextColor
-                                        : widget.calendarController
-                                                .isSelectedDate(
-                                            DateTime(
-                                                snapshot['focusDate'].year,
-                                                snapshot['focusDate'].month +
-                                                    type,
-                                                weekList[i]),
-                                          )
-                                            ? widget.highlightTextColor
-                                            : widget.weekDayColor
-                                    : Colors.grey),
-                          ),
+                child: Text(
+                  "${eachDate.day}",
+                  style: TextStyle(color: dateColor(snapshot, eachDate)),
+                ),
               ),
             ),
           ),
@@ -483,6 +426,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
 
     return TableRow(children: children);
   }
+
 
   Widget _buildEvents(Map snapshot) {
     final children = <Widget>[
@@ -505,7 +449,8 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
 
   Widget _buildEventList(Map snapshot) {
 //    List selectDateEvent = snapshot['eventsByDate'][snapshot['selectDate']];
-    List selectDateEvent = widget.calendarController.findEvents(snapshot['selectDate']);
+    List selectDateEvent =
+        widget.calendarController.findEvents(snapshot['selectDate']);
     return ListView.builder(
       itemCount: selectDateEvent != null ? selectDateEvent.length : 0,
       itemBuilder: (context, index) {
@@ -535,7 +480,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
       return false;
   }
 
-  bool _isThisMonth(Map snapshot, List weekList, DateTime eachDate, int type) {
+  bool _isThisMonth(Map snapshot, DateTime eachDate, int type) {
     bool result = true;
     int focusMonth = snapshot['focusDate'].month + type;
     if (focusMonth > 12) focusMonth -= 12;
@@ -587,5 +532,23 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     }
     // return Calendar
     return TableRow(children: children);
+  }
+
+  Color dateColor(Map snapshot, DateTime eachDate) {
+    if (snapshot['focusDate'].month != eachDate.month) {
+      return Colors.grey;
+    } else if (eachDate == snapshot['selectDate']) {
+      return widget.highlightTextColor;
+    } else if (eachDate ==
+        DateTime(
+            DateTime.now().year, DateTime.now().month, DateTime.now().day)) {
+      return widget.todayTextColor;
+    } else if (eachDate.weekday == 7) {
+      return widget.sundayColor;
+    } else if (eachDate.weekday == 6) {
+      return widget.saturdayColor;
+    }
+
+    return widget.weekDayColor;
   }
 }
