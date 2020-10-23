@@ -172,6 +172,8 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                 children: children,
               ),
             ),
+
+            // FlatButtons - For Test
             FlatButton(
                 onPressed: () {
                   showModalBottomSheet(
@@ -526,7 +528,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
       IconButton(
         icon: Icon(Icons.arrow_forward_ios),
         onPressed: () {
-          print(snapshot['calendarFormat']);
+//          print(snapshot['calendarFormat']);
           widget.calendarController.changeMonth(1);
         },
       ),
@@ -582,7 +584,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   }
 
   TableRow _buildEachWeek(Map snapshot, DateTime baseDate, int type) {
-    print(snapshot['selectDate'].toString());
+//    print(snapshot['selectDate'].toString());
     final children = <TableCell>[];
     int baseDay = (baseDate.weekday) % 7;
     DateTime tempDate = baseDate.subtract(Duration(days: baseDay));
@@ -644,11 +646,13 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
       Color labelColor =
           widget.calendarController.getLabelColor(eventMap["labelColor"]);
       bool toggle = widget.calendarController.getLabelColorToggle(eventMap["labelColor"]) ?? false;
-      children.add(Icon(
-        Icons.lens,
-        size: 7,
-        color: labelColor != null && toggle ? labelColor : labelColor.withOpacity(0),
-      ));
+      if (toggle) {
+        children.add(Icon(
+          Icons.lens,
+          size: 7,
+          color: labelColor ?? Colors.grey,
+        ));
+      }
     }
     return Column(
       children: [

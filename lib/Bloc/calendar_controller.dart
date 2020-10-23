@@ -108,12 +108,12 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
   }
 
   Color getLabelColor(String colorKey){
-    if (colorKey != null) return super.data.labelColorMap[colorKey]["color"];
+    if (colorKey != null && super.data.labelColorMap.containsKey(colorKey)) return super.data.labelColorMap[colorKey]["color"];
     else return super.data.labelColorMap["empty"]["color"];
   }
 
   bool getLabelColorToggle(String colorKey){
-    if (colorKey != null) return super.data.labelColorMap[colorKey]["toggle"];
+    if (colorKey != null && super.data.labelColorMap.containsKey(colorKey)) return super.data.labelColorMap[colorKey]["toggle"];
     else return false;
   }
 
@@ -131,10 +131,6 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     super.streamSink();
   }
 
-//  DateTime
-//      .now()
-//      .microsecondsSinceEpoch
-//      .toString()
   void addLabel(Map labelMap){
     if (super.data.labelColorMap.length < 5) super.data.labelColorMap.addAll(Map.from(labelMap));
     super.streamSink();
