@@ -223,6 +223,90 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
         },
 //                => widget.calendarController.changeEntireLabelColor("0", Colors.black),
                 child: Text("Label Color Change")),
+            FlatButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      Color resultColor = Colors.black;
+                      return AlertDialog(
+                        titlePadding: const EdgeInsets.all(0.0),
+                        contentPadding: const EdgeInsets.all(0.0),
+                        content: SingleChildScrollView(
+                          child: SlidePicker(
+                            pickerColor: Colors.black,
+                            onColorChanged: (Color change){
+                              resultColor = change;
+                            },
+                            paletteType: PaletteType.rgb,
+                            enableAlpha: false,
+                            displayThumbColor: true,
+                            showLabel: false,
+                            showIndicator: true,
+                            indicatorBorderRadius:
+                            const BorderRadius.vertical(
+                              top: const Radius.circular(25.0),
+                            ),
+                          ),
+                        ),
+                        actions: [
+                          FlatButton(
+                            child: Text('Ok'),
+                            onPressed: () {
+                              // { colorKey(random value string) : { "name" : customName, "color" : customColor }  }
+                              widget.calendarController.addLabel({
+                                DateTime
+                                    .now()
+                                    .microsecondsSinceEpoch
+                                    .toString() : {
+                                  "name" : "testLabel",
+                                  "color" : resultColor
+                                }
+                              });
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+
+                },
+                child: Text("ADD Label")),
+            FlatButton(
+                onPressed: () {
+                  showModalBottomSheet(
+                      context: context,
+                      builder: (BuildContext context) {
+                        Map entireColorMap = widget.calendarController.getLabelColorMap();
+                        final children = <Widget>[];
+
+                        entireColorMap.forEach((key,value){
+                          if (key != "empty"){
+                            children.add(
+                              _buildColorFlatButton(snapshot.data, key,3),
+                            );
+                          }
+                        });
+                        return Container(
+                          height: MediaQuery.of(context).size.height * 0.25,
+                          child: Column(
+                            children: <Widget>[
+                              Expanded(
+                                flex: 1,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: children,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      });
+
+                },
+//                => widget.calendarController.changeEntireLabelColor("0", Colors.black),
+                child: Text("Delete Label")),
             _buildEvents(snapshot.data),
           ],
         );
@@ -254,7 +338,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
           widget.calendarController
               .changeEventsLabelColor(colorKey, eventKey);
           Navigator.of(context).pop();
-        } else {
+        } else if (type == 2) {
           Navigator.of(context).pop();
           showDialog(
             context: context,
@@ -292,6 +376,9 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
               );
             },
           );
+        } else if (type == 3){
+          widget.calendarController.deleteLabel(colorKey);
+          Navigator.of(context).pop();
         }
 
       },
