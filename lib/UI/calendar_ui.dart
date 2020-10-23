@@ -21,18 +21,18 @@ class WidgetableCalendarUI extends StatefulWidget {
 
   WidgetableCalendarUI(
       {Key key,
-        @required this.calendarController,
-        this.weekDayColor = Colors.black,
-        this.sundayColor = Colors.red,
-        this.saturdayColor = Colors.blue,
-        this.backgroundColor = Colors.white,
-        this.lineColor = Colors.black,
-        this.holidays,
-        this.events,
-        this.todayBackgroundColor = Colors.black26,
-        this.todayTextColor = Colors.white,
-        this.highlightBackgroundColor = Colors.red,
-        this.highlightTextColor = Colors.white})
+      @required this.calendarController,
+      this.weekDayColor = Colors.black,
+      this.sundayColor = Colors.red,
+      this.saturdayColor = Colors.blue,
+      this.backgroundColor = Colors.white,
+      this.lineColor = Colors.black,
+      this.holidays,
+      this.events,
+      this.todayBackgroundColor = Colors.black26,
+      this.todayTextColor = Colors.white,
+      this.highlightBackgroundColor = Colors.red,
+      this.highlightTextColor = Colors.white})
       : super(key: key);
 
   _WidgetableCalendarUIState createState() => _WidgetableCalendarUIState();
@@ -162,13 +162,14 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                   showModalBottomSheet(
                       context: context,
                       builder: (BuildContext context) {
-                        Map entireColorMap = widget.calendarController.getLabelColorMap();
+                        Map entireColorMap =
+                            widget.calendarController.getLabelColorMap();
                         final children = <Widget>[];
 
-                        entireColorMap.forEach((key,value){
-                          if (key != "empty"){
+                        entireColorMap.forEach((key, value) {
+                          if (key != "empty") {
                             children.add(
-                              _buildColorFlatButton(snapshot.data, key,0),
+                              _buildColorFlatButton(snapshot.data, key, 0),
                             );
                           }
                         });
@@ -194,13 +195,14 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                   showModalBottomSheet(
                       context: context,
                       builder: (BuildContext context) {
-                        Map entireColorMap = widget.calendarController.getLabelColorMap();
+                        Map entireColorMap =
+                            widget.calendarController.getLabelColorMap();
                         final children = <Widget>[];
 
-                        entireColorMap.forEach((key,value){
-                          if (key != "empty"){
+                        entireColorMap.forEach((key, value) {
+                          if (key != "empty") {
                             children.add(
-                              _buildColorFlatButton(snapshot.data, key,2),
+                              _buildColorFlatButton(snapshot.data, key, 2),
                             );
                           }
                         });
@@ -219,8 +221,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                           ),
                         );
                       });
-
-        },
+                },
 //                => widget.calendarController.changeEntireLabelColor("0", Colors.black),
                 child: Text("Label Color Change")),
             FlatButton(
@@ -235,7 +236,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                         content: SingleChildScrollView(
                           child: SlidePicker(
                             pickerColor: Colors.black,
-                            onColorChanged: (Color change){
+                            onColorChanged: (Color change) {
                               resultColor = change;
                             },
                             paletteType: PaletteType.rgb,
@@ -243,8 +244,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                             displayThumbColor: true,
                             showLabel: false,
                             showIndicator: true,
-                            indicatorBorderRadius:
-                            const BorderRadius.vertical(
+                            indicatorBorderRadius: const BorderRadius.vertical(
                               top: const Radius.circular(25.0),
                             ),
                           ),
@@ -253,14 +253,14 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                           FlatButton(
                             child: Text('Ok'),
                             onPressed: () {
-                              // { colorKey(random value string) : { "name" : customName, "color" : customColor }  }
+                              // { colorKey(random value string) : { "name" : customName, "color" : customColor, "toggle" : true or false }  }
                               widget.calendarController.addLabel({
-                                DateTime
-                                    .now()
+                                DateTime.now()
                                     .microsecondsSinceEpoch
-                                    .toString() : {
-                                  "name" : "testLabel",
-                                  "color" : resultColor
+                                    .toString(): {
+                                  "name": "testLabel",
+                                  "color": resultColor,
+                                  "toggle" : true,
                                 }
                               });
                               Navigator.of(context).pop();
@@ -270,7 +270,6 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                       );
                     },
                   );
-
                 },
                 child: Text("ADD Label")),
             FlatButton(
@@ -278,13 +277,14 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                   showModalBottomSheet(
                       context: context,
                       builder: (BuildContext context) {
-                        Map entireColorMap = widget.calendarController.getLabelColorMap();
+                        Map entireColorMap =
+                            widget.calendarController.getLabelColorMap();
                         final children = <Widget>[];
 
-                        entireColorMap.forEach((key,value){
-                          if (key != "empty"){
+                        entireColorMap.forEach((key, value) {
+                          if (key != "empty") {
                             children.add(
-                              _buildColorFlatButton(snapshot.data, key,3),
+                              _buildColorFlatButton(snapshot.data, key, 3),
                             );
                           }
                         });
@@ -303,10 +303,43 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                           ),
                         );
                       });
-
                 },
 //                => widget.calendarController.changeEntireLabelColor("0", Colors.black),
                 child: Text("Delete Label")),
+            FlatButton(
+                onPressed: () {
+                  showModalBottomSheet(
+                      context: context,
+                      builder: (BuildContext context) {
+                        Map entireColorMap =
+                            widget.calendarController.getLabelColorMap();
+                        final children = <Widget>[];
+
+                        entireColorMap.forEach((key, value) {
+                          if (key != "empty") {
+                            children.add(
+                              _buildColorFlatButton(snapshot.data, key, 4),
+                            );
+                          }
+                        });
+                        return Container(
+                          height: MediaQuery.of(context).size.height * 0.25,
+                          child: Column(
+                            children: <Widget>[
+                              Expanded(
+                                flex: 1,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: children,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      });
+                },
+//                => widget.calendarController.changeEntireLabelColor("0", Colors.black),
+                child: Text("Toggle Label")),
             _buildEvents(snapshot.data),
           ],
         );
@@ -314,29 +347,26 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     );
   }
 
-  Widget _buildColorFlatButton(Map snapshot, String colorKey, int type, {String eventKey}){
+  Widget _buildColorFlatButton(Map snapshot, String colorKey, int type,
+      {String eventKey}) {
+    print(widget.calendarController.getLabelColorMap().toString());
     return FlatButton(
-      onPressed: (){
+      onPressed: () {
         if (type == 0) {
           widget.calendarController.addEvents(
             {
-              DateTime
-                  .now()
-                  .microsecondsSinceEpoch
-                  .toString(): {
+              DateTime.now().microsecondsSinceEpoch.toString(): {
                 'summary': 'TEST',
                 'start': snapshot['selectDate'],
-                'end': snapshot['selectDate']
-                    .add(Duration(days: 2)),
+                'end': snapshot['selectDate'].add(Duration(days: 2)),
                 'recurrence': null,
                 'labelColor': colorKey
               }
             },
           );
           Navigator.of(context).pop();
-        } else if (type == 1){
-          widget.calendarController
-              .changeEventsLabelColor(colorKey, eventKey);
+        } else if (type == 1) {
+          widget.calendarController.changeEventsLabelColor(colorKey, eventKey);
           Navigator.of(context).pop();
         } else if (type == 2) {
           Navigator.of(context).pop();
@@ -349,8 +379,9 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                 contentPadding: const EdgeInsets.all(0.0),
                 content: SingleChildScrollView(
                   child: SlidePicker(
-                    pickerColor: widget.calendarController.getLabelColor(colorKey),
-                    onColorChanged: (Color change){
+                    pickerColor:
+                        widget.calendarController.getLabelColor(colorKey),
+                    onColorChanged: (Color change) {
                       resultColor = change;
                     },
                     paletteType: PaletteType.rgb,
@@ -358,8 +389,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                     displayThumbColor: true,
                     showLabel: false,
                     showIndicator: true,
-                    indicatorBorderRadius:
-                    const BorderRadius.vertical(
+                    indicatorBorderRadius: const BorderRadius.vertical(
                       top: const Radius.circular(25.0),
                     ),
                   ),
@@ -368,7 +398,8 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                   FlatButton(
                     child: Text('Ok'),
                     onPressed: () {
-                      widget.calendarController.changeEntireLabelColor(colorKey, resultColor);
+                      widget.calendarController
+                          .changeEntireLabelColor(colorKey, resultColor);
                       Navigator.of(context).pop();
                     },
                   ),
@@ -376,16 +407,23 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
               );
             },
           );
-        } else if (type == 3){
+        } else if (type == 3) {
           widget.calendarController.deleteLabel(colorKey);
           Navigator.of(context).pop();
+        } else if (type == 4) {
+          widget.calendarController.toggleLabel(colorKey);
+          Navigator.of(context).pop();
         }
-
       },
       child: Container(
         height: 25,
         width: 25,
-        color: widget.calendarController.getLabelColor(colorKey),
+//        color: widget.calendarController.getLabelColor(colorKey) ?? Colors.grey
+        color: widget.calendarController.getLabelColorToggle(colorKey)
+            ? widget.calendarController.getLabelColor(colorKey)
+            : widget.calendarController
+                .getLabelColor(colorKey)
+                .withOpacity(0.3),
       ),
     );
   }
@@ -428,7 +466,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                                   onPressed: () {
                                     widget.calendarController
                                         .changeMonthCompletely(
-                                        selectYear, selectMonth);
+                                            selectYear, selectMonth);
                                     Navigator.of(context).pop();
                                   },
                                   icon: Icon(Icons.arrow_forward),
@@ -573,11 +611,13 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     final children = <Widget>[];
     for (int i = 0; i < events.length && i < 3; i++) {
       Map eventMap = events[i]["content"];
-      Color labelColor = widget.calendarController.getLabelColor(eventMap["labelColor"]);
+      Color labelColor =
+          widget.calendarController.getLabelColor(eventMap["labelColor"]);
+      bool toggle = widget.calendarController.getLabelColorToggle(eventMap["labelColor"]) ?? false;
       children.add(Icon(
         Icons.lens,
         size: 7,
-        color: labelColor ?? Colors.grey,
+        color: labelColor != null && toggle ? labelColor : labelColor.withOpacity(0),
       ));
     }
     return Column(
@@ -608,7 +648,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
 
   Widget _buildEventList(Map snapshot) {
     List selectDateEvent =
-    widget.calendarController.findEvents(snapshot['selectDate']);
+        widget.calendarController.findEvents(snapshot['selectDate']);
     Map entireColorMap = widget.calendarController.getLabelColorMap();
 
     return ListView.builder(
@@ -628,10 +668,11 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
               print('${eventInfo['summary']} tapped! Label Color Change!');
               final children = <Widget>[];
 
-             entireColorMap.forEach((key,value){
-                if (key != "empty"){
+              entireColorMap.forEach((key, value) {
+                if (key != "empty") {
                   children.add(
-                    _buildColorFlatButton(snapshot, key,1,eventKey: eventKeyValue),
+                    _buildColorFlatButton(snapshot, key, 1,
+                        eventKey: eventKeyValue),
                   );
                 }
               });
@@ -705,18 +746,18 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
             child: Center(
               child: i == 0
                   ? Text(
-                dayList[i],
-                style: TextStyle(color: widget.sundayColor),
-              )
+                      dayList[i],
+                      style: TextStyle(color: widget.sundayColor),
+                    )
                   : i == 6
-                  ? Text(
-                dayList[i],
-                style: TextStyle(color: widget.saturdayColor),
-              )
-                  : Text(
-                dayList[i],
-                style: TextStyle(color: widget.weekDayColor),
-              ),
+                      ? Text(
+                          dayList[i],
+                          style: TextStyle(color: widget.saturdayColor),
+                        )
+                      : Text(
+                          dayList[i],
+                          style: TextStyle(color: widget.weekDayColor),
+                        ),
             ),
           ),
         ),

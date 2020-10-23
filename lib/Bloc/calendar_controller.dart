@@ -49,11 +49,11 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     super.data.nextWeekList = _makeWeekList(nextFirstDay, nextLastDay);
 
 
-    // { colorKey(random value) : { "name" : customName, "color" : customColor, "enable" : show or not }  }
+    // Format -- { colorKey(random value) : { "name" : customName, "color" : customColor, "toggle" : show or not }  }
     super.data.labelColorMap = {
-      "initial" : {"name" : "init", "color": Colors.green, "enable" : true},
-      "empty" : {"name" : "", "color": Colors.grey, "enable" : true},
-      "google" : {"name" : "google", "color": Colors.blue, "enable" : true},
+      "initial" : {"name" : "init", "color": Colors.green, "toggle" : true},
+      "empty" : {"name" : "", "color": Colors.grey, "toggle" : true},
+      "google" : {"name" : "google", "color": Colors.blue, "toggle" : true},
     };
 
 
@@ -108,6 +108,11 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     else return super.data.labelColorMap["empty"]["color"];
   }
 
+  bool getLabelColorToggle(String colorKey){
+    if (colorKey != null) return super.data.labelColorMap[colorKey]["toggle"];
+    else return false;
+  }
+
   void changeEventsLabelColor(String colorKey, String key) {
     if (super.data.eachEvent.containsKey(key)) {
       super.data.eachEvent[key]["labelColor"] = colorKey;
@@ -134,6 +139,11 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
   // TODO delete all events!
   void deleteLabel(String colorKey){
     if (super.data.labelColorMap.containsKey(colorKey)) super.data.labelColorMap.remove(colorKey);
+    super.streamSink();
+  }
+
+  void toggleLabel(String colorKey){
+    if (super.data.labelColorMap.containsKey(colorKey)) super.data.labelColorMap[colorKey]["toggle"] = !super.data.labelColorMap[colorKey]["toggle"];
     super.streamSink();
   }
 
