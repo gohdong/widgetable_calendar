@@ -15,7 +15,7 @@ class WidgetableCalendarData {
   List weekList;
   List prevWeekList;
   List nextWeekList;
-  Map<String, Color> labelColorMap;
+  Map<String, Map> labelColorMap;
 
   double startDXPoint = 0;
   double endDXPoint = 0;

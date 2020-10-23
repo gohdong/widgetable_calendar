@@ -49,15 +49,13 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     super.data.nextWeekList = _makeWeekList(nextFirstDay, nextLastDay);
 
 
+    // { colorKey(random value) : { name : customName, color : customColor }  }
     super.data.labelColorMap = {
-      "0" : Colors.red,
-      "1" : Colors.green,
-      "2" : Colors.yellowAccent,
-      "empty" : Colors.grey,
-      "google" : Colors.blue
+      "initial" : {"name" : "init", "color": Colors.green},
+      "empty" : {"name" : "", "color": Colors.grey},
+      "google" : {"name" : "google", "color": Colors.blue},
     };
 
-    //TODO Change labelColorMap ( key values )
 
     super.streamSink();
   }
@@ -106,8 +104,8 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
   }
 
   Color getLabelColor(String colorKey){
-    if (colorKey != null) return super.data.labelColorMap[colorKey];
-    else return super.data.labelColorMap["empty"];
+    if (colorKey != null) return super.data.labelColorMap[colorKey]["color"];
+    else return super.data.labelColorMap["empty"]["color"];
   }
 
   void changeEventsLabelColor(String colorKey, String key) {
@@ -119,10 +117,25 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
 
   void changeEntireLabelColor(String colorKey, Color color){
     if (super.data.labelColorMap.containsKey(colorKey)){
-      super.data.labelColorMap[colorKey] = color;
+      super.data.labelColorMap[colorKey]["color"] = color;
     }
     super.streamSink();
   }
+
+//  DateTime
+//      .now()
+//      .microsecondsSinceEpoch
+//      .toString()
+  void addLabel(Map labelMap){
+    if (super.data.labelColorMap.length <= 5) super.data.labelColorMap.addAll(Map.from(labelMap));
+    super.streamSink();
+  }
+
+  void deleteLabel(String colorKey){
+    if (super.data.labelColorMap.containsKey(colorKey)) super.data.labelColorMap.remove(colorKey);
+    super.streamSink();
+  }
+
 
   List _makeWeekList(DateTime firstDay, DateTime lastDay) {
     List<int> dateList = List<int>();
