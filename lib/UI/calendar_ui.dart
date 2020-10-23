@@ -367,7 +367,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   Widget _buildColorFlatButton(Map snapshot, String colorKey, int type,
       {String eventKey}) {
     return FlatButton(
-      onPressed: () {
+      onPressed: () async {
         if (type == 0) {
           widget.calendarController.addEvents(
             {
@@ -424,7 +424,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
             },
           );
         } else if (type == 3) {
-          widget.calendarController.deleteLabel(colorKey);
+          await widget.calendarController.deleteLabel(colorKey);
           Navigator.of(context).pop();
         } else if (type == 4) {
           widget.calendarController.toggleLabel(colorKey);

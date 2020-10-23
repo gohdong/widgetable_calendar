@@ -97,7 +97,7 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
       List temp = super.data.eventsByDate[date];
       temp.forEach((element) {
 //        returnValue.add(element);
-        returnValue.add({"id":element,"content":super.data.eachEvent[element]});
+        if (super.data.eachEvent.containsKey(element)) returnValue.add({"id":element,"content":super.data.eachEvent[element]});
       });
     }
     return returnValue;
@@ -117,9 +117,9 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     else return false;
   }
 
-  void changeEventsLabelColor(String colorKey, String key) {
-    if (super.data.eachEvent.containsKey(key)) {
-      super.data.eachEvent[key]["labelColor"] = colorKey;
+  void changeEventsLabelColor(String colorKey, String eventKey) {
+    if (super.data.eachEvent.containsKey(eventKey)) {
+      super.data.eachEvent[eventKey]["labelColor"] = colorKey;
     }
     super.streamSink();
   }
@@ -136,9 +136,22 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     super.streamSink();
   }
 
-  // TODO delete all events!
+  // TODO delete all events? change to another label?
   void deleteLabel(String colorKey){
     if (super.data.labelColorMap.containsKey(colorKey)) super.data.labelColorMap.remove(colorKey);
+
+    // delete events ( just eachEvent Map )
+    List keyList = [];
+    super.data.eachEvent.forEach((key, value) {
+      print(value.toString());
+      print(value['labelColor'].toString());
+      if (value["labelColor"] == colorKey) keyList.add(key);
+    });
+
+    keyList.forEach((element) {
+      super.data.eachEvent.remove(element);
+    });
+
     super.streamSink();
   }
 
