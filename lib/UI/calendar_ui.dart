@@ -37,7 +37,7 @@ class WidgetableCalendarUI extends StatefulWidget {
       this.todayTextColor = Colors.white,
       this.highlightBackgroundColor = Colors.red,
       this.highlightTextColor = Colors.white,
-      this.calendarFormat = CalendarFormat.Month})
+      this.calendarFormat})
       : super(key: key);
 
   _WidgetableCalendarUIState createState() => _WidgetableCalendarUIState();
@@ -48,8 +48,9 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   @override
   void initState() {
     // _buildEachWeek2(DateTime.now().add(Duration(days: 3)));
-    widget.calendarController.init();
-    _calendarFormat = widget.calendarFormat;
+    widget.calendarController.init(
+      calendarFormat: widget.calendarFormat
+    );
     super.initState();
   }
 
@@ -58,7 +59,6 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     super.dispose();
   }
 
-  CalendarFormat _calendarFormat = CalendarFormat.Month;
 
   double startDXPoint = 0;
   double endDXPoint = 0;
@@ -140,7 +140,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
               ],
             ),
             Container(
-              height: _calendarFormat == CalendarFormat.Week ? 50 : 300,
+              height: snapshot.data['calendarFormat'] == CalendarFormat.Week ? 50 : 300,
               child: PageView(
                 controller: pageController,
                 onPageChanged: (pageId) async {
@@ -150,7 +150,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                       duration: const Duration(milliseconds: 250),
                       curve: Curves.ease,
                     );
-                    if (_calendarFormat == CalendarFormat.Month)
+                    if (snapshot.data['calendarFormat'] == CalendarFormat.Month)
                       widget.calendarController.changeMonth(1);
                     else
                       widget.calendarController.changeWeek(1);
@@ -162,7 +162,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                       duration: const Duration(milliseconds: 250),
                       curve: Curves.ease,
                     );
-                    if (_calendarFormat == CalendarFormat.Month)
+                    if (snapshot.data['calendarFormat'] == CalendarFormat.Month)
                       widget.calendarController.changeMonth(-1);
                     else
                       widget.calendarController.changeWeek(-1);
@@ -393,16 +393,13 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
       IconButton(
         icon: Icon(Icons.weekend),
         onPressed: () {
-          setState(() {
-            _calendarFormat = _calendarFormat == CalendarFormat.Month
-                ? CalendarFormat.Week
-                : CalendarFormat.Month;
-          });
+          widget.calendarController.toggleCalendarFormat();
         },
       ),
       IconButton(
         icon: Icon(Icons.arrow_forward_ios),
         onPressed: () {
+          print(snapshot['calendarFormat']);
           widget.calendarController.changeMonth(1);
         },
       ),
@@ -431,7 +428,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   Widget _buildCalendarContent(Map snapshot, int type) {
     final children = <TableRow>[];
 
-    switch (_calendarFormat) {
+    switch (snapshot['calendarFormat']) {
       case CalendarFormat.Week:
         if (type == -1)
           children.add(_buildEachWeek(
@@ -499,7 +496,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                   ),
                   Text(
                     "${eachDate.month}/${eachDate.day}",
-                    style: TextStyle(color: dateColor(snapshot, eachDate)),
+                    style: TextStyle(color: dateColor(snapshot, eachDate,type)),
                   ),
                   _buildEventDot(events),
                 ],
@@ -672,9 +669,9 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     return TableRow(children: children);
   }
 
-  Color dateColor(Map snapshot, DateTime eachDate) {
-    if (snapshot['selectDate'].month != eachDate.month &&
-        _calendarFormat == CalendarFormat.Month) {
+  Color dateColor(Map snapshot, DateTime eachDate,int type) {
+    if (snapshot['selectDate'].month+type != eachDate.month &&
+        snapshot['calendarFormat'] == CalendarFormat.Month) {
       return Colors.grey;
     } else if (eachDate == snapshot['selectDate']) {
       return widget.highlightTextColor;

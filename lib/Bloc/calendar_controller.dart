@@ -6,6 +6,7 @@ import 'package:googleapis_auth/auth_io.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:widgetable_calendar/Bloc/calendar_bloc.dart';
 import 'package:widgetable_calendar/Data/calendar_data.dart';
+import 'package:widgetable_calendar/widgetable_calendar.dart';
 
 class WidgetableCalendarController extends WidgetableCalendarBloc {
   List googleCalendarList = [];
@@ -16,13 +17,16 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
 
   WidgetableCalendarController();
 
-  void init() {
+  void init({
+  CalendarFormat calendarFormat
+}) {
     super.data.holidays = [];
     super.data.eventsByDate = {};
     super.data.eachEvent = {};
 
     final now = DateTime.now();
     super.data.selectDate = _normalizeDate(now);
+    super.data.calendarFormat = calendarFormat ?? CalendarFormat.Month;
 //    super.data.focusDate = _normalizeDate(now);
 
 //    super.data.firstDay =
@@ -154,8 +158,16 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     return DateTime(value.year, value.month, value.day);
   }
 
-  void setSelectDate(DateTime day) async{
+  void setSelectDate(DateTime day) {
     super.data.selectDate = day;
+    super.streamSink();
+  }
+  void toggleCalendarFormat(){
+    if(super.data.calendarFormat == CalendarFormat.Month)
+      super.data.calendarFormat = CalendarFormat.Week;
+    else
+      super.data.calendarFormat = CalendarFormat.Month;
+
     super.streamSink();
   }
 
