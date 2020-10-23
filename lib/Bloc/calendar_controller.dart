@@ -55,9 +55,9 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
 
     // Format -- { colorKey(random value) : { "name" : customName, "color" : customColor, "toggle" : show or not }  }
     super.data.labelColorMap = {
-      "initial" : {"name" : "init", "color": Colors.green, "toggle" : true},
+      "default" : {"name" : "first", "color": Colors.green, "toggle" : true},
       "empty" : {"name" : "", "color": Colors.grey, "toggle" : true},
-      "google" : {"name" : "google", "color": Colors.blue, "toggle" : true},
+//      "google" : {"name" : "google", "color": Colors.blue, "toggle" : true},
     };
 
 
@@ -148,8 +148,6 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     // delete events ( just eachEvent Map )
     List keyList = [];
     super.data.eachEvent.forEach((key, value) {
-      print(value.toString());
-      print(value['labelColor'].toString());
       if (value["labelColor"] == colorKey) keyList.add(key);
     });
 
@@ -298,6 +296,8 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
                             'labelColor' : "google"
                           }
                         };
+                        if (!super.data.labelColorMap.containsKey("google"))
+                          this.addLabel({"google" : {"name" : "google", "color": Colors.blue, "toggle" : true},});
 
                         this.addEvents(temp);
                       },
