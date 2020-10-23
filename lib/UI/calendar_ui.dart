@@ -366,81 +366,87 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
 
   Widget _buildColorFlatButton(Map snapshot, String colorKey, int type,
       {String eventKey}) {
-    return FlatButton(
-      onPressed: () async {
-        if (type == 0) {
-          widget.calendarController.addEvents(
-            {
-              DateTime.now().microsecondsSinceEpoch.toString(): {
-                'summary': 'TEST',
-                'start': snapshot['selectDate'],
-                'end': snapshot['selectDate'].add(Duration(days: 2)),
-                'recurrence': null,
-                'labelColor': colorKey
-              }
-            },
-          );
-          Navigator.of(context).pop();
-        } else if (type == 1) {
-          widget.calendarController.changeEventsLabelColor(colorKey, eventKey);
-          Navigator.of(context).pop();
-        } else if (type == 2) {
-          Navigator.of(context).pop();
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              Color resultColor;
-              return AlertDialog(
-                titlePadding: const EdgeInsets.all(0.0),
-                contentPadding: const EdgeInsets.all(0.0),
-                content: SingleChildScrollView(
-                  child: SlidePicker(
-                    pickerColor:
-                        widget.calendarController.getLabelColor(colorKey),
-                    onColorChanged: (Color change) {
-                      resultColor = change;
-                    },
-                    paletteType: PaletteType.rgb,
-                    enableAlpha: false,
-                    displayThumbColor: true,
-                    showLabel: false,
-                    showIndicator: true,
-                    indicatorBorderRadius: const BorderRadius.vertical(
-                      top: const Radius.circular(25.0),
-                    ),
-                  ),
-                ),
-                actions: [
-                  FlatButton(
-                    child: Text('Ok'),
-                    onPressed: () {
-                      widget.calendarController
-                          .changeEntireLabelColor(colorKey, resultColor);
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(widget.calendarController.getLabelColorName(colorKey)),
+        FlatButton(
+          onPressed: () async {
+            if (type == 0) {
+              widget.calendarController.addEvents(
+                {
+                  DateTime.now().microsecondsSinceEpoch.toString(): {
+                    'summary': 'TEST',
+                    'start': snapshot['selectDate'],
+                    'end': snapshot['selectDate'].add(Duration(days: 2)),
+                    'recurrence': null,
+                    'labelColor': colorKey
+                  }
+                },
               );
-            },
-          );
-        } else if (type == 3) {
-          await widget.calendarController.deleteLabel(colorKey);
-          Navigator.of(context).pop();
-        } else if (type == 4) {
-          widget.calendarController.toggleLabel(colorKey);
-          Navigator.of(context).pop();
-        }
-      },
-      child: Container(
-        height: 25,
-        width: 25,
+              Navigator.of(context).pop();
+            } else if (type == 1) {
+              widget.calendarController.changeEventsLabelColor(colorKey, eventKey);
+              Navigator.of(context).pop();
+            } else if (type == 2) {
+              Navigator.of(context).pop();
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  Color resultColor;
+                  return AlertDialog(
+                    titlePadding: const EdgeInsets.all(0.0),
+                    contentPadding: const EdgeInsets.all(0.0),
+                    content: SingleChildScrollView(
+                      child: SlidePicker(
+                        pickerColor:
+                            widget.calendarController.getLabelColor(colorKey),
+                        onColorChanged: (Color change) {
+                          resultColor = change;
+                        },
+                        paletteType: PaletteType.rgb,
+                        enableAlpha: false,
+                        displayThumbColor: true,
+                        showLabel: false,
+                        showIndicator: true,
+                        indicatorBorderRadius: const BorderRadius.vertical(
+                          top: const Radius.circular(25.0),
+                        ),
+                      ),
+                    ),
+                    actions: [
+                      FlatButton(
+                        child: Text('Ok'),
+                        onPressed: () {
+                          widget.calendarController
+                              .changeEntireLabelColor(colorKey, resultColor);
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            } else if (type == 3) {
+              await widget.calendarController.deleteLabel(colorKey);
+              Navigator.of(context).pop();
+            } else if (type == 4) {
+              widget.calendarController.toggleLabel(colorKey);
+              Navigator.of(context).pop();
+            }
+          },
+          child: Container(
+            height: 25,
+            width: 25,
 //        color: widget.calendarController.getLabelColor(colorKey) ?? Colors.grey
-        color: widget.calendarController.getLabelColorToggle(colorKey)
-            ? widget.calendarController.getLabelColor(colorKey)
-            : widget.calendarController
-                .getLabelColor(colorKey)
-                .withOpacity(0.3),
-      ),
+            color: widget.calendarController.getLabelColorToggle(colorKey)
+                ? widget.calendarController.getLabelColor(colorKey)
+                : widget.calendarController
+                    .getLabelColor(colorKey)
+                    .withOpacity(0.3),
+          ),
+        ),
+      ],
     );
   }
 

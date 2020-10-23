@@ -117,6 +117,11 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     else return false;
   }
 
+  String getLabelColorName(String colorKey){
+    if (colorKey != null && super.data.labelColorMap.containsKey(colorKey)) return super.data.labelColorMap[colorKey]["name"];
+    else return "empty";
+  }
+
   void changeEventsLabelColor(String colorKey, String eventKey) {
     if (super.data.eachEvent.containsKey(eventKey)) {
       super.data.eachEvent[eventKey]["labelColor"] = colorKey;
@@ -151,6 +156,7 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     keyList.forEach((element) {
       super.data.eachEvent.remove(element);
     });
+    // delete events ( just eachEvent Map )
 
     super.streamSink();
   }
