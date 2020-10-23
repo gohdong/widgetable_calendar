@@ -139,7 +139,8 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                 _buildDaysOfWeek(),
               ],
             ),
-            Expanded(
+            Container(
+              height: _calendarFormat==CalendarFormat.Week?50:300,
               child: PageView(
                 controller: pageController,
                 onPageChanged: (pageId) async {
@@ -464,13 +465,11 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
       children.add(
         TableCell(
           child: InkWell(
-            onTap: () {
-              widget.calendarController.setSelectDate(
+            onTap: ()  {
+
+               widget.calendarController.setSelectDate(
                   DateTime(snapshot['selectDate'].year,
-                      snapshot['selectDate'].month + type, eachDate.day),
-                  [],
-                  []);
-              // print(thisMonth);
+                      snapshot['selectDate'].month + type, eachDate.day));
 
               if (snapshot['selectDate'].month > eachDate.month) {
                 widget.calendarController.changeMonth(-1);
@@ -670,7 +669,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   }
 
   Color dateColor(Map snapshot, DateTime eachDate) {
-    if (snapshot['selectDate'].month != eachDate.month) {
+    if (snapshot['selectDate'].month != eachDate.month && _calendarFormat==CalendarFormat.Month) {
       return Colors.grey;
     } else if (eachDate == snapshot['selectDate']) {
       return widget.highlightTextColor;

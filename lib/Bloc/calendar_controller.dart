@@ -154,7 +154,7 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     return DateTime(value.year, value.month, value.day);
   }
 
-  void setSelectDate(DateTime day, List events, List holidays) {
+  void setSelectDate(DateTime day) async{
     super.data.selectDate = day;
     super.streamSink();
   }
@@ -171,32 +171,11 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
   }
 
   void changeMonth(int i) {
+    print(super.data.selectDate.month);
     super.data.selectDate = i == 0
         ? _normalizeDate(DateTime.now())
         : DateTime(
             super.data.selectDate.year, super.data.selectDate.month + i, 1);
-//    super.data.firstDay =
-//        DateTime(super.data.focusDate.year, super.data.focusDate.month, 1);
-//    super.data.lastDay =
-//        DateTime(super.data.focusDate.year, super.data.focusDate.month + 1, 1)
-//            .subtract(new Duration(days: 1));
-//
-//    DateTime prevFirstDay =
-//        DateTime(super.data.focusDate.year, super.data.focusDate.month - 1, 1);
-//    DateTime prevLastDay =
-//        DateTime(super.data.focusDate.year, super.data.focusDate.month, 1)
-//            .subtract(new Duration(days: 1));
-//
-//    DateTime nextFirstDay =
-//        DateTime(super.data.focusDate.year, super.data.focusDate.month + 1, 1);
-//    DateTime nextLastDay =
-//        DateTime(super.data.focusDate.year, super.data.focusDate.month + 2, 1)
-//            .subtract(new Duration(days: 1));
-//
-//    super.data.weekList =
-//        _makeWeekList(super.data.firstDay, super.data.lastDay);
-//    super.data.prevWeekList = _makeWeekList(prevFirstDay, prevLastDay);
-//    super.data.nextWeekList = _makeWeekList(nextFirstDay, nextLastDay);
     super.streamSink();
   }
 
