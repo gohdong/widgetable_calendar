@@ -47,6 +47,18 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
         _makeWeekList(super.data.firstDay, super.data.lastDay);
     super.data.prevWeekList = _makeWeekList(prevFirstDay, prevLastDay);
     super.data.nextWeekList = _makeWeekList(nextFirstDay, nextLastDay);
+
+
+    super.data.labelColorMap = {
+      "0" : Colors.red,
+      "1" : Colors.green,
+      "2" : Colors.yellowAccent,
+      "empty" : Colors.grey,
+      "google" : Colors.blue
+    };
+
+    //TODO Change labelColorMap ( key values )
+
     super.streamSink();
   }
 
@@ -77,23 +89,39 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
   }
 
   List findEvents(DateTime date) {
-//    print(super.data.eventsByDate);
     List returnValue = [];
-//    super.data.eventsByDate.forEach((key, value) {
-//      if (key == date) {
-//        value.forEach((element) {
-//          returnValue.add(element);
-//        });
-//      }
-//    });
 
     if (super.data.eventsByDate.containsKey(date)) {
       List temp = super.data.eventsByDate[date];
       temp.forEach((element) {
-        returnValue.add(element);
+//        returnValue.add(element);
+        returnValue.add({"id":element,"content":super.data.eachEvent[element]});
       });
     }
     return returnValue;
+  }
+
+  Map getLabelColorMap(){
+    return super.data.labelColorMap;
+  }
+
+  Color getLabelColor(String colorKey){
+    if (colorKey != null) return super.data.labelColorMap[colorKey];
+    else return super.data.labelColorMap["empty"];
+  }
+
+  void changeEventsLabelColor(String colorKey, String key) {
+    if (super.data.eachEvent.containsKey(key)) {
+      super.data.eachEvent[key]["labelColor"] = colorKey;
+    }
+    super.streamSink();
+  }
+
+  void changeEntireLabelColor(String colorKey, Color color){
+    if (super.data.labelColorMap.containsKey(colorKey)){
+      super.data.labelColorMap[colorKey] = color;
+    }
+    super.streamSink();
   }
 
   List _makeWeekList(DateTime firstDay, DateTime lastDay) {
@@ -123,7 +151,7 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
   }
 
   DateTime _normalizeDate(DateTime value) {
-    return DateTime.utc(value.year, value.month, value.day, 0);
+    return DateTime(value.year, value.month, value.day);
   }
 
   void setSelectDate(DateTime day, List events, List holidays) {
@@ -229,7 +257,8 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
                             'recurrence':
                                 eachEventToMap.containsKey('recurrence')
                                     ? eachEventToMap['recurrence']
-                                    : null
+                                    : null,
+                            'labelColor' : "google"
                           }
                         };
 

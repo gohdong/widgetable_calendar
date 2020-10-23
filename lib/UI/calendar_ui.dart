@@ -21,18 +21,18 @@ class WidgetableCalendarUI extends StatefulWidget {
 
   WidgetableCalendarUI(
       {Key key,
-      @required this.calendarController,
-      this.weekDayColor = Colors.black,
-      this.sundayColor = Colors.red,
-      this.saturdayColor = Colors.blue,
-      this.backgroundColor = Colors.white,
-      this.lineColor = Colors.black,
-      this.holidays,
-      this.events,
-      this.todayBackgroundColor = Colors.black26,
-      this.todayTextColor = Colors.white,
-      this.highlightBackgroundColor = Colors.red,
-      this.highlightTextColor = Colors.white})
+        @required this.calendarController,
+        this.weekDayColor = Colors.black,
+        this.sundayColor = Colors.red,
+        this.saturdayColor = Colors.blue,
+        this.backgroundColor = Colors.white,
+        this.lineColor = Colors.black,
+        this.holidays,
+        this.events,
+        this.todayBackgroundColor = Colors.black26,
+        this.todayTextColor = Colors.white,
+        this.highlightBackgroundColor = Colors.red,
+        this.highlightTextColor = Colors.white})
       : super(key: key);
 
   _WidgetableCalendarUIState createState() => _WidgetableCalendarUIState();
@@ -42,28 +42,19 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     with SingleTickerProviderStateMixin {
   @override
   void initState() {
+    // _buildEachWeek2(DateTime.now().add(Duration(days: 3)));
     widget.calendarController.init();
-
-    scrollController = ScrollController();
-//    scrollController.addListener(() {
-////      print('offset = ${scrollController.offset}');
-//      if (scrollController.offset == 0.0){
-//        scrollController.jumpTo(50.0);
-//      }
-//    });
     super.initState();
   }
 
   @override
   void dispose() {
-    scrollController.dispose();
     super.dispose();
   }
 
   double startDXPoint = 0;
   double endDXPoint = 0;
 
-  static List yearList = ["2019", "2020", "2021"];
   static List monthList = [
     "Jan",
     "Feb",
@@ -83,31 +74,31 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   int selectYear = 0;
   int selectMonth = 0;
 
+  // Page Controller - animation
   final PageController pageController = PageController(
     initialPage: 1,
   );
-  ScrollController scrollController;
 
-  void _onHorizontalDragStartHandler(DragStartDetails details) {
-    setState(() {
-      startDXPoint = details.globalPosition.dx.floorToDouble();
-    });
-  }
-
-  void _onDragUpdateHandler(DragUpdateDetails details) {
-    setState(() {
-      endDXPoint = details.globalPosition.dx.floorToDouble();
-    });
-  }
-
-  void _onDragEnd(DragEndDetails details) {
-    if (startDXPoint > endDXPoint) {
-      widget.calendarController.changeMonth(1);
-    } else if (startDXPoint < endDXPoint) {
-      widget.calendarController.changeMonth(-1);
-    }
-  }
-
+  // gesture detector
+//  void _onHorizontalDragStartHandler(DragStartDetails details) {
+//    setState(() {
+//      startDXPoint = details.globalPosition.dx.floorToDouble();
+//    });
+//  }
+//
+//  void _onDragUpdateHandler(DragUpdateDetails details) {
+//    setState(() {
+//      endDXPoint = details.globalPosition.dx.floorToDouble();
+//    });
+//  }
+//
+//  void _onDragEnd(DragEndDetails details) {
+//    if (startDXPoint > endDXPoint) {
+//      widget.calendarController.changeMonth(1);
+//    } else if (startDXPoint < endDXPoint) {
+//      widget.calendarController.changeMonth(-1);
+//    }
+//  }
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
@@ -118,26 +109,6 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
             child: CircularProgressIndicator(),
           );
         }
-//        return ClipRect(
-//          child: GestureDetector(
-//            onHorizontalDragStart: _onHorizontalDragStartHandler,
-//            onHorizontalDragUpdate: _onDragUpdateHandler,
-//            onHorizontalDragEnd: _onDragEnd,
-//            child: Container(
-//              child: Column(
-//                children: [
-//                  _buildHeader(snapshot.data),
-//                  _buildCalendarContent(snapshot.data),
-//                  FlatButton(
-//                      onPressed: () => widget.calendarController.addEvents(),
-//                      child: Text("ADD EVENTS")),
-//                  _buildEvents(snapshot.data)
-//                ],
-//              ),
-//            ),
-//          ),
-//        );
-
         final children = <Widget>[];
 
         for (int i = -1; i < 2; i++) {
@@ -187,18 +158,71 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
               ),
             ),
             FlatButton(
-                onPressed: () => widget.calendarController.addEvents(
-                      {
-                        DateTime.now().microsecondsSinceEpoch.toString(): {
-                          'summary': 'TEST',
-                          'start': snapshot.data['selectDate'],
-                          'end': snapshot.data['selectDate']
-                              .add(Duration(days: 1)),
-                          'recurrence': null
-                        }
-                      },
-                    ),
-                child: Text("ADD EVENTS")),
+                onPressed: () {
+                  showModalBottomSheet(
+                      context: context,
+                      builder: (BuildContext context) {
+                        Map entireColorMap = widget.calendarController.getLabelColorMap();
+                        final children = <Widget>[];
+
+                        entireColorMap.forEach((key,value){
+                          if (key != "empty"){
+                            children.add(
+                              _buildColorFlatButton(snapshot.data, key,0),
+                            );
+                          }
+                        });
+                        return Container(
+                          height: MediaQuery.of(context).size.height * 0.25,
+                          child: Column(
+                            children: <Widget>[
+                              Expanded(
+                                flex: 1,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: children,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      });
+                },
+                child: Text("ADD EVENTS - Color")),
+            FlatButton(
+                onPressed: () {
+                  showModalBottomSheet(
+                      context: context,
+                      builder: (BuildContext context) {
+                        Map entireColorMap = widget.calendarController.getLabelColorMap();
+                        final children = <Widget>[];
+
+                        entireColorMap.forEach((key,value){
+                          if (key != "empty"){
+                            children.add(
+                              _buildColorFlatButton(snapshot.data, key,2),
+                            );
+                          }
+                        });
+                        return Container(
+                          height: MediaQuery.of(context).size.height * 0.25,
+                          child: Column(
+                            children: <Widget>[
+                              Expanded(
+                                flex: 1,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: children,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      });
+
+        },
+//                => widget.calendarController.changeEntireLabelColor("0", Colors.black),
+                child: Text("Label Color Change")),
             _buildEvents(snapshot.data),
           ],
         );
@@ -206,18 +230,80 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     );
   }
 
-  int findYear(int year) {
-    int returnValue = 0;
-    for (int i = 0; i < yearList.length; i++) {
-      if (yearList[i] == year.toString()) return i;
-    }
-    return returnValue;
+  Widget _buildColorFlatButton(Map snapshot, String colorKey, int type, {String eventKey}){
+    return FlatButton(
+      onPressed: (){
+        if (type == 0) {
+          widget.calendarController.addEvents(
+            {
+              DateTime
+                  .now()
+                  .microsecondsSinceEpoch
+                  .toString(): {
+                'summary': 'TEST',
+                'start': snapshot['selectDate'],
+                'end': snapshot['selectDate']
+                    .add(Duration(days: 2)),
+                'recurrence': null,
+                'labelColor': colorKey
+              }
+            },
+          );
+          Navigator.of(context).pop();
+        } else if (type == 1){
+          widget.calendarController
+              .changeEventsLabelColor(colorKey, eventKey);
+          Navigator.of(context).pop();
+        } else {
+          Navigator.of(context).pop();
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              Color resultColor;
+              return AlertDialog(
+                titlePadding: const EdgeInsets.all(0.0),
+                contentPadding: const EdgeInsets.all(0.0),
+                content: SingleChildScrollView(
+                  child: SlidePicker(
+                    pickerColor: widget.calendarController.getLabelColor(colorKey),
+                    onColorChanged: (Color change){
+                      resultColor = change;
+                    },
+                    paletteType: PaletteType.rgb,
+                    enableAlpha: false,
+                    displayThumbColor: true,
+                    showLabel: false,
+                    showIndicator: true,
+                    indicatorBorderRadius:
+                    const BorderRadius.vertical(
+                      top: const Radius.circular(25.0),
+                    ),
+                  ),
+                ),
+                actions: [
+                  FlatButton(
+                    child: Text('Ok'),
+                    onPressed: () {
+                      widget.calendarController.changeEntireLabelColor(colorKey, resultColor);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        }
+
+      },
+      child: Container(
+        height: 25,
+        width: 25,
+        color: widget.calendarController.getLabelColor(colorKey),
+      ),
+    );
   }
 
   Widget _buildHeader(Map snapshot) {
-//    initialScrollOffset: scrollController.position.minScrollExtent
-
-//    print(scrollController.offset.toString());
     final children = [
       IconButton(
         icon: Icon(Icons.arrow_back_ios),
@@ -228,57 +314,58 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
       Expanded(
         child: Center(
           child: InkWell(
-            onTap: () async {
+            onTap: () {
               setState(() {
                 selectYear = snapshot["focusDate"].year;
                 selectMonth = snapshot["focusDate"].month;
               });
-              await showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return StatefulBuilder(
-                    builder: (context, setState) {
-                      return AlertDialog(
-                        content: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-//                              height: 100.0, // Change as per your requirement
-                              width: 100,
-                              child: RollerList(
-                                initialIndex: 1,
-                                items: years,
-                                onSelectedIndexChanged: _changeYears,
-                                dividerColor: Colors.grey,
-                              ),
+              showModalBottomSheet(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return Container(
+                      height: MediaQuery.of(context).size.height * 0.35,
+                      child: Column(
+                        children: <Widget>[
+                          Expanded(
+                            flex: 1,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                IconButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  icon: Icon(Icons.clear),
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    widget.calendarController
+                                        .changeMonthCompletely(
+                                        selectYear, selectMonth);
+                                    Navigator.of(context).pop();
+                                  },
+                                  icon: Icon(Icons.arrow_forward),
+                                ),
+                              ],
                             ),
-                            Container(
-//                              height: 100.0, // Change as per your requirement
-                              width: 100,
-                              child: RollerList(
-                                initialIndex: selectMonth - 1,
-                                items: months,
-                                onSelectedIndexChanged: _changeMonths,
-                                dividerColor: Colors.grey,
-                              ),
+                          ),
+                          Expanded(
+                            flex: 7,
+                            child: CupertinoDatePicker(
+                              initialDateTime: snapshot["focusDate"],
+                              onDateTimeChanged: (DateTime time) {
+                                setState(() {
+                                  selectYear = time.year;
+                                  selectMonth = time.month;
+                                });
+                              },
+                              mode: CupertinoDatePickerMode.date,
                             ),
-                          ],
-                        ),
-                        actions: <Widget>[
-                          new FlatButton(
-                            child: new Text("Done"),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
                           ),
                         ],
-                      );
-                    },
-                  );
-                },
-              );
-              widget.calendarController
-                  .changeMonthCompletely(selectYear, selectMonth);
+                      ),
+                    );
+                  });
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -307,44 +394,6 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     );
   }
 
-  final List<Widget> months = monthList
-      .map(
-        (month) => Padding(
-          padding: EdgeInsets.all(12.0),
-          child: Text(
-            month,
-            textScaleFactor: 1.3,
-            textAlign: TextAlign.center,
-          ),
-        ),
-      )
-      .toList();
-
-  final List<Widget> years = yearList
-      .map(
-        (year) => Padding(
-          padding: EdgeInsets.all(12.0),
-          child: Text(
-            year,
-            textScaleFactor: 1.3,
-            textAlign: TextAlign.center,
-          ),
-        ),
-      )
-      .toList();
-
-  void _changeMonths(int value) {
-    setState(() {
-      selectMonth = value + 1;
-    });
-  }
-
-  void _changeYears(int value) {
-    setState(() {
-      selectYear = int.tryParse(yearList[value]) ?? 2020;
-    });
-  }
-
   Widget headerText(int focusYear, int focusMonth) {
     int monthListIndex = focusMonth - 1;
     if (monthListIndex > 11) {
@@ -359,31 +408,25 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
 
   Widget _buildCalendarContent(Map snapshot, int type) {
     final children = <TableRow>[];
-    List weekList = [];
+    DateTime thisMonthFirstDate = DateTime(
+        snapshot['focusDate'].year, snapshot['focusDate'].month + type);
 
-    if (type == -1)
-      weekList = snapshot['prevWeekList'];
-    else if (type == 0)
-      weekList = snapshot['weekList'];
-    else if (type == 1) weekList = snapshot['nextWeekList'];
-
-    for (int i = 0; i < weekList.length; i++) {
-      children.add(_buildEachWeek(snapshot, weekList[i], type));
+    for (int i = 0; i < 6; i++) {
+      children.add(_buildEachWeek(
+          snapshot, thisMonthFirstDate.add(Duration(days: i * 7)), type));
     }
     return Table(
       children: children,
     );
   }
 
-  TableRow _buildEachWeek(Map snapshot, List weekList, int type) {
+  TableRow _buildEachWeek(Map snapshot, DateTime baseDate, int type) {
     final children = <TableCell>[];
-
-    for (int i = 0; i < weekList.length; i++) {
-      DateTime eachDate = DateTime(snapshot['focusDate'].year,
-          snapshot['focusDate'].month + type, weekList[i]); // 정확한 날짜
-      bool thisMonth = _isThisMonth(snapshot, weekList, eachDate, type);
-      String date = eachDate.day.toString();
-
+    int baseDay = (baseDate.weekday) % 7;
+    DateTime tempDate = baseDate.subtract(Duration(days: baseDay));
+    for (int i = 0; i < 7; i++) {
+      DateTime eachDate = tempDate.add(Duration(days: i));
+      List events = widget.calendarController.findEvents(eachDate);
       children.add(
         TableCell(
           child: InkWell(
@@ -391,89 +434,44 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
               if (widget.calendarController.isSelectedDate(DateTime(
                   snapshot['focusDate'].year,
                   snapshot['focusDate'].month,
-                  weekList[i])))
+                  eachDate.day)))
                 widget.calendarController.setSelectDate(null, [], []);
               else
                 widget.calendarController.setSelectDate(
                     DateTime(snapshot['focusDate'].year,
-                        snapshot['focusDate'].month + type, weekList[i]),
+                        snapshot['focusDate'].month + type, eachDate.day),
                     [],
                     []);
+              // print(thisMonth);
 
-              if (!thisMonth && weekList[i] <= 0)
+              if (snapshot['focusDate'].month > eachDate.month) {
                 widget.calendarController.changeMonth(-1);
-              if (!thisMonth && weekList[i] > 0)
+              }
+              if (snapshot['focusDate'].month < eachDate.month) {
                 widget.calendarController.changeMonth(1);
+              }
             },
             child: Container(
               width: double.infinity,
-              color: _isToday(weekList[i], snapshot['focusDate'], type)
-                  ? widget.todayBackgroundColor
-                  : widget.calendarController.isSelectedDate(
-                      DateTime(snapshot['focusDate'].year,
-                          snapshot['focusDate'].month + type, weekList[i]),
-                    )
-                      ? widget.highlightBackgroundColor
+              color: snapshot['selectDate'] == eachDate
+                  ? widget.highlightBackgroundColor
+                  : eachDate ==
+                          DateTime(DateTime.now().year, DateTime.now().month,
+                              DateTime.now().day)
+                      ? widget.todayBackgroundColor
                       : null,
               height: 50,
-              child: Center(
-                child: i == 0
-                    ? Text(
-                        date,
-                        style: TextStyle(
-                            color: thisMonth
-                                ? _isToday(weekList[i], snapshot['focusDate'],
-                                        type)
-                                    ? widget.todayTextColor
-                                    : widget.calendarController.isSelectedDate(
-                                        DateTime(
-                                            snapshot['focusDate'].year,
-                                            snapshot['focusDate'].month + type,
-                                            weekList[i]),
-                                      )
-                                        ? widget.highlightTextColor
-                                        : widget.sundayColor
-                                : Colors.grey),
-                      )
-                    : i == 6
-                        ? Text(
-                            date,
-                            style: TextStyle(
-                                color: thisMonth
-                                    ? _isToday(weekList[i],
-                                            snapshot['focusDate'], type)
-                                        ? widget.todayTextColor
-                                        : widget.calendarController
-                                                .isSelectedDate(
-                                            DateTime(
-                                                snapshot['focusDate'].year,
-                                                snapshot['focusDate'].month +
-                                                    type,
-                                                weekList[i]),
-                                          )
-                                            ? widget.highlightTextColor
-                                            : widget.saturdayColor
-                                    : Colors.grey),
-                          )
-                        : Text(
-                            date,
-                            style: TextStyle(
-                                color: thisMonth
-                                    ? _isToday(weekList[i],
-                                            snapshot['focusDate'], type)
-                                        ? widget.todayTextColor
-                                        : widget.calendarController
-                                                .isSelectedDate(
-                                            DateTime(
-                                                snapshot['focusDate'].year,
-                                                snapshot['focusDate'].month +
-                                                    type,
-                                                weekList[i]),
-                                          )
-                                            ? widget.highlightTextColor
-                                            : widget.weekDayColor
-                                    : Colors.grey),
-                          ),
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    "${eachDate.day}",
+                    style: TextStyle(color: dateColor(snapshot, eachDate)),
+                  ),
+                  _buildEventDot(events),
+                ],
               ),
             ),
           ),
@@ -484,14 +482,32 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     return TableRow(children: children);
   }
 
+  Widget _buildEventDot(List events) {
+    final children = <Widget>[];
+    for (int i = 0; i < events.length && i < 3; i++) {
+      Map eventMap = events[i]["content"];
+      Color labelColor = widget.calendarController.getLabelColor(eventMap["labelColor"]);
+      children.add(Icon(
+        Icons.lens,
+        size: 7,
+        color: labelColor ?? Colors.grey,
+      ));
+    }
+    return Column(
+      children: [
+        SizedBox(
+          height: 5,
+        ),
+        Row(mainAxisAlignment: MainAxisAlignment.center, children: children),
+      ],
+    );
+  }
+
   Widget _buildEvents(Map snapshot) {
     final children = <Widget>[
-//      Text(snapshot['events'].toString()),
       Divider(
         thickness: 5,
       ),
-//      Text(widget.calendarController.findEvents().toString()),
-//       Expanded(child: _buildEventList(widget.calendarController.findEvents())),
       Expanded(child: _buildEventList(snapshot)),
     ];
 
@@ -504,12 +520,15 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   }
 
   Widget _buildEventList(Map snapshot) {
-//    List selectDateEvent = snapshot['eventsByDate'][snapshot['selectDate']];
-    List selectDateEvent = widget.calendarController.findEvents(snapshot['selectDate']);
+    List selectDateEvent =
+    widget.calendarController.findEvents(snapshot['selectDate']);
+    Map entireColorMap = widget.calendarController.getLabelColorMap();
+
     return ListView.builder(
       itemCount: selectDateEvent != null ? selectDateEvent.length : 0,
       itemBuilder: (context, index) {
-        Map eventInfo = snapshot['eachEvent'][selectDateEvent[index]];
+        Map eventInfo = selectDateEvent[index]["content"];
+        String eventKeyValue = selectDateEvent[index]["id"];
         return Container(
           decoration: BoxDecoration(
             border: Border.all(width: 0.8),
@@ -518,7 +537,38 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
           margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
           child: ListTile(
             title: Text("$eventInfo"),
-            onTap: () => print('${eventInfo['summary']} tapped!'),
+            onTap: () {
+              print('${eventInfo['summary']} tapped! Label Color Change!');
+              final children = <Widget>[];
+
+             entireColorMap.forEach((key,value){
+                if (key != "empty"){
+                  children.add(
+                    _buildColorFlatButton(snapshot, key,1,eventKey: eventKeyValue),
+                  );
+                }
+              });
+              showModalBottomSheet(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return Container(
+                      height: MediaQuery.of(context).size.height * 0.25,
+                      child: Column(
+                        children: <Widget>[
+                          Expanded(
+                            flex: 1,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: children,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  });
+//              widget.calendarController
+//                  .changeEventsLabelColor("2", keyValue);
+            },
           ),
         );
       },
@@ -535,7 +585,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
       return false;
   }
 
-  bool _isThisMonth(Map snapshot, List weekList, DateTime eachDate, int type) {
+  bool _isThisMonth(Map snapshot, DateTime eachDate, int type) {
     bool result = true;
     int focusMonth = snapshot['focusDate'].month + type;
     if (focusMonth > 12) focusMonth -= 12;
@@ -568,18 +618,18 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
             child: Center(
               child: i == 0
                   ? Text(
-                      dayList[i],
-                      style: TextStyle(color: widget.sundayColor),
-                    )
+                dayList[i],
+                style: TextStyle(color: widget.sundayColor),
+              )
                   : i == 6
-                      ? Text(
-                          dayList[i],
-                          style: TextStyle(color: widget.saturdayColor),
-                        )
-                      : Text(
-                          dayList[i],
-                          style: TextStyle(color: widget.weekDayColor),
-                        ),
+                  ? Text(
+                dayList[i],
+                style: TextStyle(color: widget.saturdayColor),
+              )
+                  : Text(
+                dayList[i],
+                style: TextStyle(color: widget.weekDayColor),
+              ),
             ),
           ),
         ),
@@ -587,5 +637,23 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     }
     // return Calendar
     return TableRow(children: children);
+  }
+
+  Color dateColor(Map snapshot, DateTime eachDate) {
+    if (snapshot['focusDate'].month != eachDate.month) {
+      return Colors.grey;
+    } else if (eachDate == snapshot['selectDate']) {
+      return widget.highlightTextColor;
+    } else if (eachDate ==
+        DateTime(
+            DateTime.now().year, DateTime.now().month, DateTime.now().day)) {
+      return widget.todayTextColor;
+    } else if (eachDate.weekday == 7) {
+      return widget.sundayColor;
+    } else if (eachDate.weekday == 6) {
+      return widget.saturdayColor;
+    }
+
+    return widget.weekDayColor;
   }
 }
