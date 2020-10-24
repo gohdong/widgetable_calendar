@@ -74,6 +74,8 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   int selectYear = 0;
   int selectMonth = 0;
 
+  List eventList = [];
+
   // Page Controller - animation
   final PageController pageController = PageController(
     initialPage: 1,
@@ -673,7 +675,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     int baseDay = (baseDate.weekday) % 7;
     DateTime thisWeekFirstDate = baseDate.subtract(Duration(days: baseDay));
     DateTime thisWeekLastDate = thisWeekFirstDate.add(Duration(days: 6));
-    List eventList = [];
+
     Map thisWeekEvents = {};
     //
     // int thisWeekEventsCount ;
@@ -685,6 +687,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
       thisWeekEvents
           .addAll(widget.calendarController.associatedEventsByDate(eachDate));
     }
+    eventList.clear();
 
     thisWeekEvents.forEach((key, value) {
       String summary = value['summary'];
@@ -705,39 +708,38 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     });
     // 이벤트들을 길이 순으로 정렬하기
     eventList.sort((a, b) => b['length'].compareTo(a['length']));
-    bool beforeLongest = false;
 
     for (int i = 0; i < 4; i++) {
       if (eventList.isEmpty) {
         break;
       }
+      
       int j = (eventList.first['start'].weekday % 7);
       List willRemovedList = [];
-      DateTime tempLastDate = thisWeekFirstDate;
+      // DateTime tempLastDate = thisWeekFirstDate;
       for (int k = 0; k < eventList.length; k++) {
         if (eventList.first['start'] == eventList[k]['end'] ||
             eventList[k]['end'].isBefore(eventList.first['start'])) {
-          print("===${eventList.first}");
-          print("!11${eventList[k]}");
-
-          rowChildren[i].add(Container(
-            margin: EdgeInsets.only(
-                top: 1,
-                bottom: 1,
-                right: 1,
-                left: (eventList[k]['start'].difference(tempLastDate).inDays) *
-                    (MediaQuery.of(context).size.width / 7)),
-            height: 10,
-            width:
-                (MediaQuery.of(context).size.width * eventList[k]['length'] / 7) - 1,
-            color: Colors.black,
-            child: Text(
-              "${eventList[k]['summary']}",
-              style: TextStyle(fontSize: 7, color: Colors.white),
+          rowChildren[i].add(Positioned(
+            top: 1,
+            left: (eventList[k]['start'].difference(thisWeekFirstDate).inDays) *
+                (MediaQuery.of(context).size.width / 7),
+            child: Container(
+              margin: EdgeInsets.only(right: 1, left: 1),
+              height: 10,
+              width: (MediaQuery.of(context).size.width *
+                      eventList[k]['length'] /
+                      7) -
+                  1,
+              color: Colors.black,
+              child: Text(
+                "${eventList[k]['summary']}",
+                style: TextStyle(fontSize: 7, color: Colors.white),
+              ),
             ),
           ));
           //
-          tempLastDate = eventList[k]['end'];
+          // tempLastDate = eventList[k]['end'];
           willRemovedList.add(eventList[k]);
           break;
         }
@@ -746,32 +748,31 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
       eventList.removeWhere((e) => willRemovedList.contains(e));
 
       //TODO 가장긴거 밖으로 빼기
-      rowChildren[i].add(Container(
-        margin: EdgeInsets.only(
-            top: 1,
-            bottom: 1,
-            right: 1,
-            left: (eventList.first['start'].difference(tempLastDate).inDays) *
-                (MediaQuery.of(context).size.width / 7)),
-        height: 10,
-        width: j + eventList.first['length'] <= 7
-            ? (MediaQuery.of(context).size.width *
-                    eventList.first['length'] /
-                    7) -
-                1
-            : (MediaQuery.of(context).size.width * (7 - j) / 7) - 1,
-        color: Colors.black,
-        child: Text(
-          "${eventList.first['summary']}",
-          style: TextStyle(fontSize: 7, color: Colors.white),
+      rowChildren[i].add(Positioned(
+        left: (eventList.first['start'].difference(thisWeekFirstDate).inDays) *
+            (MediaQuery.of(context).size.width / 7),
+        top: 1,
+        child: Container(
+          margin: EdgeInsets.only(right: 1, left: 1),
+          height: 10,
+          width: (MediaQuery.of(context).size.width *
+                  eventList.first['length'] /
+                  7) -
+              1,
+          color: Colors.black,
+          child: Text(
+            "${eventList.first['summary']}",
+            style: TextStyle(fontSize: 7, color: Colors.white),
+          ),
         ),
       ));
       j += eventList.first['length'];
-      tempLastDate = thisWeekFirstDate.add(Duration(days: j));
+      // tempLastDate = thisWeekFirstDate.add(Duration(days: j));
 
       eventList.removeAt(0);
 
       for (; j < 7; j++) {
+        eventList.sort((a, b) => b['length'].compareTo(a['length']));
         if (eventList.isEmpty) {
           break;
         }
@@ -780,102 +781,62 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
           if (thisWeekFirstDate
               .add(Duration(days: j))
               .isAtSameMomentAs(element['start'])) {
-            rowChildren[i].add(Container(
-              margin: EdgeInsets.only(
-                  top: 1,
-                  bottom: 1,
-                  right: 1,
-                  left: (element['start'].difference(tempLastDate).inDays) *
-                      (MediaQuery.of(context).size.width / 7)),
-              height: 10,
-              width: j + element['length'] <= 7
-                  ? (MediaQuery.of(context).size.width *
-                          element['length'] /
-                          7) -
-                      1
-                  : (MediaQuery.of(context).size.width * (7 - j) / 7) - 1,
-              color: Colors.black,
-              child: Text(
-                "${element['summary']}",
-                style: TextStyle(fontSize: 7, color: Colors.white),
+            rowChildren[i].add(Positioned(
+              left: (element['start'].difference(thisWeekFirstDate).inDays) *
+                  (MediaQuery.of(context).size.width / 7),
+              top: 1,
+              child: Container(
+                margin: EdgeInsets.only(left: 1, right: 1),
+                height: 10,
+                width: (MediaQuery.of(context).size.width *
+                        element['length'] /
+                        7) -
+                    1,
+                color: Colors.black,
+                child: Text(
+                  "${element['summary']}",
+                  style: TextStyle(fontSize: 7, color: Colors.white),
+                ),
               ),
             ));
             j += element['length'];
             //
-            tempLastDate = element['end'];
+            // tempLastDate = element['end'];
             willRemovedList.add(element);
           }
         });
         // print(eventList);
         eventList.removeWhere((e) => willRemovedList.contains(e));
-
-        //TODO 뒤에 붙일수 있는거 찾기 events.foreach
-        //가장 긴 것 추가
-        // eventList.forEach((element) {
-        //   print(element);
-        //   if(thisWeekFirstDate.add(Duration(days: j))== element['start']){
-        //     rowChildren[i].add(Container(
-        //       margin: EdgeInsets.only(
-        //           top: 1, bottom: 1, left: j * MediaQuery.of(context).size.width / 7),
-        //       height: 10,
-        //       width: j + element['length'] <= 7
-        //           ? MediaQuery.of(context).size.width * element['length'] / 7
-        //           : MediaQuery.of(context).size.width * (7 - j) / 7,
-        //       color: Colors.black,
-        //       child: Text(
-        //         "${element['summary']}",
-        //         style: TextStyle(fontSize: 7, color: Colors.white),
-        //       ),
-        //     ));
-        //     j += element['length'];
-        //     print("##$j");
-        //     eventList.removeAt(0);
-        //   }
-        // });
-
-        //삭제
-
       }
-      //삭제
-
-      //나머지 날에 들어갈 아이가 있는지 확인
-
-      //다음 Row 바꾸기
     }
-
-    // int i = 0;
-    // while (i < 4) {
-    //
-    //   i++;
-    // }
 
     List<Widget> columnChildren = [
       Container(
         margin: EdgeInsets.only(top: 10),
         height: 10,
         width: MediaQuery.of(context).size.width,
-        child: Row(
+        child: Stack(
           children: rowChildren[0],
         ),
       ),
       Container(
         height: 10,
         width: MediaQuery.of(context).size.width,
-        child: Row(
+        child: Stack(
           children: rowChildren[1],
         ),
       ),
       Container(
         height: 10,
         width: MediaQuery.of(context).size.width,
-        child: Row(
+        child: Stack(
           children: rowChildren[2],
         ),
       ),
       Container(
         height: 10,
         width: MediaQuery.of(context).size.width,
-        child: Row(
+        child: Stack(
           children: rowChildren[3],
         ),
       ),
