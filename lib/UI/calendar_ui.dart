@@ -695,8 +695,6 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
           ? thisWeekLastDate.add(Duration(days: 1))
           : end;
 
-
-
       eventList.add({
         "id": key,
         "summary": summary,
@@ -707,12 +705,45 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     });
     // 이벤트들을 길이 순으로 정렬하기
     eventList.sort((a, b) => b['length'].compareTo(a['length']));
+    bool beforeLongest = false;
 
     for (int i = 0; i < 4; i++) {
       if (eventList.isEmpty) {
         break;
       }
       int j = (eventList.first['start'].weekday % 7);
+      List willRemovedList = [];
+      DateTime tempLastDate = thisWeekFirstDate;
+      for (int k = 0; k < eventList.length; k++) {
+        if (eventList.first['start'] == eventList[k]['end'] ||
+            eventList[k]['end'].isBefore(eventList.first['start'])) {
+          print("===${eventList.first}");
+          print("!11${eventList[k]}");
+
+          rowChildren[i].add(Container(
+            margin: EdgeInsets.only(
+                top: 1,
+                bottom: 1,
+                right: 1,
+                left: (eventList[k]['start'].difference(tempLastDate).inDays) *
+                    (MediaQuery.of(context).size.width / 7)),
+            height: 10,
+            width:
+                (MediaQuery.of(context).size.width * eventList[k]['length'] / 7) - 1,
+            color: Colors.black,
+            child: Text(
+              "${eventList[k]['summary']}",
+              style: TextStyle(fontSize: 7, color: Colors.white),
+            ),
+          ));
+          //
+          tempLastDate = eventList[k]['end'];
+          willRemovedList.add(eventList[k]);
+          break;
+        }
+      }
+
+      eventList.removeWhere((e) => willRemovedList.contains(e));
 
       //TODO 가장긴거 밖으로 빼기
       rowChildren[i].add(Container(
@@ -720,16 +751,15 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
             top: 1,
             bottom: 1,
             right: 1,
-            left:(eventList.first['start']
-                .difference(thisWeekFirstDate)
-                .inDays) *
+            left: (eventList.first['start'].difference(tempLastDate).inDays) *
                 (MediaQuery.of(context).size.width / 7)),
         height: 10,
         width: j + eventList.first['length'] <= 7
             ? (MediaQuery.of(context).size.width *
-            eventList.first['length'] /
-            7)-1
-            : (MediaQuery.of(context).size.width * (7 - j) / 7)-1,
+                    eventList.first['length'] /
+                    7) -
+                1
+            : (MediaQuery.of(context).size.width * (7 - j) / 7) - 1,
         color: Colors.black,
         child: Text(
           "${eventList.first['summary']}",
@@ -737,36 +767,33 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
         ),
       ));
       j += eventList.first['length'];
-      DateTime tempLastDate =thisWeekFirstDate.add(Duration(days: j));
+      tempLastDate = thisWeekFirstDate.add(Duration(days: j));
 
-
-      List willRemovedList = [];
       eventList.removeAt(0);
 
-      for (; j < 7;j++) {
+      for (; j < 7; j++) {
         if (eventList.isEmpty) {
           break;
         }
         willRemovedList.clear();
         eventList.forEach((element) {
-          print(element);
-
-          if(thisWeekFirstDate.add(Duration(days: j)).isAtSameMomentAs(element['start'])){
+          if (thisWeekFirstDate
+              .add(Duration(days: j))
+              .isAtSameMomentAs(element['start'])) {
             rowChildren[i].add(Container(
               margin: EdgeInsets.only(
                   top: 1,
                   bottom: 1,
                   right: 1,
-                  left:(element['start']
-                      .difference(tempLastDate)
-                      .inDays) *
+                  left: (element['start'].difference(tempLastDate).inDays) *
                       (MediaQuery.of(context).size.width / 7)),
               height: 10,
               width: j + element['length'] <= 7
                   ? (MediaQuery.of(context).size.width *
-                  element['length'] /
-                  7)-1
-                  : (MediaQuery.of(context).size.width * (7 - j) / 7)-1,
+                          element['length'] /
+                          7) -
+                      1
+                  : (MediaQuery.of(context).size.width * (7 - j) / 7) - 1,
               color: Colors.black,
               child: Text(
                 "${element['summary']}",
@@ -780,9 +807,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
           }
         });
         // print(eventList);
-        eventList.removeWhere( (e) => willRemovedList.contains(e));
-
-
+        eventList.removeWhere((e) => willRemovedList.contains(e));
 
         //TODO 뒤에 붙일수 있는거 찾기 events.foreach
         //가장 긴 것 추가
