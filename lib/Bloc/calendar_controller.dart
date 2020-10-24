@@ -18,7 +18,10 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
   WidgetableCalendarController();
 
   void init({CalendarFormat calendarFormat}) {
-    super.data.holidays = [];
+//    super.data.holidays = [];
+    super.data.holidaysByDate = {};
+    super.data.eachHoliday = {};
+
     super.data.eventsByDate = {};
     super.data.eachEvent = {};
 
@@ -156,7 +159,6 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
       super.data.labelColorMap.remove(colorKey);
     // delete Label
 
-
     // delete events in eachEvent MAP
     List keyList = [];
     List dateList = [];
@@ -175,8 +177,8 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
         while (true) {
           dateList.add(temp);
           temp = temp.add(Duration(days: 1));
-          if (temp.isAfter(
-              roundDown(end.subtract(Duration(microseconds: 1))))) {
+          if (temp
+              .isAfter(roundDown(end.subtract(Duration(microseconds: 1))))) {
             break;
           }
         }
@@ -189,26 +191,24 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     });
     // delete events in eachEvent MAP
 
-
     // remove duplicates in dateList !!  <---- bug.......
 //    dateList = dateList.toSet().toList();
 //    print(dateList.toString());
-
 
     // delete events Key in eventsByDate MAP
     dateList.forEach((element) {
       if (super.data.eventsByDate.containsKey(element)) {
         for (int i = 0; i < super.data.eventsByDate[element].length; i++) {
           String key = super.data.eventsByDate[element][i];
-          if (keyList.contains(key)) super.data.eventsByDate[element].remove(
-              key);
+          if (keyList.contains(key))
+            super.data.eventsByDate[element].remove(key);
         }
       } else {
         print("error in here : " + element.toString());
       }
     });
 
-    print("\n"+super.data.eventsByDate.toString()+"\n");
+    print("\n" + super.data.eventsByDate.toString() + "\n");
     // delete events Key in eventsByDate MAP
 
     super.streamSink();
@@ -323,11 +323,12 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
 
     if (!super.data.labelColorMap.containsKey("google"))
       this.addLabel({
-        "google": {
-          "name": "google",
-          "color": Colors.blue,
+        "google": {"name": "google", "color": Colors.blue, "toggle": true},
+        "google_holiday": {
+          "name": "google_holiday",
+          "color": Colors.red,
           "toggle": true
-        },
+        }
       });
 
     final _scopes = const [GoogleCalendar.CalendarApi.CalendarScope];
@@ -343,26 +344,30 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
                     getEvents.items.forEach(
                       (eachEvent) {
                         Map eachEventToMap = Map.from(eachEvent.toJson());
+
                         Map temp = {
                           eachEvent.id: {
                             'summary': eachEventToMap['summary'],
                             'start': eachEventToMap['start'].containsKey('date')
                                 ? DateTime.parse(
-                                    eachEventToMap['start']['date']).toLocal()
+                                        eachEventToMap['start']['date'])
+                                    .toLocal()
                                 : DateTime.parse(
-                                    eachEventToMap['start']['dateTime']).toLocal(),
+                                        eachEventToMap['start']['dateTime'])
+                                    .toLocal(),
                             'end': eachEventToMap['start'].containsKey('date')
-                                ? DateTime.parse(eachEventToMap['end']['date']).toLocal()
+                                ? DateTime.parse(eachEventToMap['end']['date'])
+                                    .toLocal()
                                 : DateTime.parse(
-                                    eachEventToMap['end']['dateTime']).toLocal(),
+                                        eachEventToMap['end']['dateTime'])
+                                    .toLocal(),
                             'recurrence':
                                 eachEventToMap.containsKey('recurrence')
                                     ? eachEventToMap['recurrence']
                                     : null,
-                            'labelColor': "google"
+                            'labelColor': eachEventToMap['creator']['email'] != "ko.south_korea#holiday@group.v.calendar.google.com" ? "google" : "google_holiday"
                           }
                         };
-
                         this.addEvents(temp);
                       },
                     );
