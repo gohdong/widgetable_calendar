@@ -8,7 +8,7 @@ class WidgetableCalendarData {
   OnDaySelected onDaySelected;
   DateTime focusDate;
   List holidays;
-  Map<DateTime, List<String>> eventsByDate;
+  Map<DateTime, Set<String>> eventsByDate;
   Map<String, Map> eachEvent;
   DateTime firstDay;
   DateTime lastDay;

@@ -73,7 +73,7 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     DateTime temp = roundDown(start);
     while (true) {
       if (super.data.eventsByDate[temp] == null) {
-        super.data.eventsByDate[temp] = [eid];
+        super.data.eventsByDate[temp] = [eid].toSet();
       } else {
         super.data.eventsByDate[temp].add(eid);
       }
@@ -91,7 +91,7 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     List returnValue = [];
 
     if (super.data.eventsByDate.containsKey(date)) {
-      List temp = super.data.eventsByDate[date];
+      List temp = super.data.eventsByDate[date].toList();
       temp.forEach((element) {
 //        returnValue.add(element);
         returnValue
