@@ -76,7 +76,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   int selectMonth = 0;
 
   List eventList = [];
-  bool isSAMSAM;
+  bool isSAMSAM = false;
 
   // Page Controller - animation
   final PageController pageController = PageController(
