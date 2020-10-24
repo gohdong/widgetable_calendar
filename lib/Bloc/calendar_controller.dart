@@ -107,9 +107,9 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     return returnValue;
   }
 
-  Map getLabelColorMap() {
-    return super.data.labelColorMap;
-  }
+//  Map getLabelColorMap() {
+//    return super.data.labelColorMap;
+//  }
 
   Color getLabelColor(String colorKey) {
     if (colorKey != null && super.data.labelColorMap.containsKey(colorKey))
@@ -125,12 +125,12 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
       return false;
   }
 
-  String getLabelColorName(String colorKey) {
-    if (colorKey != null && super.data.labelColorMap.containsKey(colorKey))
-      return super.data.labelColorMap[colorKey]["name"];
-    else
-      return "empty";
-  }
+//  String getLabelColorName(String colorKey) {
+//    if (colorKey != null && super.data.labelColorMap.containsKey(colorKey))
+//      return super.data.labelColorMap[colorKey]["name"];
+//    else
+//      return "empty";
+//  }
 
   void changeEventsLabelColor(String colorKey, String eventKey) {
     if (super.data.eachEvent.containsKey(eventKey)) {
@@ -153,7 +153,7 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
   }
 
   void deleteLabel(String colorKey) {
-    print(super.data.eventsByDate.toString());
+//    print(super.data.eventsByDate.toString());
     // delete Label
     if (super.data.labelColorMap.containsKey(colorKey))
       super.data.labelColorMap.remove(colorKey);
@@ -208,7 +208,7 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
       }
     });
 
-    print("\n" + super.data.eventsByDate.toString() + "\n");
+//    print("\n"+super.data.eventsByDate.toString()+"\n");
     // delete events Key in eventsByDate MAP
 
     super.streamSink();

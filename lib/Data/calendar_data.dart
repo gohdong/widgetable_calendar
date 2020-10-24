@@ -70,6 +70,7 @@ class WidgetableCalendarData {
       "eachEvent": eachEvent,
 //      "prevWeekList": prevWeekList,
 //      "nextWeekList": nextWeekList,
+      "labelColorMap" : labelColorMap,
       "calendarFormat": calendarFormat
     };
   }

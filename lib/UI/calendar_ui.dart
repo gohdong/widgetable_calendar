@@ -48,9 +48,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   @override
   void initState() {
     // _buildEachWeek2(DateTime.now().add(Duration(days: 3)));
-    widget.calendarController.init(
-      calendarFormat: widget.calendarFormat
-    );
+    widget.calendarController.init(calendarFormat: widget.calendarFormat);
     super.initState();
   }
 
@@ -58,7 +56,6 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   void dispose() {
     super.dispose();
   }
-
 
   double startDXPoint = 0;
   double endDXPoint = 0;
@@ -141,7 +138,9 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
               ],
             ),
             Container(
-              height: snapshot.data['calendarFormat'] == CalendarFormat.Week ? 50 : 300,
+              height: snapshot.data['calendarFormat'] == CalendarFormat.Week
+                  ? 50
+                  : 300,
               child: PageView(
                 controller: pageController,
                 onPageChanged: (pageId) async {
@@ -180,8 +179,9 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                   showModalBottomSheet(
                       context: context,
                       builder: (BuildContext context) {
-                        Map entireColorMap =
-                            widget.calendarController.getLabelColorMap();
+//                        Map entireColorMap =
+//                            widget.calendarController.getLabelColorMap();
+                        Map entireColorMap = snapshot.data['labelColorMap'];
                         final children = <Widget>[];
 
                         entireColorMap.forEach((key, value) {
@@ -213,8 +213,9 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                   showModalBottomSheet(
                       context: context,
                       builder: (BuildContext context) {
-                        Map entireColorMap =
-                            widget.calendarController.getLabelColorMap();
+//                        Map entireColorMap =
+//                            widget.calendarController.getLabelColorMap();
+                        Map entireColorMap = snapshot.data['labelColorMap'];
                         final children = <Widget>[];
 
                         entireColorMap.forEach((key, value) {
@@ -278,7 +279,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                                     .toString(): {
                                   "name": "testLabel",
                                   "color": resultColor,
-                                  "toggle" : true,
+                                  "toggle": true,
                                 }
                               });
                               Navigator.of(context).pop();
@@ -295,8 +296,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                   showModalBottomSheet(
                       context: context,
                       builder: (BuildContext context) {
-                        Map entireColorMap =
-                            widget.calendarController.getLabelColorMap();
+                        Map entireColorMap = snapshot.data['labelColorMap'];
                         final children = <Widget>[];
 
                         entireColorMap.forEach((key, value) {
@@ -329,8 +329,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                   showModalBottomSheet(
                       context: context,
                       builder: (BuildContext context) {
-                        Map entireColorMap =
-                            widget.calendarController.getLabelColorMap();
+                        Map entireColorMap = snapshot.data['labelColorMap'];
                         final children = <Widget>[];
 
                         entireColorMap.forEach((key, value) {
@@ -370,7 +369,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(widget.calendarController.getLabelColorName(colorKey)),
+        Text(snapshot['labelColorMap'][colorKey]['name'].toString()),
         FlatButton(
           onPressed: () async {
             if (type == 0) {
@@ -387,7 +386,8 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
               );
               Navigator.of(context).pop();
             } else if (type == 1) {
-              widget.calendarController.changeEventsLabelColor(colorKey, eventKey);
+              widget.calendarController
+                  .changeEventsLabelColor(colorKey, eventKey);
               Navigator.of(context).pop();
             } else if (type == 2) {
               Navigator.of(context).pop();
@@ -489,8 +489,8 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                                 IconButton(
                                   onPressed: () {
                                     widget.calendarController
-                                        .changeMonthCompletely(
-                                            selectYear, selectMonth, selectMonthDate);
+                                        .changeMonthCompletely(selectYear,
+                                            selectMonth, selectMonthDate);
                                     Navigator.of(context).pop();
                                   },
                                   icon: Icon(Icons.arrow_forward),
@@ -634,7 +634,8 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                   ),
                   Text(
                     "${eachDate.month}/${eachDate.day}",
-                    style: TextStyle(color: dateColor(snapshot, eachDate,type)),
+                    style:
+                        TextStyle(color: dateColor(snapshot, eachDate, type)),
                   ),
                   _buildEventDot(events),
                 ],
@@ -654,7 +655,9 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
       Map eventMap = events[i]["content"];
       Color labelColor =
           widget.calendarController.getLabelColor(eventMap["labelColor"]);
-      bool toggle = widget.calendarController.getLabelColorToggle(eventMap["labelColor"]) ?? false;
+      bool toggle = widget.calendarController
+              .getLabelColorToggle(eventMap["labelColor"]) ??
+          false;
       if (toggle) {
         children.add(Icon(
           Icons.lens,
@@ -692,7 +695,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   Widget _buildEventList(Map snapshot) {
     List selectDateEvent =
         widget.calendarController.findEvents(snapshot['selectDate']);
-    Map entireColorMap = widget.calendarController.getLabelColorMap();
+    Map entireColorMap = snapshot['labelColorMap'];
 
     return ListView.builder(
       itemCount: selectDateEvent != null ? selectDateEvent.length : 0,
@@ -810,8 +813,8 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     return TableRow(children: children);
   }
 
-  Color dateColor(Map snapshot, DateTime eachDate,int type) {
-    if (snapshot['selectDate'].month+type != eachDate.month &&
+  Color dateColor(Map snapshot, DateTime eachDate, int type) {
+    if (snapshot['selectDate'].month + type != eachDate.month &&
         snapshot['calendarFormat'] == CalendarFormat.Month) {
       return Colors.grey;
     } else if (eachDate == snapshot['selectDate']) {
