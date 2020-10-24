@@ -17,9 +17,7 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
 
   WidgetableCalendarController();
 
-  void init({
-  CalendarFormat calendarFormat
-}) {
+  void init({CalendarFormat calendarFormat}) {
     super.data.holidays = [];
     super.data.eventsByDate = {};
     super.data.eachEvent = {};
@@ -52,14 +50,12 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
 //    super.data.prevWeekList = _makeWeekList(prevFirstDay, prevLastDay);
 //    super.data.nextWeekList = _makeWeekList(nextFirstDay, nextLastDay);
 
-
     // Format -- { colorKey(random value) : { "name" : customName, "color" : customColor, "toggle" : show or not }  }
     super.data.labelColorMap = {
-      "default" : {"name" : "first", "color": Colors.green, "toggle" : true},
-      "empty" : {"name" : "", "color": Colors.grey, "toggle" : true},
+      "default": {"name": "first", "color": Colors.green, "toggle": true},
+      "empty": {"name": "", "color": Colors.grey, "toggle": true},
 //      "google" : {"name" : "google", "color": Colors.blue, "toggle" : true},
     };
-
 
     super.streamSink();
   }
@@ -97,29 +93,37 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
       List temp = super.data.eventsByDate[date];
       temp.forEach((element) {
 //        returnValue.add(element);
-        if (super.data.eachEvent.containsKey(element)) returnValue.add({"id":element,"content":super.data.eachEvent[element]});
+        if (super.data.eachEvent.containsKey(element))
+          returnValue
+              .add({"id": element, "content": super.data.eachEvent[element]});
       });
     }
     return returnValue;
   }
 
-  Map getLabelColorMap(){
+  Map getLabelColorMap() {
     return super.data.labelColorMap;
   }
 
-  Color getLabelColor(String colorKey){
-    if (colorKey != null && super.data.labelColorMap.containsKey(colorKey)) return super.data.labelColorMap[colorKey]["color"];
-    else return super.data.labelColorMap["empty"]["color"];
+  Color getLabelColor(String colorKey) {
+    if (colorKey != null && super.data.labelColorMap.containsKey(colorKey))
+      return super.data.labelColorMap[colorKey]["color"];
+    else
+      return super.data.labelColorMap["empty"]["color"];
   }
 
-  bool getLabelColorToggle(String colorKey){
-    if (colorKey != null && super.data.labelColorMap.containsKey(colorKey)) return super.data.labelColorMap[colorKey]["toggle"];
-    else return false;
+  bool getLabelColorToggle(String colorKey) {
+    if (colorKey != null && super.data.labelColorMap.containsKey(colorKey))
+      return super.data.labelColorMap[colorKey]["toggle"];
+    else
+      return false;
   }
 
-  String getLabelColorName(String colorKey){
-    if (colorKey != null && super.data.labelColorMap.containsKey(colorKey)) return super.data.labelColorMap[colorKey]["name"];
-    else return "empty";
+  String getLabelColorName(String colorKey) {
+    if (colorKey != null && super.data.labelColorMap.containsKey(colorKey))
+      return super.data.labelColorMap[colorKey]["name"];
+    else
+      return "empty";
   }
 
   void changeEventsLabelColor(String colorKey, String eventKey) {
@@ -129,26 +133,53 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     super.streamSink();
   }
 
-  void changeEntireLabelColor(String colorKey, Color color){
-    if (super.data.labelColorMap.containsKey(colorKey)){
+  void changeEntireLabelColor(String colorKey, Color color) {
+    if (super.data.labelColorMap.containsKey(colorKey)) {
       super.data.labelColorMap[colorKey]["color"] = color;
     }
     super.streamSink();
   }
 
-  void addLabel(Map labelMap){
-    if (super.data.labelColorMap.length < 5) super.data.labelColorMap.addAll(Map.from(labelMap));
+  void addLabel(Map labelMap) {
+    if (super.data.labelColorMap.length < 5)
+      super.data.labelColorMap.addAll(Map.from(labelMap));
     super.streamSink();
   }
 
   // TODO delete all events? change to another label?
-  void deleteLabel(String colorKey){
-    if (super.data.labelColorMap.containsKey(colorKey)) super.data.labelColorMap.remove(colorKey);
+  void deleteLabel(String colorKey) {
+    print("before == ");
+    print(super.data.eachEvent.toString());
+    print(super.data.eventsByDate.toString());
+
+    if (super.data.labelColorMap.containsKey(colorKey))
+      super.data.labelColorMap.remove(colorKey);
 
     // delete events ( just eachEvent Map )
     List keyList = [];
+//    List dateList = [];
+//    List valueList = [];
+//    DateTime roundDown(DateTime date) =>
+//        DateTime(date.year, date.month, date.day);
+
     super.data.eachEvent.forEach((key, value) {
-      if (value["labelColor"] == colorKey) keyList.add(key);
+      if (value["labelColor"] == colorKey) {
+        keyList.add(key);
+//        valueList.add(value);
+
+//        DateTime start = value["start"];
+//        DateTime end = value["end"];
+//        DateTime temp = start;
+//
+//        while (true) {
+//          dateList.add(temp);
+//          temp = temp.add(Duration(days: 1));
+//          if (temp.isAfter(
+//              roundDown(end.subtract(Duration(microseconds: 1))))) {
+//            break;
+//          }
+//        }
+      }
     });
 
     keyList.forEach((element) {
@@ -156,14 +187,40 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     });
     // delete events ( just eachEvent Map )
 
+
+
+    List keyList2 = [];
+    List indexList = [];
+    super.data.eventsByDate.forEach((key, value) {
+      value.asMap().forEach((index, element) {
+        keyList.forEach((keyElement) {
+          if (element == keyElement) {
+            keyList2.add(key);
+            indexList.add(index);
+          }
+        });
+      });
+    });
+
+
+    keyList2.asMap().forEach((index,element) {
+      super.data.eventsByDate[element].removeAt(indexList[index]);
+    });
+
+
+    print("after == ");
+    print(super.data.eachEvent.toString());
+    print(super.data.eventsByDate.toString());
+
     super.streamSink();
   }
 
-  void toggleLabel(String colorKey){
-    if (super.data.labelColorMap.containsKey(colorKey)) super.data.labelColorMap[colorKey]["toggle"] = !super.data.labelColorMap[colorKey]["toggle"];
+  void toggleLabel(String colorKey) {
+    if (super.data.labelColorMap.containsKey(colorKey))
+      super.data.labelColorMap[colorKey]["toggle"] =
+          !super.data.labelColorMap[colorKey]["toggle"];
     super.streamSink();
   }
-
 
   List _makeWeekList(DateTime firstDay, DateTime lastDay) {
     List<int> dateList = List<int>();
@@ -199,8 +256,9 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     super.data.selectDate = day;
     super.streamSink();
   }
-  void toggleCalendarFormat(){
-    if(super.data.calendarFormat == CalendarFormat.Month)
+
+  void toggleCalendarFormat() {
+    if (super.data.calendarFormat == CalendarFormat.Month)
       super.data.calendarFormat = CalendarFormat.Week;
     else
       super.data.calendarFormat = CalendarFormat.Month;
@@ -215,7 +273,7 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
   void changeWeek(int i) {
     super.data.selectDate = i == 0
         ? _normalizeDate(DateTime.now())
-        : super.data.selectDate.add(Duration(days: 7*i));
+        : super.data.selectDate.add(Duration(days: 7 * i));
     super.streamSink();
   }
 
@@ -293,11 +351,17 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
                                 eachEventToMap.containsKey('recurrence')
                                     ? eachEventToMap['recurrence']
                                     : null,
-                            'labelColor' : "google"
+                            'labelColor': "google"
                           }
                         };
                         if (!super.data.labelColorMap.containsKey("google"))
-                          this.addLabel({"google" : {"name" : "google", "color": Colors.blue, "toggle" : true},});
+                          this.addLabel({
+                            "google": {
+                              "name": "google",
+                              "color": Colors.blue,
+                              "toggle": true
+                            },
+                          });
 
                         this.addEvents(temp);
                       },
