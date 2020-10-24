@@ -6,6 +6,7 @@ import 'package:googleapis_auth/auth_io.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:widgetable_calendar/Bloc/calendar_bloc.dart';
 import 'package:widgetable_calendar/Data/calendar_data.dart';
+import 'package:widgetable_calendar/widgetable_calendar.dart';
 
 class WidgetableCalendarController extends WidgetableCalendarBloc {
   List googleCalendarList = [];
@@ -16,37 +17,40 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
 
   WidgetableCalendarController();
 
-  void init() {
+  void init({
+  CalendarFormat calendarFormat
+}) {
     super.data.holidays = [];
     super.data.eventsByDate = {};
     super.data.eachEvent = {};
 
     final now = DateTime.now();
     super.data.selectDate = _normalizeDate(now);
-    super.data.focusDate = _normalizeDate(now);
+    super.data.calendarFormat = calendarFormat ?? CalendarFormat.Month;
+//    super.data.focusDate = _normalizeDate(now);
 
-    super.data.firstDay =
-        DateTime(super.data.focusDate.year, super.data.focusDate.month, 1);
-    super.data.lastDay =
-        DateTime(super.data.focusDate.year, super.data.focusDate.month + 1, 1)
-            .subtract(new Duration(days: 1));
-
-    DateTime prevFirstDay =
-        DateTime(super.data.focusDate.year, super.data.focusDate.month - 1, 1);
-    DateTime prevLastDay =
-        DateTime(super.data.focusDate.year, super.data.focusDate.month, 1)
-            .subtract(new Duration(days: 1));
-
-    DateTime nextFirstDay =
-        DateTime(super.data.focusDate.year, super.data.focusDate.month + 1, 1);
-    DateTime nextLastDay =
-        DateTime(super.data.focusDate.year, super.data.focusDate.month + 2, 1)
-            .subtract(new Duration(days: 1));
-
-    super.data.weekList =
-        _makeWeekList(super.data.firstDay, super.data.lastDay);
-    super.data.prevWeekList = _makeWeekList(prevFirstDay, prevLastDay);
-    super.data.nextWeekList = _makeWeekList(nextFirstDay, nextLastDay);
+//    super.data.firstDay =
+//        DateTime(super.data.focusDate.year, super.data.focusDate.month, 1);
+//    super.data.lastDay =
+//        DateTime(super.data.focusDate.year, super.data.focusDate.month + 1, 1)
+//            .subtract(new Duration(days: 1));
+//
+//    DateTime prevFirstDay =
+//        DateTime(super.data.focusDate.year, super.data.focusDate.month - 1, 1);
+//    DateTime prevLastDay =
+//        DateTime(super.data.focusDate.year, super.data.focusDate.month, 1)
+//            .subtract(new Duration(days: 1));
+//
+//    DateTime nextFirstDay =
+//        DateTime(super.data.focusDate.year, super.data.focusDate.month + 1, 1);
+//    DateTime nextLastDay =
+//        DateTime(super.data.focusDate.year, super.data.focusDate.month + 2, 1)
+//            .subtract(new Duration(days: 1));
+//
+//    super.data.weekList =
+//        _makeWeekList(super.data.firstDay, super.data.lastDay);
+//    super.data.prevWeekList = _makeWeekList(prevFirstDay, prevLastDay);
+//    super.data.nextWeekList = _makeWeekList(nextFirstDay, nextLastDay);
 
 
     super.data.labelColorMap = {
@@ -154,8 +158,16 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     return DateTime(value.year, value.month, value.day);
   }
 
-  void setSelectDate(DateTime day, List events, List holidays) {
+  void setSelectDate(DateTime day) {
     super.data.selectDate = day;
+    super.streamSink();
+  }
+  void toggleCalendarFormat(){
+    if(super.data.calendarFormat == CalendarFormat.Month)
+      super.data.calendarFormat = CalendarFormat.Week;
+    else
+      super.data.calendarFormat = CalendarFormat.Month;
+
     super.streamSink();
   }
 
@@ -163,60 +175,46 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     return day == super.data.getSelectDate;
   }
 
+  void changeWeek(int i) {
+    super.data.selectDate = i == 0
+        ? _normalizeDate(DateTime.now())
+        : super.data.selectDate.add(Duration(days: 7*i));
+    super.streamSink();
+  }
+
   void changeMonth(int i) {
-    super.data.focusDate = i == 0
+//    print(super.data.selectDate.month);
+    super.data.selectDate = i == 0
         ? _normalizeDate(DateTime.now())
         : DateTime(
-            super.data.focusDate.year, super.data.focusDate.month + i, 1);
-    super.data.firstDay =
-        DateTime(super.data.focusDate.year, super.data.focusDate.month, 1);
-    super.data.lastDay =
-        DateTime(super.data.focusDate.year, super.data.focusDate.month + 1, 1)
-            .subtract(new Duration(days: 1));
-
-    DateTime prevFirstDay =
-        DateTime(super.data.focusDate.year, super.data.focusDate.month - 1, 1);
-    DateTime prevLastDay =
-        DateTime(super.data.focusDate.year, super.data.focusDate.month, 1)
-            .subtract(new Duration(days: 1));
-
-    DateTime nextFirstDay =
-        DateTime(super.data.focusDate.year, super.data.focusDate.month + 1, 1);
-    DateTime nextLastDay =
-        DateTime(super.data.focusDate.year, super.data.focusDate.month + 2, 1)
-            .subtract(new Duration(days: 1));
-
-    super.data.weekList =
-        _makeWeekList(super.data.firstDay, super.data.lastDay);
-    super.data.prevWeekList = _makeWeekList(prevFirstDay, prevLastDay);
-    super.data.nextWeekList = _makeWeekList(nextFirstDay, nextLastDay);
+            super.data.selectDate.year, super.data.selectDate.month + i, 1);
     super.streamSink();
   }
 
   void changeMonthCompletely(int year, int month) {
-    super.data.focusDate = DateTime(year, month, 1);
-    super.data.firstDay =
-        DateTime(super.data.focusDate.year, super.data.focusDate.month, 1);
-    super.data.lastDay =
-        DateTime(super.data.focusDate.year, super.data.focusDate.month + 1, 1)
-            .subtract(new Duration(days: 1));
-
-    DateTime prevFirstDay =
-        DateTime(super.data.focusDate.year, super.data.focusDate.month - 1, 1);
-    DateTime prevLastDay =
-        DateTime(super.data.focusDate.year, super.data.focusDate.month, 1)
-            .subtract(new Duration(days: 1));
-
-    DateTime nextFirstDay =
-        DateTime(super.data.focusDate.year, super.data.focusDate.month + 1, 1);
-    DateTime nextLastDay =
-        DateTime(super.data.focusDate.year, super.data.focusDate.month + 2, 1)
-            .subtract(new Duration(days: 1));
-
-    super.data.weekList =
-        _makeWeekList(super.data.firstDay, super.data.lastDay);
-    super.data.prevWeekList = _makeWeekList(prevFirstDay, prevLastDay);
-    super.data.nextWeekList = _makeWeekList(nextFirstDay, nextLastDay);
+    super.data.selectDate = DateTime(year, month, 1);
+//    super.data.firstDay =
+//        DateTime(super.data.focusDate.year, super.data.focusDate.month, 1);
+//    super.data.lastDay =
+//        DateTime(super.data.focusDate.year, super.data.focusDate.month + 1, 1)
+//            .subtract(new Duration(days: 1));
+//
+//    DateTime prevFirstDay =
+//        DateTime(super.data.focusDate.year, super.data.focusDate.month - 1, 1);
+//    DateTime prevLastDay =
+//        DateTime(super.data.focusDate.year, super.data.focusDate.month, 1)
+//            .subtract(new Duration(days: 1));
+//
+//    DateTime nextFirstDay =
+//        DateTime(super.data.focusDate.year, super.data.focusDate.month + 1, 1);
+//    DateTime nextLastDay =
+//        DateTime(super.data.focusDate.year, super.data.focusDate.month + 2, 1)
+//            .subtract(new Duration(days: 1));
+//
+//    super.data.weekList =
+//        _makeWeekList(super.data.firstDay, super.data.lastDay);
+//    super.data.prevWeekList = _makeWeekList(prevFirstDay, prevLastDay);
+//    super.data.nextWeekList = _makeWeekList(nextFirstDay, nextLastDay);
     super.streamSink();
   }
 

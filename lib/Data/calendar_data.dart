@@ -6,19 +6,23 @@ class WidgetableCalendarData {
   DateTime selectDate;
   OnCalendarCreated onCalendarCreated;
   OnDaySelected onDaySelected;
-  DateTime focusDate;
+
+//  DateTime focusDate;
   List holidays;
   Map<DateTime, List<String>> eventsByDate;
   Map<String, Map> eachEvent;
-  DateTime firstDay;
-  DateTime lastDay;
-  List weekList;
-  List prevWeekList;
-  List nextWeekList;
+
+//  DateTime firstDay;
+//  DateTime lastDay;
+//  List weekList;
+//  List prevWeekList;
+//  List nextWeekList;
   Map<String, Color> labelColorMap;
 
-  double startDXPoint = 0;
-  double endDXPoint = 0;
+  CalendarFormat calendarFormat;
+
+//  double startDXPoint = 0;
+//  double endDXPoint = 0;
 
   WidgetableCalendarData(
       {Key key,
@@ -27,13 +31,14 @@ class WidgetableCalendarData {
       this.onDaySelected,
       this.selectDate,
       this.holidays,
-      this.firstDay,
-      this.focusDate,
-      this.lastDay,
-      this.weekList,
-      this.prevWeekList,
-      this.nextWeekList,
-      this.labelColorMap});
+//      this.firstDay,
+//      this.focusDate,
+//      this.lastDay,
+//      this.weekList,
+//      this.prevWeekList,
+//      this.nextWeekList,
+      this.labelColorMap,
+      this.calendarFormat});
 
   // WidgetableCalendarData.fromJson(Map json)
   //     :
@@ -53,14 +58,15 @@ class WidgetableCalendarData {
       "onDaySelected": onDaySelected,
       "selectDate": selectDate,
       "holidays": holidays,
-      "focusDate": focusDate,
-      "firstDay": firstDay,
-      "lastDay": lastDay,
-      "weekList": weekList,
+//      "focusDate": focusDate,
+//      "firstDay": firstDay,
+//      "lastDay": lastDay,
+//      "weekList": weekList,
       "eventsByDate": eventsByDate,
       "eachEvent": eachEvent,
-      "prevWeekList": prevWeekList,
-      "nextWeekList": nextWeekList,
+//      "prevWeekList": prevWeekList,
+//      "nextWeekList": nextWeekList,
+      "calendarFormat": calendarFormat
     };
   }
 }
