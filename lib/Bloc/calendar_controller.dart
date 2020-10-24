@@ -190,7 +190,7 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     // delete events in eachEvent MAP
 
 
-    // remove duplicates in dateList !!
+    // remove duplicates in dateList !!  <---- bug.......
 //    dateList = dateList.toSet().toList();
 //    print(dateList.toString());
 
@@ -285,8 +285,8 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     super.streamSink();
   }
 
-  void changeMonthCompletely(int year, int month) {
-    super.data.selectDate = DateTime(year, month, 1);
+  void changeMonthCompletely(int year, int month, int date) {
+    super.data.selectDate = DateTime(year, month, date);
 //    super.data.firstDay =
 //        DateTime(super.data.focusDate.year, super.data.focusDate.month, 1);
 //    super.data.lastDay =

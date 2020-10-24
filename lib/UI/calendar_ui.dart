@@ -81,6 +81,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   // Complete Month Changer
   int selectYear = 0;
   int selectMonth = 0;
+  int selectMonthDate = 0;
 
   // Page Controller - animation
   final PageController pageController = PageController(
@@ -465,6 +466,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
               setState(() {
                 selectYear = snapshot["selectDate"].year;
                 selectMonth = snapshot["selectDate"].month;
+                selectMonthDate = snapshot["selectDate"].day;
               });
               showModalBottomSheet(
                   context: context,
@@ -488,7 +490,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                                   onPressed: () {
                                     widget.calendarController
                                         .changeMonthCompletely(
-                                            selectYear, selectMonth);
+                                            selectYear, selectMonth, selectMonthDate);
                                     Navigator.of(context).pop();
                                   },
                                   icon: Icon(Icons.arrow_forward),
@@ -504,6 +506,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                                 setState(() {
                                   selectYear = time.year;
                                   selectMonth = time.month;
+                                  selectMonthDate = time.day;
                                 });
                               },
                               mode: CupertinoDatePickerMode.date,
