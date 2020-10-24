@@ -145,72 +145,60 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
       super.data.labelColorMap.addAll(Map.from(labelMap));
     super.streamSink();
   }
-
-  // TODO delete all events? change to another label?
+  
   void deleteLabel(String colorKey) {
-    print("before == ");
-    print(super.data.eachEvent.toString());
-    print(super.data.eventsByDate.toString());
-
+    // delete Label
     if (super.data.labelColorMap.containsKey(colorKey))
       super.data.labelColorMap.remove(colorKey);
+    // delete Label
 
-    // delete events ( just eachEvent Map )
+
+    // delete events in eachEvent MAP
     List keyList = [];
-//    List dateList = [];
-//    List valueList = [];
-//    DateTime roundDown(DateTime date) =>
-//        DateTime(date.year, date.month, date.day);
+    List dateList = [];
+    DateTime roundDown(DateTime date) =>
+        DateTime(date.year, date.month, date.day);
 
     super.data.eachEvent.forEach((key, value) {
       if (value["labelColor"] == colorKey) {
         keyList.add(key);
-//        valueList.add(value);
 
-//        DateTime start = value["start"];
-//        DateTime end = value["end"];
-//        DateTime temp = start;
-//
-//        while (true) {
-//          dateList.add(temp);
-//          temp = temp.add(Duration(days: 1));
-//          if (temp.isAfter(
-//              roundDown(end.subtract(Duration(microseconds: 1))))) {
-//            break;
-//          }
-//        }
+        // make dateList <- key of eventsByDate's MAP
+        DateTime start = value["start"];
+        DateTime end = value["end"];
+        DateTime temp = start;
+
+        while (true) {
+          dateList.add(temp);
+          temp = temp.add(Duration(days: 1));
+          if (temp.isAfter(
+              roundDown(end.subtract(Duration(microseconds: 1))))) {
+            break;
+          }
+        }
+        // make dateList <- key of eventsByDate's MAP
       }
     });
 
     keyList.forEach((element) {
       super.data.eachEvent.remove(element);
     });
-    // delete events ( just eachEvent Map )
+    // delete events in eachEvent MAP
 
 
 
-    List keyList2 = [];
-    List indexList = [];
-    super.data.eventsByDate.forEach((key, value) {
-      value.asMap().forEach((index, element) {
-        keyList.forEach((keyElement) {
-          if (element == keyElement) {
-            keyList2.add(key);
-            indexList.add(index);
-          }
-        });
-      });
+    // remove duplicates in dateList !!
+    dateList = dateList.toSet().toList();
+
+
+    // delete events Key in eventsByDate MAP
+    dateList.forEach((element) {
+      for (int i=0 ; i<super.data.eventsByDate[element].length ; i++){
+        String key = super.data.eventsByDate[element][i];
+        if (keyList.contains(key)) super.data.eventsByDate[element].remove(key);
+      }
     });
-
-
-    keyList2.asMap().forEach((index,element) {
-      super.data.eventsByDate[element].removeAt(indexList[index]);
-    });
-
-
-    print("after == ");
-    print(super.data.eachEvent.toString());
-    print(super.data.eventsByDate.toString());
+    // delete events Key in eventsByDate MAP
 
     super.streamSink();
   }
