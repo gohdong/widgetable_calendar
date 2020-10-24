@@ -716,34 +716,46 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
       
       int j = (eventList.first['start'].weekday % 7);
       List willRemovedList = [];
+      List beforeEvents = [];
       // DateTime tempLastDate = thisWeekFirstDate;
+      Map tempEvent = eventList.first;
       for (int k = 0; k < eventList.length; k++) {
         if (eventList.first['start'] == eventList[k]['end'] ||
             eventList[k]['end'].isBefore(eventList.first['start'])) {
+          beforeEvents.add(eventList[k]);
+        }
+      }
+      beforeEvents.forEach((element) {
+        DateTime tempStart = element['start'];
+        DateTime tempEnd = element['end'];
+        if((tempEnd.compareTo(tempEvent['start'])<=0 && tempStart.compareTo(thisWeekFirstDate)>=0)||(tempStart.compareTo(tempEvent['end']) >= 0 &&
+                tempEnd.compareTo(eventList.first['start']) <= 0)){
           rowChildren[i].add(Positioned(
             top: 1,
-            left: (eventList[k]['start'].difference(thisWeekFirstDate).inDays) *
+            left: (element['start'].difference(thisWeekFirstDate).inDays) *
                 (MediaQuery.of(context).size.width / 7),
             child: Container(
               margin: EdgeInsets.only(right: 1, left: 1),
               height: 10,
               width: (MediaQuery.of(context).size.width *
-                      eventList[k]['length'] /
-                      7) -
+                  element['length'] /
+                  7) -
                   1,
               color: Colors.black,
               child: Text(
-                "${eventList[k]['summary']}",
+                "${element['summary']}",
                 style: TextStyle(fontSize: 7, color: Colors.white),
               ),
             ),
           ));
           //
-          // tempLastDate = eventList[k]['end'];
-          willRemovedList.add(eventList[k]);
-          break;
+          // tempLastDate = element['end'];
+          willRemovedList.add(element);
+          tempEvent = element;
         }
-      }
+
+        // break;
+      });
 
       eventList.removeWhere((e) => willRemovedList.contains(e));
 
