@@ -804,11 +804,6 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
           if(!isSAMSAM && (endDate == thisWeekLastDate)){
 
             if((tempStart.isAfter(startDate)||tempStart.isAtSameMomentAs(startDate))&&(tempEnd.isBefore(endDate.add(Duration(days: 1)))||tempEnd.isAtSameMomentAs(endDate.add(Duration(days: 1))))){
-              print("tempStart$tempStart");
-              print("tempEnd$tempEnd");
-              print("startDate$startDate");
-              print("endDate$endDate");
-              print(tempEventsList2[i]['summary']);
               temp = tempEventsList2[i];
               isSAMSAM = true;
               break;
