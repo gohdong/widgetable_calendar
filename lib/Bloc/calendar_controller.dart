@@ -93,9 +93,12 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
       List temp = super.data.eventsByDate[date];
       temp.forEach((element) {
 //        returnValue.add(element);
-        if (super.data.eachEvent.containsKey(element))
-          returnValue
-              .add({"id": element, "content": super.data.eachEvent[element]});
+        if (super.data.eachEvent.containsKey(element)) {
+          String colorKey = super.data.eachEvent[element]["labelColor"];
+          if (this.getLabelColorToggle(colorKey))
+            returnValue
+                .add({"id": element, "content": super.data.eachEvent[element]});
+        }
       });
     }
     return returnValue;
@@ -145,8 +148,9 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
       super.data.labelColorMap.addAll(Map.from(labelMap));
     super.streamSink();
   }
-  
+
   void deleteLabel(String colorKey) {
+    print(super.data.eventsByDate.toString());
     // delete Label
     if (super.data.labelColorMap.containsKey(colorKey))
       super.data.labelColorMap.remove(colorKey);
@@ -166,7 +170,7 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
         // make dateList <- key of eventsByDate's MAP
         DateTime start = value["start"];
         DateTime end = value["end"];
-        DateTime temp = start;
+        DateTime temp = roundDown(start);
 
         while (true) {
           dateList.add(temp);
@@ -186,18 +190,25 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     // delete events in eachEvent MAP
 
 
-
     // remove duplicates in dateList !!
-    dateList = dateList.toSet().toList();
+//    dateList = dateList.toSet().toList();
+//    print(dateList.toString());
 
 
     // delete events Key in eventsByDate MAP
     dateList.forEach((element) {
-      for (int i=0 ; i<super.data.eventsByDate[element].length ; i++){
-        String key = super.data.eventsByDate[element][i];
-        if (keyList.contains(key)) super.data.eventsByDate[element].remove(key);
+      if (super.data.eventsByDate.containsKey(element)) {
+        for (int i = 0; i < super.data.eventsByDate[element].length; i++) {
+          String key = super.data.eventsByDate[element][i];
+          if (keyList.contains(key)) super.data.eventsByDate[element].remove(
+              key);
+        }
+      } else {
+        print("error in here : " + element.toString());
       }
     });
+
+    print("\n"+super.data.eventsByDate.toString()+"\n");
     // delete events Key in eventsByDate MAP
 
     super.streamSink();
@@ -310,6 +321,15 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
       }
     }
 
+    if (!super.data.labelColorMap.containsKey("google"))
+      this.addLabel({
+        "google": {
+          "name": "google",
+          "color": Colors.blue,
+          "toggle": true
+        },
+      });
+
     final _scopes = const [GoogleCalendar.CalendarApi.CalendarScope];
     clientViaUserConsent(ClientId(clientID, ""), _scopes, prompt).then(
       (AuthClient client) {
@@ -328,13 +348,13 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
                             'summary': eachEventToMap['summary'],
                             'start': eachEventToMap['start'].containsKey('date')
                                 ? DateTime.parse(
-                                    eachEventToMap['start']['date'])
+                                    eachEventToMap['start']['date']).toLocal()
                                 : DateTime.parse(
-                                    eachEventToMap['start']['dateTime']),
+                                    eachEventToMap['start']['dateTime']).toLocal(),
                             'end': eachEventToMap['start'].containsKey('date')
-                                ? DateTime.parse(eachEventToMap['end']['date'])
+                                ? DateTime.parse(eachEventToMap['end']['date']).toLocal()
                                 : DateTime.parse(
-                                    eachEventToMap['end']['dateTime']),
+                                    eachEventToMap['end']['dateTime']).toLocal(),
                             'recurrence':
                                 eachEventToMap.containsKey('recurrence')
                                     ? eachEventToMap['recurrence']
@@ -342,14 +362,6 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
                             'labelColor': "google"
                           }
                         };
-                        if (!super.data.labelColorMap.containsKey("google"))
-                          this.addLabel({
-                            "google": {
-                              "name": "google",
-                              "color": Colors.blue,
-                              "toggle": true
-                            },
-                          });
 
                         this.addEvents(temp);
                       },
