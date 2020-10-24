@@ -106,7 +106,7 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     super.data.eachEvent.forEach((key, value) {
       DateTime start = value['start'];
       DateTime end = value['end'].subtract(Duration(microseconds: 1));
-      if (start.isBefore(date) && end.isAfter(date)) {
+      if ((start.isBefore(date) && end.isAfter(date))||start.compareTo(date)==0) {
         tempMap.addAll({key: value});
       }
     });

@@ -690,6 +690,12 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
       String summary = value['summary'];
       DateTime start = value['start'];
       DateTime end = value['end'];
+      start = start.isBefore(thisWeekFirstDate) ? thisWeekFirstDate : start;
+      end = end.isAfter(thisWeekLastDate)
+          ? thisWeekLastDate.add(Duration(days: 1))
+          : end;
+
+
 
       eventList.add({
         "id": key,
@@ -700,45 +706,110 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
       });
     });
     // 이벤트들을 길이 순으로 정렬하기
-    eventList.sort((a, b) => b['start'].compareTo(a['start']));
     eventList.sort((a, b) => b['length'].compareTo(a['length']));
 
     for (int i = 0; i < 4; i++) {
       if (eventList.isEmpty) {
         break;
       }
-      print(eventList.first);
-      //TODO 가장긴거 밖으로 빼기
-      for (int j = (eventList.first['start'].weekday % 7);
-          j < 7;
-          j += eventList.first['length']) {
-        //TODO 뒤에 붙일수 있는거 찾기 events.foreach
-        //가장 긴 것 추가
-        rowChildren[i].add(Container(
-          margin: EdgeInsets.only(
-              top: 1,
-              bottom: 1,
-              left: j * MediaQuery.of(context).size.width / 7),
-          height: 10,
-          width: j + eventList.first['length'] <= 7
-              ? MediaQuery.of(context).size.width *
-                  eventList.first['length'] /
-                  7
-              : MediaQuery.of(context).size.width *
-              (7-j) /
-              7,
-          color: Colors.black,
-          child: Text(
-            "${eventList.first['summary']}",
-            style: TextStyle(fontSize: 7, color: Colors.white),
-          ),
-        ));
+      int j = (eventList.first['start'].weekday % 7);
 
-        //삭제
-        eventList.removeAt(0);
+      //TODO 가장긴거 밖으로 빼기
+      rowChildren[i].add(Container(
+        margin: EdgeInsets.only(
+            top: 1,
+            bottom: 1,
+            right: 1,
+            left:(eventList.first['start']
+                .difference(thisWeekFirstDate)
+                .inDays) *
+                (MediaQuery.of(context).size.width / 7)),
+        height: 10,
+        width: j + eventList.first['length'] <= 7
+            ? (MediaQuery.of(context).size.width *
+            eventList.first['length'] /
+            7)-1
+            : (MediaQuery.of(context).size.width * (7 - j) / 7)-1,
+        color: Colors.black,
+        child: Text(
+          "${eventList.first['summary']}",
+          style: TextStyle(fontSize: 7, color: Colors.white),
+        ),
+      ));
+      j += eventList.first['length'];
+      DateTime tempLastDate =thisWeekFirstDate.add(Duration(days: j));
+
+
+      List willRemovedList = [];
+      eventList.removeAt(0);
+
+      for (; j < 7;j++) {
         if (eventList.isEmpty) {
           break;
         }
+        willRemovedList.clear();
+        eventList.forEach((element) {
+          print(element);
+
+          if(thisWeekFirstDate.add(Duration(days: j)).isAtSameMomentAs(element['start'])){
+            rowChildren[i].add(Container(
+              margin: EdgeInsets.only(
+                  top: 1,
+                  bottom: 1,
+                  right: 1,
+                  left:(element['start']
+                      .difference(tempLastDate)
+                      .inDays) *
+                      (MediaQuery.of(context).size.width / 7)),
+              height: 10,
+              width: j + element['length'] <= 7
+                  ? (MediaQuery.of(context).size.width *
+                  element['length'] /
+                  7)-1
+                  : (MediaQuery.of(context).size.width * (7 - j) / 7)-1,
+              color: Colors.black,
+              child: Text(
+                "${element['summary']}",
+                style: TextStyle(fontSize: 7, color: Colors.white),
+              ),
+            ));
+            j += element['length'];
+            //
+            tempLastDate = element['end'];
+            willRemovedList.add(element);
+          }
+        });
+        // print(eventList);
+        eventList.removeWhere( (e) => willRemovedList.contains(e));
+
+
+
+        //TODO 뒤에 붙일수 있는거 찾기 events.foreach
+        //가장 긴 것 추가
+        // eventList.forEach((element) {
+        //   print(element);
+        //   if(thisWeekFirstDate.add(Duration(days: j))== element['start']){
+        //     rowChildren[i].add(Container(
+        //       margin: EdgeInsets.only(
+        //           top: 1, bottom: 1, left: j * MediaQuery.of(context).size.width / 7),
+        //       height: 10,
+        //       width: j + element['length'] <= 7
+        //           ? MediaQuery.of(context).size.width * element['length'] / 7
+        //           : MediaQuery.of(context).size.width * (7 - j) / 7,
+        //       color: Colors.black,
+        //       child: Text(
+        //         "${element['summary']}",
+        //         style: TextStyle(fontSize: 7, color: Colors.white),
+        //       ),
+        //     ));
+        //     j += element['length'];
+        //     print("##$j");
+        //     eventList.removeAt(0);
+        //   }
+        // });
+
+        //삭제
+
       }
       //삭제
 
