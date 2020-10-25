@@ -11,13 +11,12 @@ class WidgetableCalendarData {
   List holidays;
   Map<DateTime, List<String>> eventsByDate;
   Map<String, Map> eachEvent;
-
 //  DateTime firstDay;
 //  DateTime lastDay;
 //  List weekList;
 //  List prevWeekList;
 //  List nextWeekList;
-  Map<String, Color> labelColorMap;
+  Map<String, Map> labelColorMap;
 
   CalendarFormat calendarFormat;
 
@@ -66,6 +65,7 @@ class WidgetableCalendarData {
       "eachEvent": eachEvent,
 //      "prevWeekList": prevWeekList,
 //      "nextWeekList": nextWeekList,
+      "labelColorMap" : labelColorMap,
       "calendarFormat": calendarFormat
     };
   }

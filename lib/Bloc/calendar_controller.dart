@@ -17,9 +17,7 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
 
   WidgetableCalendarController();
 
-  void init({
-  CalendarFormat calendarFormat
-}) {
+  void init({CalendarFormat calendarFormat}) {
     super.data.holidays = [];
     super.data.eventsByDate = {};
     super.data.eachEvent = {};
@@ -52,16 +50,12 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
 //    super.data.prevWeekList = _makeWeekList(prevFirstDay, prevLastDay);
 //    super.data.nextWeekList = _makeWeekList(nextFirstDay, nextLastDay);
 
-
+    // Format -- { colorKey(random value) : { "name" : customName, "color" : customColor, "toggle" : show or not }  }
     super.data.labelColorMap = {
-      "0" : Colors.red,
-      "1" : Colors.green,
-      "2" : Colors.yellowAccent,
-      "empty" : Colors.grey,
-      "google" : Colors.blue
+      "default": {"name": "first", "color": Colors.green, "toggle": true},
+      "empty": {"name": "", "color": Colors.grey, "toggle": true},
+//      "google" : {"name" : "google", "color": Colors.blue, "toggle" : true},
     };
-
-    //TODO Change labelColorMap ( key values )
 
     super.streamSink();
   }
@@ -99,32 +93,131 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
       List temp = super.data.eventsByDate[date];
       temp.forEach((element) {
 //        returnValue.add(element);
-        returnValue.add({"id":element,"content":super.data.eachEvent[element]});
+        if (super.data.eachEvent.containsKey(element)) {
+          String colorKey = super.data.eachEvent[element]["labelColor"];
+          if (this.getLabelColorToggle(colorKey))
+            returnValue
+                .add({"id": element, "content": super.data.eachEvent[element]});
+        }
       });
     }
     return returnValue;
   }
 
-  Map getLabelColorMap(){
-    return super.data.labelColorMap;
+//  Map getLabelColorMap() {
+//    return super.data.labelColorMap;
+//  }
+
+  Color getLabelColor(String colorKey) {
+    if (colorKey != null && super.data.labelColorMap.containsKey(colorKey))
+      return super.data.labelColorMap[colorKey]["color"];
+    else
+      return super.data.labelColorMap["empty"]["color"];
   }
 
-  Color getLabelColor(String colorKey){
-    if (colorKey != null) return super.data.labelColorMap[colorKey];
-    else return super.data.labelColorMap["empty"];
+  bool getLabelColorToggle(String colorKey) {
+    if (colorKey != null && super.data.labelColorMap.containsKey(colorKey))
+      return super.data.labelColorMap[colorKey]["toggle"];
+    else
+      return false;
   }
 
-  void changeEventsLabelColor(String colorKey, String key) {
-    if (super.data.eachEvent.containsKey(key)) {
-      super.data.eachEvent[key]["labelColor"] = colorKey;
+//  String getLabelColorName(String colorKey) {
+//    if (colorKey != null && super.data.labelColorMap.containsKey(colorKey))
+//      return super.data.labelColorMap[colorKey]["name"];
+//    else
+//      return "empty";
+//  }
+
+  void changeEventsLabelColor(String colorKey, String eventKey) {
+    if (super.data.eachEvent.containsKey(eventKey)) {
+      super.data.eachEvent[eventKey]["labelColor"] = colorKey;
     }
     super.streamSink();
   }
 
-  void changeEntireLabelColor(String colorKey, Color color){
-    if (super.data.labelColorMap.containsKey(colorKey)){
-      super.data.labelColorMap[colorKey] = color;
+  void changeEntireLabelColor(String colorKey, Color color) {
+    if (super.data.labelColorMap.containsKey(colorKey)) {
+      super.data.labelColorMap[colorKey]["color"] = color;
     }
+    super.streamSink();
+  }
+
+  void addLabel(Map labelMap) {
+    if (super.data.labelColorMap.length < 5)
+      super.data.labelColorMap.addAll(Map.from(labelMap));
+    super.streamSink();
+  }
+
+  void deleteLabel(String colorKey) {
+//    print(super.data.eventsByDate.toString());
+    // delete Label
+    if (super.data.labelColorMap.containsKey(colorKey))
+      super.data.labelColorMap.remove(colorKey);
+    // delete Label
+
+
+    // delete events in eachEvent MAP
+    List keyList = [];
+    List dateList = [];
+    DateTime roundDown(DateTime date) =>
+        DateTime(date.year, date.month, date.day);
+
+    super.data.eachEvent.forEach((key, value) {
+      if (value["labelColor"] == colorKey) {
+        keyList.add(key);
+
+        // make dateList <- key of eventsByDate's MAP
+        DateTime start = value["start"];
+        DateTime end = value["end"];
+        DateTime temp = roundDown(start);
+
+        while (true) {
+          dateList.add(temp);
+          temp = temp.add(Duration(days: 1));
+          if (temp.isAfter(
+              roundDown(end.subtract(Duration(microseconds: 1))))) {
+            break;
+          }
+        }
+        // make dateList <- key of eventsByDate's MAP
+      }
+    });
+
+    keyList.forEach((element) {
+      super.data.eachEvent.remove(element);
+    });
+    // delete events in eachEvent MAP
+
+
+    // remove duplicates in dateList !!  <---- bug.......
+//    dateList = dateList.toSet().toList();
+//    print(dateList.toString());
+
+
+    // delete events Key in eventsByDate MAP
+    dateList.forEach((element) {
+      if (super.data.eventsByDate.containsKey(element)) {
+        for (int i = 0; i < super.data.eventsByDate[element].length; i++) {
+          String key = super.data.eventsByDate[element][i];
+          if (keyList.contains(key)) super.data.eventsByDate[element].remove(
+              key);
+        }
+      } else {
+        print("error in here : " + element.toString());
+      }
+    });
+
+//    print("\n"+super.data.eventsByDate.toString()+"\n");
+    // delete events Key in eventsByDate MAP
+
+    super.streamSink();
+  }
+
+  void toggleLabel(String colorKey) {
+    if (super.data.labelColorMap.containsKey(colorKey))
+      super.data.labelColorMap[colorKey]["toggle"] =
+          !super.data.labelColorMap[colorKey]["toggle"];
     super.streamSink();
   }
 
@@ -162,8 +255,9 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     super.data.selectDate = day;
     super.streamSink();
   }
-  void toggleCalendarFormat(){
-    if(super.data.calendarFormat == CalendarFormat.Month)
+
+  void toggleCalendarFormat() {
+    if (super.data.calendarFormat == CalendarFormat.Month)
       super.data.calendarFormat = CalendarFormat.Week;
     else
       super.data.calendarFormat = CalendarFormat.Month;
@@ -178,7 +272,7 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
   void changeWeek(int i) {
     super.data.selectDate = i == 0
         ? _normalizeDate(DateTime.now())
-        : super.data.selectDate.add(Duration(days: 7*i));
+        : super.data.selectDate.add(Duration(days: 7 * i));
     super.streamSink();
   }
 
@@ -191,8 +285,8 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     super.streamSink();
   }
 
-  void changeMonthCompletely(int year, int month) {
-    super.data.selectDate = DateTime(year, month, 1);
+  void changeMonthCompletely(int year, int month, int date) {
+    super.data.selectDate = DateTime(year, month, date);
 //    super.data.firstDay =
 //        DateTime(super.data.focusDate.year, super.data.focusDate.month, 1);
 //    super.data.lastDay =
@@ -227,6 +321,15 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
       }
     }
 
+    if (!super.data.labelColorMap.containsKey("google"))
+      this.addLabel({
+        "google": {
+          "name": "google",
+          "color": Colors.blue,
+          "toggle": true
+        },
+      });
+
     final _scopes = const [GoogleCalendar.CalendarApi.CalendarScope];
     clientViaUserConsent(ClientId(clientID, ""), _scopes, prompt).then(
       (AuthClient client) {
@@ -245,18 +348,18 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
                             'summary': eachEventToMap['summary'],
                             'start': eachEventToMap['start'].containsKey('date')
                                 ? DateTime.parse(
-                                    eachEventToMap['start']['date'])
+                                    eachEventToMap['start']['date']).toLocal()
                                 : DateTime.parse(
-                                    eachEventToMap['start']['dateTime']),
+                                    eachEventToMap['start']['dateTime']).toLocal(),
                             'end': eachEventToMap['start'].containsKey('date')
-                                ? DateTime.parse(eachEventToMap['end']['date'])
+                                ? DateTime.parse(eachEventToMap['end']['date']).toLocal()
                                 : DateTime.parse(
-                                    eachEventToMap['end']['dateTime']),
+                                    eachEventToMap['end']['dateTime']).toLocal(),
                             'recurrence':
                                 eachEventToMap.containsKey('recurrence')
                                     ? eachEventToMap['recurrence']
                                     : null,
-                            'labelColor' : "google"
+                            'labelColor': "google"
                           }
                         };
 
