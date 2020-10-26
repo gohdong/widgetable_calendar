@@ -34,6 +34,7 @@ class WidgetableCalendar extends StatefulWidget {
   final Color highlightTextColor;
   final double height;
   final double width;
+  final CalendarFormat calendarFormat;
 
   WidgetableCalendar(
       {this.weekDayColor = Colors.black,
@@ -48,7 +49,8 @@ class WidgetableCalendar extends StatefulWidget {
       this.todayBackgroundColor = Colors.black26,
       this.todayTextColor = Colors.white,
       this.highlightBackgroundColor = Colors.red,
-      this.highlightTextColor = Colors.white});
+      this.highlightTextColor = Colors.white,
+      this.calendarFormat});
 
   // : assert(holidays != null);
 
@@ -71,6 +73,7 @@ class _WidgetableCalendarState extends State<WidgetableCalendar> {
         todayTextColor: widget.todayTextColor,
         highlightBackgroundColor: widget.highlightBackgroundColor,
         highlightTextColor: widget.highlightTextColor,
+        calendarFormat : widget.calendarFormat
       ),
     );
   }
