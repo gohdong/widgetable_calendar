@@ -16,8 +16,9 @@ class WidgetableCalendarUI extends StatefulWidget {
   final Color highlightBackgroundColor;
   final Color highlightTextColor;
 
-  final List holidays;
-  final List events;
+//  final List holidays;
+//  final List events;
+  final Map holiday;
 
   final WidgetableCalendarController calendarController;
 
@@ -31,8 +32,9 @@ class WidgetableCalendarUI extends StatefulWidget {
       this.saturdayColor = Colors.blue,
       this.backgroundColor = Colors.white,
       this.lineColor = Colors.black,
-      this.holidays,
-      this.events,
+//      this.holidays,
+//      this.events,
+      this.holiday,
       this.todayBackgroundColor = Colors.black26,
       this.todayTextColor = Colors.white,
       this.highlightBackgroundColor = Colors.red,
@@ -48,7 +50,8 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   @override
   void initState() {
     // _buildEachWeek2(DateTime.now().add(Duration(days: 3)));
-    widget.calendarController.init(calendarFormat: widget.calendarFormat);
+    widget.calendarController.init(
+        calendarFormat: widget.calendarFormat, holidayData: widget.holiday);
     super.initState();
   }
 
@@ -620,6 +623,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     for (int i = 0; i < 7; i++) {
       DateTime eachDate = tempDate.add(Duration(days: i));
       List events = widget.calendarController.findEvents(eachDate);
+      List holidays = widget.calendarController.findHolidays(eachDate);
       children.add(
         TableCell(
           child: InkWell(
@@ -657,7 +661,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                     style:
                         TextStyle(color: dateColor(snapshot, eachDate, type)),
                   ),
-                  _buildEventDot(events),
+                  _buildEventDot(events,holidays),
                 ],
               ),
             ),
@@ -669,9 +673,26 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     return TableRow(children: children);
   }
 
-  Widget _buildEventDot(List events) {
+  Widget _buildEventDot(List events, List holidays) {
     final children = <Widget>[];
-    for (int i = 0; i < events.length && i < 3; i++) {
+    int index = 0;
+    for (index = 0; index < holidays.length && index < 3; index++) {
+      Map eventMap = holidays[index]["content"];
+//      print("here  == "+eventMap.toString());
+      Color labelColor =
+      widget.calendarController.getLabelColor(eventMap["labelColor"]);
+      bool toggle = widget.calendarController
+          .getLabelColorToggle(eventMap["labelColor"]) ??
+          false;
+      if (toggle) {
+        children.add(Icon(
+          Icons.lens,
+          size: 7,
+          color: labelColor ?? Colors.grey,
+        ));
+      }
+    }
+    for (int i = 0; i < events.length && index < 3; i++,index++) {
       Map eventMap = events[i]["content"];
       Color labelColor =
           widget.calendarController.getLabelColor(eventMap["labelColor"]);
@@ -713,64 +734,76 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   }
 
   Widget _buildEventList(Map snapshot) {
+    List selectDateHoliday =
+        widget.calendarController.findHolidays(snapshot['selectDate']);
     List selectDateEvent =
         widget.calendarController.findEvents(snapshot['selectDate']);
     Map entireColorMap = snapshot['labelColorMap'];
 
     return ListView.builder(
-      itemCount: selectDateEvent != null ? selectDateEvent.length : 0,
-      itemBuilder: (context, index) {
-        Map eventInfo = selectDateEvent[index]["content"];
-        String eventKeyValue = selectDateEvent[index]["id"];
-        return Container(
-          decoration: BoxDecoration(
-            border: Border.all(width: 0.8),
-            borderRadius: BorderRadius.circular(12.0),
-          ),
-          margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-          child: ListTile(
-            title: Text("$eventInfo"),
-            onTap: () {
-              print('${eventInfo['summary']} tapped! Label Color Change!');
-              final children = <Widget>[];
+        itemCount: selectDateHoliday != null && selectDateEvent != null
+            ? selectDateHoliday.length + selectDateEvent.length
+            : 0,
+        itemBuilder: (context, index) {
+          Map eventInfo = {};
+          String eventKeyValue = "";
+          if (index < selectDateHoliday.length) {
+            eventInfo = selectDateHoliday[index]["content"];
+            eventKeyValue = selectDateHoliday[index]["id"];
+          } else {
+            eventInfo = selectDateEvent[index-selectDateHoliday.length]["content"];
+            eventKeyValue = selectDateEvent[index-selectDateHoliday.length]["id"];
+          }
+//
+          return Container(
+            decoration: BoxDecoration(
+              border: Border.all(width: 0.8),
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+            margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+            child: ListTile(
+              title: Text("$eventInfo"),
+              onTap: () {
+                print('${eventInfo['summary']} tapped! Label Color Change!');
+                final children = <Widget>[];
 
-              entireColorMap.forEach((key, value) {
-                if (key != "empty") {
-                  children.add(
-                    _buildColorFlatButton(snapshot, key, 1,
-                        eventKey: eventKeyValue),
-                  );
-                }
-              });
-              showModalBottomSheet(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return Container(
-                      height: MediaQuery.of(context).size.height * 0.25,
-                      child: Column(
-                        children: <Widget>[
-                          Expanded(
-                            flex: 1,
-                            child: ListView(
-                                scrollDirection: Axis.horizontal,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: children,
-                                  ),
-                                ]),
-                          ),
-                        ],
-                      ),
+                entireColorMap.forEach((key, value) {
+                  if (key != "empty") {
+                    children.add(
+                      _buildColorFlatButton(snapshot, key, 1,
+                          eventKey: eventKeyValue),
                     );
-                  });
+                  }
+                });
+                showModalBottomSheet(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Container(
+                        height: MediaQuery.of(context).size.height * 0.25,
+                        child: Column(
+                          children: <Widget>[
+                            Expanded(
+                              flex: 1,
+                              child: ListView(
+                                  scrollDirection: Axis.horizontal,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: children,
+                                    ),
+                                  ]),
+                            ),
+                          ],
+                        ),
+                      );
+                    });
 //              widget.calendarController
 //                  .changeEventsLabelColor("2", keyValue);
-            },
-          ),
-        );
-      },
-    );
+              },
+            ),
+          );
+        });
   }
 
 //  bool _isToday(int date, DateTime focusDate, int type) {

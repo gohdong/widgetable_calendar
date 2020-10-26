@@ -88,6 +88,15 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       todayTextColor: Colors.greenAccent,
       highlightBackgroundColor: Colors.pink,
       highlightTextColor: Colors.deepOrangeAccent,
+      holiday: {
+        DateTime.now().microsecondsSinceEpoch.toString(): {
+          'summary': 'holiday test',
+          'start': DateTime.now(),
+          'end': DateTime.now().add(Duration(days: 1)),
+          'recurrence': null,
+          'labelColor': "holiday"
+        }
+      },
     );
   }
 }

@@ -17,13 +17,14 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
 
   WidgetableCalendarController();
 
-  void init({CalendarFormat calendarFormat}) {
+  void init({CalendarFormat calendarFormat, Map holidayData}) {
 //    super.data.holidays = [];
     super.data.holidaysByDate = {};
     super.data.eachHoliday = {};
 
     super.data.eventsByDate = {};
     super.data.eachEvent = {};
+    this.addHolidays(holidayData);
 
     final now = DateTime.now();
     super.data.selectDate = _normalizeDate(now);
@@ -102,6 +103,53 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
           if (this.getLabelColorToggle(colorKey))
             returnValue
                 .add({"id": element, "content": super.data.eachEvent[element]});
+        }
+      });
+    }
+    return returnValue;
+  }
+
+
+  void addHolidays(Map eventData) {
+    DateTime roundDown(DateTime date) =>
+        DateTime(date.year, date.month, date.day);
+//    print(eventData);
+
+    super.data.eachHoliday.addAll(Map.from(eventData));
+    String eid = eventData.keys.first;
+    DateTime start = super.data.eachHoliday[eid]['start'];
+    DateTime end = super.data.eachHoliday[eid]['end'];
+    DateTime temp = roundDown(start);
+    while (true) {
+      if (super.data.holidaysByDate[temp] == null) {
+        super.data.holidaysByDate[temp] = [eid];
+      } else {
+        super.data.holidaysByDate[temp].add(eid);
+      }
+
+      temp = temp.add(Duration(days: 1));
+      if (temp.isAfter(roundDown(end.subtract(Duration(microseconds: 1))))) {
+        break;
+      }
+    }
+
+    print("=== eachHoliday === " + super.data.eachHoliday.toString());
+    print("=== holidaysByDate === " + super.data.holidaysByDate.toString());
+    super.streamSink();
+  }
+
+  List findHolidays(DateTime date) {
+    List returnValue = [];
+
+    if (super.data.holidaysByDate.containsKey(date)) {
+      List temp = super.data.holidaysByDate[date];
+      temp.forEach((element) {
+//        returnValue.add(element);
+        if (super.data.eachHoliday.containsKey(element)) {
+          String colorKey = super.data.eachHoliday[element]["labelColor"];
+          if (this.getLabelColorToggle(colorKey))
+            returnValue
+                .add({"id": element, "content": super.data.eachHoliday[element]});
         }
       });
     }
@@ -366,6 +414,7 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
                                 eachEventToMap.containsKey('recurrence')
                                     ? eachEventToMap['recurrence']
                                     : null,
+                            // for test!
                             'labelColor': eachEventToMap['creator']['email'] != "ko.south_korea#holiday@group.v.calendar.google.com" ? "google" : "google_holiday"
                           }
                         };
