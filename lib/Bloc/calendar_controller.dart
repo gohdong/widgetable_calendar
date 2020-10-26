@@ -57,6 +57,7 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     super.data.labelColorMap = {
       "default": {"name": "first", "color": Colors.green, "toggle": true},
       "empty": {"name": "", "color": Colors.grey, "toggle": true},
+      "holiday" : {"name": "holiday", "color": Colors.red, "toggle": true}
 //      "google" : {"name" : "google", "color": Colors.blue, "toggle" : true},
     };
 
@@ -147,7 +148,7 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
   }
 
   void addLabel(Map labelMap) {
-    if (super.data.labelColorMap.length < 5)
+//    if (super.data.labelColorMap.length < 5)
       super.data.labelColorMap.addAll(Map.from(labelMap));
     super.streamSink();
   }

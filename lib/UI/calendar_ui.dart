@@ -197,10 +197,15 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                             children: <Widget>[
                               Expanded(
                                 flex: 1,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: children,
-                                ),
+                                child: ListView(
+                                    scrollDirection: Axis.horizontal,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: children,
+                                      ),
+                                    ]),
                               ),
                             ],
                           ),
@@ -231,10 +236,15 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                             children: <Widget>[
                               Expanded(
                                 flex: 1,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: children,
-                                ),
+                                child: ListView(
+                                    scrollDirection: Axis.horizontal,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: children,
+                                      ),
+                                    ]),
                               ),
                             ],
                           ),
@@ -312,10 +322,15 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                             children: <Widget>[
                               Expanded(
                                 flex: 1,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: children,
-                                ),
+                                child: ListView(
+                                    scrollDirection: Axis.horizontal,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: children,
+                                      ),
+                                    ]),
                               ),
                             ],
                           ),
@@ -345,10 +360,15 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                             children: <Widget>[
                               Expanded(
                                 flex: 1,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: children,
-                                ),
+                                child: ListView(
+                                    scrollDirection: Axis.horizontal,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: children,
+                                      ),
+                                    ]),
                               ),
                             ],
                           ),
@@ -731,10 +751,14 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                         children: <Widget>[
                           Expanded(
                             flex: 1,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: children,
-                            ),
+                            child: ListView(
+                                scrollDirection: Axis.horizontal,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: children,
+                                  ),
+                                ]),
                           ),
                         ],
                       ),
