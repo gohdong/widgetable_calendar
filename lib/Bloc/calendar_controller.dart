@@ -17,7 +17,7 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
 
   WidgetableCalendarController();
 
-  void init({CalendarFormat calendarFormat, Map holidayData}) {
+  void init({CalendarFormat calendarFormat, Map holidayData, bool headerEnable}) {
 //    super.data.holidays = [];
     super.data.holidaysByDate = {};
     super.data.eachHoliday = {};
@@ -29,6 +29,7 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     final now = DateTime.now();
     super.data.selectDate = _normalizeDate(now);
     super.data.calendarFormat = calendarFormat ?? CalendarFormat.Month;
+    super.data.headerEnable = headerEnable ?? true;
 //    super.data.focusDate = _normalizeDate(now);
 
 //    super.data.firstDay =
@@ -406,11 +407,6 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     if (!super.data.labelColorMap.containsKey("google"))
       this.addLabel({
         "google": {"name": "google", "color": Colors.blue, "toggle": true},
-        "google_holiday": {
-          "name": "google_holiday",
-          "color": Colors.red,
-          "toggle": true
-        }
       });
 
     final _scopes = const [GoogleCalendar.CalendarApi.CalendarScope];
@@ -447,8 +443,7 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
                                 eachEventToMap.containsKey('recurrence')
                                     ? eachEventToMap['recurrence']
                                     : null,
-                            // for test!
-                            'labelColor': eachEventToMap['creator']['email'] != "ko.south_korea#holiday@group.v.calendar.google.com" ? "google" : "google_holiday"
+                            'labelColor': "google"
                           }
                         };
                         this.addEvents(temp);

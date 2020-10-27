@@ -24,6 +24,8 @@ class WidgetableCalendarUI extends StatefulWidget {
 
   final CalendarFormat calendarFormat;
 
+  final bool headerEnable;
+
   WidgetableCalendarUI(
       {Key key,
       @required this.calendarController,
@@ -39,7 +41,8 @@ class WidgetableCalendarUI extends StatefulWidget {
       this.todayTextColor = Colors.white,
       this.highlightBackgroundColor = Colors.red,
       this.highlightTextColor = Colors.white,
-      this.calendarFormat})
+      this.calendarFormat,
+      this.headerEnable})
       : super(key: key);
 
   _WidgetableCalendarUIState createState() => _WidgetableCalendarUIState();
@@ -51,7 +54,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   void initState() {
     // _buildEachWeek2(DateTime.now().add(Duration(days: 3)));
     widget.calendarController.init(
-        calendarFormat: widget.calendarFormat, holidayData: widget.holiday);
+        calendarFormat: widget.calendarFormat, holidayData: widget.holiday, headerEnable: widget.headerEnable);
     super.initState();
   }
 
@@ -134,7 +137,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
 
         return Column(
           children: [
-            _buildHeader(snapshot.data),
+            snapshot.data['headerEnable'] ? _buildHeader(snapshot.data) : Container(),
             Table(
               children: [
                 _buildDaysOfWeek(),

@@ -97,6 +97,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           'labelColor': "holiday"
         }
       },
+      headerEnable: true,
     );
   }
 }

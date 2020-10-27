@@ -23,6 +23,8 @@ class WidgetableCalendarData {
 
   CalendarFormat calendarFormat;
 
+  bool headerEnable;
+
 //  double startDXPoint = 0;
 //  double endDXPoint = 0;
 
@@ -40,7 +42,8 @@ class WidgetableCalendarData {
 //      this.prevWeekList,
 //      this.nextWeekList,
       this.labelColorMap,
-      this.calendarFormat});
+      this.calendarFormat,
+      this.headerEnable});
 
   // WidgetableCalendarData.fromJson(Map json)
   //     :
@@ -71,7 +74,8 @@ class WidgetableCalendarData {
 //      "prevWeekList": prevWeekList,
 //      "nextWeekList": nextWeekList,
       "labelColorMap" : labelColorMap,
-      "calendarFormat": calendarFormat
+      "calendarFormat": calendarFormat,
+      "headerEnable" : headerEnable,
     };
   }
 }
