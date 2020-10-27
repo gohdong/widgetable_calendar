@@ -188,7 +188,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                         final children = <Widget>[];
 
                         entireColorMap.forEach((key, value) {
-                          if (key != "empty") {
+                          if (key != "empty" && key !="holiday") {
                             children.add(
                               _buildColorFlatButton(snapshot.data, key, 0),
                             );
@@ -216,6 +216,19 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                       });
                 },
                 child: Text("ADD EVENTS - Color")),
+            FlatButton(
+                onPressed: () {
+                  widget.calendarController.addHolidays({
+                    DateTime.now().microsecondsSinceEpoch.toString(): {
+                      'summary': 'TEST',
+                      'start': snapshot.data['selectDate'],
+                      'end': snapshot.data['selectDate'].add(Duration(days: 2)),
+                      'recurrence': null,
+                      'labelColor': "holiday"
+                    }
+                  },);
+                },
+                child: Text("ADD HOLIDAY")),
             FlatButton(
                 onPressed: () {
                   showModalBottomSheet(
@@ -313,7 +326,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                         final children = <Widget>[];
 
                         entireColorMap.forEach((key, value) {
-                          if (key != "empty") {
+                          if (key != "empty" && key != "holiday") {
                             children.add(
                               _buildColorFlatButton(snapshot.data, key, 3),
                             );
@@ -876,6 +889,8 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
       return widget.sundayColor;
     } else if (eachDate.weekday == 6) {
       return widget.saturdayColor;
+    } else if (widget.calendarController.findHolidaysBool(eachDate)){
+      return widget.sundayColor;
     }
 
     return widget.weekDayColor;

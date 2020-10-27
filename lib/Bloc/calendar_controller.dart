@@ -184,6 +184,11 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     return returnValue;
   }
 
+  bool findHolidaysBool(DateTime date){
+    if (super.data.holidaysByDate.containsKey(date)) return true;
+    else return false;
+  }
+
 //  Map getLabelColorMap() {
 //    return super.data.labelColorMap;
 //  }
