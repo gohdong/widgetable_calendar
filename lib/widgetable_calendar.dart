@@ -17,8 +17,6 @@ import 'package:widgetable_calendar/Data/calendar_data.dart';
 
 part 'UI/calendar_ui.dart';
 
-
-
 class WidgetableCalendar extends StatefulWidget {
   final WidgetableCalendarController calendarController;
   final Color weekDayColor;
@@ -35,6 +33,9 @@ class WidgetableCalendar extends StatefulWidget {
   final double width;
   final CalendarFormat calendarFormat;
 
+  final int weekStartIndex;
+  final List weekList;
+
   WidgetableCalendar(
       {this.weekDayColor = Colors.black,
       this.sundayColor = Colors.red,
@@ -49,7 +50,9 @@ class WidgetableCalendar extends StatefulWidget {
       this.todayTextColor = Colors.white,
       this.highlightBackgroundColor = Colors.red,
       this.highlightTextColor = Colors.white,
-      this.calendarFormat});
+      this.calendarFormat,
+      this.weekStartIndex = 7,
+      this.weekList = const ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]});
 
   // : assert(holidays != null);
 
@@ -72,7 +75,9 @@ class _WidgetableCalendarState extends State<WidgetableCalendar> {
         todayTextColor: widget.todayTextColor,
         highlightBackgroundColor: widget.highlightBackgroundColor,
         highlightTextColor: widget.highlightTextColor,
-        calendarFormat : widget.calendarFormat
+        calendarFormat: widget.calendarFormat,
+        weekStartIndex: widget.weekStartIndex,
+        weekList: widget.weekList,
       ),
     );
   }

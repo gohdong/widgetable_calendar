@@ -5,6 +5,7 @@ typedef void OnDaySelected(DateTime day, List events, List holidays);
 
 enum CalendarFormat { Month, Week }
 
+
 class WidgetableCalendarUI extends StatefulWidget {
   final Color weekDayColor;
   final Color sundayColor;
@@ -23,6 +24,10 @@ class WidgetableCalendarUI extends StatefulWidget {
 
   final CalendarFormat calendarFormat;
 
+  final int weekStartIndex;
+
+  final List weekList;
+
   WidgetableCalendarUI(
       {Key key,
       @required this.calendarController,
@@ -37,7 +42,9 @@ class WidgetableCalendarUI extends StatefulWidget {
       this.todayTextColor = Colors.white,
       this.highlightBackgroundColor = Colors.red,
       this.highlightTextColor = Colors.white,
-      this.calendarFormat})
+      this.calendarFormat,
+      this.weekStartIndex,
+      this.weekList})
       : super(key: key);
 
   _WidgetableCalendarUIState createState() => _WidgetableCalendarUIState();
@@ -455,9 +462,13 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   }
 
   TableRow _buildEachWeek(Map snapshot, DateTime baseDate, int type) {
-    print(snapshot['selectDate'].toString());
     final children = <TableCell>[];
-    int baseDay = (baseDate.weekday) % 7;
+
+    int baseDay = (baseDate.weekday) % 7-widget.weekStartIndex;
+    if(baseDay<0){
+      baseDay += 7;
+    }
+
     DateTime tempDate = baseDate.subtract(Duration(days: baseDay));
     for (int i = 0; i < 7; i++) {
       DateTime eachDate = tempDate.add(Duration(days: i));
@@ -628,18 +639,14 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
 
 //
   TableRow _buildDaysOfWeek() {
-    List dayList = [
-      "SUN",
-      "MON",
-      "TUE",
-      "WED",
-      "THU",
-      "FRI",
-      "SAT",
-    ];
+
+    List dayList = widget.weekList;
     final children = <TableCell>[];
 
-    for (int i = 0; i < dayList.length; i++) {
+    int index = widget.weekStartIndex%7;
+
+
+    for (int i = index; i < dayList.length; i++) {
       children.add(
         TableCell(
           child: Container(
@@ -665,6 +672,33 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
         ),
       );
     }
+    for (int i = 0; i < index; i++) {
+      children.add(
+        TableCell(
+          child: Container(
+            width: double.infinity,
+            height: 50,
+            child: Center(
+              child: i == 0
+                  ? Text(
+                dayList[i],
+                style: TextStyle(color: widget.sundayColor),
+              )
+                  : i == 6
+                  ? Text(
+                dayList[i],
+                style: TextStyle(color: widget.saturdayColor),
+              )
+                  : Text(
+                dayList[i],
+                style: TextStyle(color: widget.weekDayColor),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     // return Calendar
     return TableRow(children: children);
   }
