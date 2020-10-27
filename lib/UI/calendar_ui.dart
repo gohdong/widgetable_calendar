@@ -54,7 +54,9 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   void initState() {
     // _buildEachWeek2(DateTime.now().add(Duration(days: 3)));
     widget.calendarController.init(
-        calendarFormat: widget.calendarFormat, holidayData: widget.holiday, headerEnable: widget.headerEnable);
+        calendarFormat: widget.calendarFormat,
+        holidayData: widget.holiday,
+        headerEnable: widget.headerEnable);
     super.initState();
   }
 
@@ -139,7 +141,9 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
 
         return Column(
           children: [
-            snapshot.data['headerEnable'] ? _buildHeader(snapshot.data) : Container(),
+            snapshot.data['headerEnable']
+                ? _buildHeader(snapshot.data)
+                : Container(),
             Table(
               children: [
                 _buildDaysOfWeek(),
@@ -193,7 +197,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                         final children = <Widget>[];
 
                         entireColorMap.forEach((key, value) {
-                          if (key != "empty" && key !="holiday") {
+                          if (key != "empty" && key != "holiday") {
                             children.add(
                               _buildColorFlatButton(snapshot.data, key, 0),
                             );
@@ -223,15 +227,18 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                 child: Text("ADD EVENTS - Color")),
             FlatButton(
                 onPressed: () {
-                  widget.calendarController.addHolidays({
-                    DateTime.now().microsecondsSinceEpoch.toString(): {
-                      'summary': 'TEST',
-                      'start': snapshot.data['selectDate'],
-                      'end': snapshot.data['selectDate'].add(Duration(days: 2)),
-                      'recurrence': null,
-                      'labelColor': "holiday"
-                    }
-                  },);
+                  widget.calendarController.addHolidays(
+                    {
+                      DateTime.now().microsecondsSinceEpoch.toString(): {
+                        'summary': 'TEST',
+                        'start': snapshot.data['selectDate'],
+                        'end':
+                            snapshot.data['selectDate'].add(Duration(days: 2)),
+                        'recurrence': null,
+                        'labelColor': "holiday"
+                      }
+                    },
+                  );
                 },
                 child: Text("ADD HOLIDAY")),
             FlatButton(
@@ -732,9 +739,9 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     for (int i = 0; i < allEvents.length && i < 3; i++) {
       Map eventMap = allEvents[i]["content"];
       Color labelColor =
-      widget.calendarController.getLabelColor(eventMap["labelColor"]);
+          widget.calendarController.getLabelColor(eventMap["labelColor"]);
       bool toggle = widget.calendarController
-          .getLabelColorToggle(eventMap["labelColor"]) ??
+              .getLabelColorToggle(eventMap["labelColor"]) ??
           false;
       if (toggle) {
         children.add(Icon(
@@ -776,7 +783,8 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
 //    List selectDateEvent =
 //        widget.calendarController.findEvents(snapshot['selectDate']);
 
-    List selectDateAllEvent = widget.calendarController.findAllEvents(snapshot['selectDate']);
+    List selectDateAllEvent =
+        widget.calendarController.findAllEvents(snapshot['selectDate']);
     Map entireColorMap = snapshot['labelColorMap'];
 
     return ListView.builder(
@@ -795,7 +803,8 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
 //            eventKeyValue = selectDateEvent[index-selectDateHoliday.length]["id"];
 //          }
 
-          Map eventInfo = selectDateAllEvent[index]["content"];;
+          Map eventInfo = selectDateAllEvent[index]["content"];
+          ;
           String eventKeyValue = selectDateAllEvent[index]["id"];
 //
           return Container(
@@ -917,14 +926,14 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     if (snapshot['selectDate'].month + type != eachDate.month &&
         snapshot['calendarFormat'] == CalendarFormat.Month) {
       return Colors.grey;
-    } else if (widget.calendarController.findHolidaysBool(eachDate)){
-      return widget.sundayColor;
     } else if (eachDate == snapshot['selectDate']) {
       return widget.highlightTextColor;
     } else if (eachDate ==
         DateTime(
             DateTime.now().year, DateTime.now().month, DateTime.now().day)) {
       return widget.todayTextColor;
+    } else if (widget.calendarController.findHolidaysBool(eachDate)) {
+      return widget.sundayColor;
     } else if (eachDate.weekday == 7) {
       return widget.sundayColor;
     } else if (eachDate.weekday == 6) {
@@ -969,6 +978,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
         "start": start,
         "end": end,
         "length": end.difference(start).inDays,
+        "labelColor": value['labelColor'],
       });
     });
     // 이벤트들을 길이 순으로 정렬하기
@@ -1049,6 +1059,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
           "start": start,
           "end": end,
           "length": end.difference(start).inDays,
+          "labelColor": value['labelColor'],
         });
       });
       tempEventsList.forEach((element) {
@@ -1083,6 +1094,10 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
             }
           }
         }
+
+        bool toggle =
+            widget.calendarController.getLabelColorToggle(temp['labelColor']) ??
+                false;
         if (temp.isNotEmpty) {
           result.add(Positioned(
             left: (temp['start'].difference(thisWeekFirstDate).inDays) *
@@ -1093,8 +1108,10 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
               height: 10,
               width:
                   (MediaQuery.of(context).size.width * temp['length'] / 7) - 1,
-              color: Colors.black
-                  .withOpacity((endDate.difference(startDate).inDays + 1) / 7),
+//              color: Colors.black
+//                .withOpacity((endDate.difference(startDate).inDays + 1) / 7),
+              color:
+                  widget.calendarController.getLabelColor(temp['labelColor']),
               child: Text(
                 "${temp['summary']}",
                 style: TextStyle(fontSize: 7, color: Colors.white),
