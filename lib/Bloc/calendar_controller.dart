@@ -132,9 +132,6 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
         break;
       }
     }
-
-    print("=== eachHoliday === " + super.data.eachHoliday.toString());
-    print("=== holidaysByDate === " + super.data.holidaysByDate.toString());
     super.streamSink();
   }
 
@@ -153,6 +150,37 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
         }
       });
     }
+    return returnValue;
+  }
+
+  List findAllEvents(DateTime date){
+    List returnValue = [];
+
+    if (super.data.holidaysByDate.containsKey(date)) {
+      List temp = super.data.holidaysByDate[date];
+      temp.forEach((element) {
+//        returnValue.add(element);
+        if (super.data.eachHoliday.containsKey(element)) {
+          String colorKey = super.data.eachHoliday[element]["labelColor"];
+          if (this.getLabelColorToggle(colorKey))
+            returnValue
+                .add({"id": element, "content": super.data.eachHoliday[element]});
+        }
+      });
+    }
+    if (super.data.eventsByDate.containsKey(date)) {
+      List temp = super.data.eventsByDate[date];
+      temp.forEach((element) {
+//        returnValue.add(element);
+        if (super.data.eachEvent.containsKey(element)) {
+          String colorKey = super.data.eachEvent[element]["labelColor"];
+          if (this.getLabelColorToggle(colorKey))
+            returnValue
+                .add({"id": element, "content": super.data.eachEvent[element]});
+        }
+      });
+    }
+
     return returnValue;
   }
 

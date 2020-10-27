@@ -622,8 +622,9 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     DateTime tempDate = baseDate.subtract(Duration(days: baseDay));
     for (int i = 0; i < 7; i++) {
       DateTime eachDate = tempDate.add(Duration(days: i));
-      List events = widget.calendarController.findEvents(eachDate);
-      List holidays = widget.calendarController.findHolidays(eachDate);
+//      List events = widget.calendarController.findEvents(eachDate);
+//      List holidays = widget.calendarController.findHolidays(eachDate);
+      List allEvents = widget.calendarController.findAllEvents(eachDate);
       children.add(
         TableCell(
           child: InkWell(
@@ -661,7 +662,8 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                     style:
                         TextStyle(color: dateColor(snapshot, eachDate, type)),
                   ),
-                  _buildEventDot(events,holidays),
+//                  _buildEventDot(events,holidays),
+                  _buildEventDot(allEvents),
                 ],
               ),
             ),
@@ -673,31 +675,15 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     return TableRow(children: children);
   }
 
-  Widget _buildEventDot(List events, List holidays) {
+  Widget _buildEventDot(List allEvents) {
     final children = <Widget>[];
-    int index = 0;
-    for (index = 0; index < holidays.length && index < 3; index++) {
-      Map eventMap = holidays[index]["content"];
-//      print("here  == "+eventMap.toString());
+
+    for (int i = 0; i < allEvents.length && i < 3; i++) {
+      Map eventMap = allEvents[i]["content"];
       Color labelColor =
       widget.calendarController.getLabelColor(eventMap["labelColor"]);
       bool toggle = widget.calendarController
           .getLabelColorToggle(eventMap["labelColor"]) ??
-          false;
-      if (toggle) {
-        children.add(Icon(
-          Icons.lens,
-          size: 7,
-          color: labelColor ?? Colors.grey,
-        ));
-      }
-    }
-    for (int i = 0; i < events.length && index < 3; i++,index++) {
-      Map eventMap = events[i]["content"];
-      Color labelColor =
-          widget.calendarController.getLabelColor(eventMap["labelColor"]);
-      bool toggle = widget.calendarController
-              .getLabelColorToggle(eventMap["labelColor"]) ??
           false;
       if (toggle) {
         children.add(Icon(
@@ -734,26 +720,32 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   }
 
   Widget _buildEventList(Map snapshot) {
-    List selectDateHoliday =
-        widget.calendarController.findHolidays(snapshot['selectDate']);
-    List selectDateEvent =
-        widget.calendarController.findEvents(snapshot['selectDate']);
+//    List selectDateHoliday =
+//        widget.calendarController.findHolidays(snapshot['selectDate']);
+//    List selectDateEvent =
+//        widget.calendarController.findEvents(snapshot['selectDate']);
+
+    List selectDateAllEvent = widget.calendarController.findAllEvents(snapshot['selectDate']);
     Map entireColorMap = snapshot['labelColorMap'];
 
     return ListView.builder(
-        itemCount: selectDateHoliday != null && selectDateEvent != null
-            ? selectDateHoliday.length + selectDateEvent.length
-            : 0,
+//        itemCount: selectDateHoliday != null && selectDateEvent != null
+//            ? selectDateHoliday.length + selectDateEvent.length
+//            : 0,
+        itemCount: selectDateAllEvent != null ? selectDateAllEvent.length : 0,
         itemBuilder: (context, index) {
-          Map eventInfo = {};
-          String eventKeyValue = "";
-          if (index < selectDateHoliday.length) {
-            eventInfo = selectDateHoliday[index]["content"];
-            eventKeyValue = selectDateHoliday[index]["id"];
-          } else {
-            eventInfo = selectDateEvent[index-selectDateHoliday.length]["content"];
-            eventKeyValue = selectDateEvent[index-selectDateHoliday.length]["id"];
-          }
+//          Map eventInfo = {};
+//          String eventKeyValue = "";
+//          if (index < selectDateHoliday.length) {
+//            eventInfo = selectDateHoliday[index]["content"];
+//            eventKeyValue = selectDateHoliday[index]["id"];
+//          } else {
+//            eventInfo = selectDateEvent[index-selectDateHoliday.length]["content"];
+//            eventKeyValue = selectDateEvent[index-selectDateHoliday.length]["id"];
+//          }
+
+          Map eventInfo = selectDateAllEvent[index]["content"];;
+          String eventKeyValue = selectDateAllEvent[index]["id"];
 //
           return Container(
             decoration: BoxDecoration(
