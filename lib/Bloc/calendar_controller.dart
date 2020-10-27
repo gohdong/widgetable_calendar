@@ -235,6 +235,23 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
 
   Map associatedEventsByDate(DateTime date) {
     Map tempMap = {};
+    super.data.eachHoliday.forEach((key, value) {
+      Map tempValue = {};
+      tempValue.addAll(value);
+      DateTime start = value['start'];
+      DateTime end = value['end'].subtract(Duration(microseconds: 1));
+      if (start.hour != 0){
+        start = start.subtract(Duration(hours: start.hour, minutes: start.minute));
+        tempValue['start'] = start;
+      }
+      if (value['end'].hour != 0){
+        end = value['end'].subtract(Duration(hours: value['end'].hour, minutes: value['end'].minute)).add(Duration(days: 1));
+        tempValue['end'] = end;
+      }
+      if ((start.isBefore(date) && end.isAfter(date))||start.compareTo(date)==0) {
+        tempMap.addAll({key: tempValue});
+      }
+    });
     super.data.eachEvent.forEach((key, value) {
       Map tempValue = {};
       tempValue.addAll(value);
