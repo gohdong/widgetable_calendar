@@ -58,6 +58,8 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     super.initState();
   }
 
+  Function eq = const MapEquality().equals;
+
   @override
   void dispose() {
     super.dispose();
@@ -85,6 +87,9 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   int selectYear = 0;
   int selectMonth = 0;
   int selectMonthDate = 0;
+
+  List eventList = [];
+  bool isSAMSAM = false;
 
   // Page Controller - animation
   final PageController pageController = PageController(
@@ -126,11 +131,8 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
         for (int i = -1; i < 2; i++) {
           children.add(
             Container(
-              child: Column(
-                children: [
-                  Expanded(child: _buildCalendarContent(snapshot.data, i)),
-                ],
-              ),
+              height: 1000,
+              child: _buildCalendarContent(snapshot.data, i),
             ),
           );
         }
@@ -603,30 +605,62 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   }
 
   Widget _buildCalendarContent(Map snapshot, int type) {
-    final children = <TableRow>[];
+    final children = <Widget>[];
 
     switch (snapshot['calendarFormat']) {
       case CalendarFormat.Week:
         if (type == -1)
-          children.add(_buildEachWeek(
-              snapshot, snapshot['selectDate'].subtract(Duration(days: 7)), 0));
+          children.add(Stack(
+            children: [
+              Table(
+                children: [
+                  _buildEachWeek(snapshot,
+                      snapshot['selectDate'].subtract(Duration(days: 7)), 0)
+                ],
+              ),
+            ],
+          ));
         if (type == 0)
-          children.add(_buildEachWeek(snapshot, snapshot['selectDate'], 0));
+          children.add(Stack(
+            children: [
+              Table(
+                children: [_buildEachWeek(snapshot, snapshot['selectDate'], 0)],
+              ),
+            ],
+          ));
+
         if (type == 1)
-          children.add(_buildEachWeek(
-              snapshot, snapshot['selectDate'].add(Duration(days: 7)), 0));
+          children.add(Stack(
+            children: [
+              Table(
+                children: [
+                  _buildEachWeek(snapshot,
+                      snapshot['selectDate'].add(Duration(days: 7)), 0)
+                ],
+              ),
+            ],
+          ));
         break;
       default:
         DateTime thisMonthFirstDate = DateTime(
             snapshot['selectDate'].year, snapshot['selectDate'].month + type);
 
         for (int i = 0; i < 6; i++) {
-          children.add(_buildEachWeek(
-              snapshot, thisMonthFirstDate.add(Duration(days: i * 7)), type));
+          children.add(Stack(
+            children: [
+              Table(
+                children: [
+                  _buildEachWeek(snapshot,
+                      thisMonthFirstDate.add(Duration(days: i * 7)), type)
+                ],
+              ),
+              ddi(snapshot, thisMonthFirstDate.add(Duration(days: i * 7)), type)
+            ],
+          ));
         }
     }
 
-    return Table(
+    return Column(
       children: children,
     );
   }
@@ -669,10 +703,11 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                       : null,
               height: 50,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  SizedBox(
-                    height: 10,
-                  ),
+                  // SizedBox(
+                  //   height: 10,
+                  // ),
                   Text(
                     "${eachDate.month}/${eachDate.day}",
                     style:
@@ -882,6 +917,8 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     if (snapshot['selectDate'].month + type != eachDate.month &&
         snapshot['calendarFormat'] == CalendarFormat.Month) {
       return Colors.grey;
+    } else if (widget.calendarController.findHolidaysBool(eachDate)){
+      return widget.sundayColor;
     } else if (eachDate == snapshot['selectDate']) {
       return widget.highlightTextColor;
     } else if (eachDate ==
@@ -892,10 +929,197 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
       return widget.sundayColor;
     } else if (eachDate.weekday == 6) {
       return widget.saturdayColor;
-    } else if (widget.calendarController.findHolidaysBool(eachDate)){
-      return widget.sundayColor;
     }
 
     return widget.weekDayColor;
+  }
+
+  Widget ddi(Map snapshot, DateTime baseDate, int type) {
+    List<List<Widget>> rowChildren = [[], [], [], []];
+
+    int baseDay = (baseDate.weekday) % 7;
+    DateTime thisWeekFirstDate = baseDate.subtract(Duration(days: baseDay));
+    DateTime thisWeekLastDate = thisWeekFirstDate.add(Duration(days: 6));
+
+    Map thisWeekEvents = {};
+    //
+    // int thisWeekEventsCount ;
+    // int maxCount =0;
+
+    // 해당 주에 관련있는 이벤트 가져오기
+    for (int i = 0; i < 7; i++) {
+      DateTime eachDate = thisWeekFirstDate.add(Duration(days: i));
+      thisWeekEvents
+          .addAll(widget.calendarController.associatedEventsByDate(eachDate));
+    }
+    eventList.clear();
+
+    thisWeekEvents.forEach((key, value) {
+      String summary = value['summary'];
+      DateTime start = value['start'];
+      DateTime end = value['end'];
+      start = start.isBefore(thisWeekFirstDate) ? thisWeekFirstDate : start;
+      end = end.isAfter(thisWeekLastDate)
+          ? thisWeekLastDate.add(Duration(days: 1))
+          : end;
+
+      eventList.add({
+        "id": key,
+        "summary": summary,
+        "start": start,
+        "end": end,
+        "length": end.difference(start).inDays,
+      });
+    });
+    // 이벤트들을 길이 순으로 정렬하기
+    eventList.sort((a, b) => b['length'].compareTo(a['length']));
+
+    for (int i = 0; i < 4; i++) {
+      if (eventList.isEmpty) {
+        break;
+      }
+
+      rowChildren[i] = ddiRecursion(thisWeekFirstDate, thisWeekLastDate,
+          thisWeekFirstDate, thisWeekLastDate);
+    }
+
+    List<Widget> columnChildren = [
+      Container(
+        margin: EdgeInsets.only(top: 10),
+        height: 10,
+        width: MediaQuery.of(context).size.width,
+        child: Stack(
+          children: rowChildren[0],
+        ),
+      ),
+      Container(
+        height: 10,
+        width: MediaQuery.of(context).size.width,
+        child: Stack(
+          children: rowChildren[1],
+        ),
+      ),
+      Container(
+        height: 10,
+        width: MediaQuery.of(context).size.width,
+        child: Stack(
+          children: rowChildren[2],
+        ),
+      ),
+      Container(
+        height: 10,
+        width: MediaQuery.of(context).size.width,
+        child: Stack(
+          children: rowChildren[3],
+        ),
+      ),
+    ];
+
+    return Column(
+      children: columnChildren,
+    );
+  }
+
+  List<Widget> ddiRecursion(DateTime startDate, DateTime endDate,
+      DateTime thisWeekFirstDate, DateTime thisWeekLastDate) {
+    List<Widget> result = [];
+
+    Map thisDurationEvents = {};
+    Map temp = {};
+    List tempEventsList = [];
+    List tempEventsList2 = [];
+
+    if (endDate.compareTo(startDate) >= 0) {
+      for (int i = 0; i < endDate.difference(startDate).inDays + 1; i++) {
+        DateTime eachDate = startDate.add(Duration(days: i));
+        thisDurationEvents
+            .addAll(widget.calendarController.associatedEventsByDate(eachDate));
+      }
+
+      thisDurationEvents.forEach((key, value) {
+        String summary = value['summary'];
+        DateTime start = value['start'];
+        DateTime end = value['end'];
+        start = start.isBefore(startDate) ? startDate : start;
+        end = end.isAfter(endDate) ? endDate.add(Duration(days: 1)) : end;
+
+        tempEventsList.add({
+          "id": key,
+          "summary": summary,
+          "start": start,
+          "end": end,
+          "length": end.difference(start).inDays,
+        });
+      });
+      tempEventsList.forEach((element) {
+        eventList.forEach((element1) {
+          if (eq(element, element1)) {
+            tempEventsList2.add(element);
+          }
+        });
+      });
+
+      if (tempEventsList2.isNotEmpty) {
+        tempEventsList2.sort((a, b) => b['length'].compareTo(a['length']));
+        for (int i = 0; i < tempEventsList2.length; i++) {
+          DateTime tempStart = tempEventsList2[i]['start'];
+          DateTime tempEnd = tempEventsList2[i]['end'];
+          if (!isSAMSAM && (endDate == thisWeekLastDate)) {
+            if ((tempStart.isAfter(startDate) ||
+                    tempStart.isAtSameMomentAs(startDate)) &&
+                (tempEnd.isBefore(endDate.add(Duration(days: 1))) ||
+                    tempEnd.isAtSameMomentAs(endDate.add(Duration(days: 1))))) {
+              temp = tempEventsList2[i];
+              isSAMSAM = true;
+              break;
+            }
+          } else {
+            if ((tempStart.isAfter(startDate) ||
+                    tempStart.isAtSameMomentAs(startDate)) &&
+                (tempEnd.isBefore(endDate) ||
+                    tempEnd.isAtSameMomentAs(endDate))) {
+              temp = tempEventsList2[i];
+              break;
+            }
+          }
+        }
+        if (temp.isNotEmpty) {
+          result.add(Positioned(
+            left: (temp['start'].difference(thisWeekFirstDate).inDays) *
+                (MediaQuery.of(context).size.width / 7),
+            top: 1,
+            child: Container(
+              margin: EdgeInsets.only(left: 1, right: 1),
+              height: 10,
+              width:
+                  (MediaQuery.of(context).size.width * temp['length'] / 7) - 1,
+              color: Colors.black
+                  .withOpacity((endDate.difference(startDate).inDays + 1) / 7),
+              child: Text(
+                "${temp['summary']}",
+                style: TextStyle(fontSize: 7, color: Colors.white),
+              ),
+            ),
+          ));
+          // eventList.remove(temp);
+          eventList.removeWhere((element) => eq(element, temp));
+          if (eventList.isNotEmpty) {
+            result.addAll(ddiRecursion(
+                startDate, temp['start'], thisWeekFirstDate, thisWeekLastDate));
+            result.addAll(ddiRecursion(
+                temp['end'], endDate, thisWeekFirstDate, thisWeekLastDate));
+          }
+        }
+      }
+    }
+    isSAMSAM = false;
+
+    return result;
+  }
+
+  EdgeInsets ddiMargin(Map event, DateTime eachDate) {
+    print(event);
+
+    return EdgeInsets.only(top: 1, bottom: 1, right: 1, left: 1);
   }
 }

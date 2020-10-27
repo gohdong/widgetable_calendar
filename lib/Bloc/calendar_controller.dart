@@ -28,6 +28,8 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
 
     final now = DateTime.now();
     super.data.selectDate = _normalizeDate(now);
+
+
     super.data.calendarFormat = calendarFormat ?? CalendarFormat.Month;
     super.data.headerEnable = headerEnable ?? true;
 //    super.data.focusDate = _normalizeDate(now);
@@ -114,9 +116,11 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     List returnValue = [];
 
     if (super.data.eventsByDate.containsKey(date)) {
-      List temp = super.data.eventsByDate[date];
+      List temp = super.data.eventsByDate[date].toList();
       temp.forEach((element) {
 //        returnValue.add(element);
+        returnValue
+            .add({"id": element, "content": super.data.eachEvent[element]});
         if (super.data.eachEvent.containsKey(element)) {
           String colorKey = super.data.eachEvent[element]["labelColor"];
           if (this.getLabelColorToggle(colorKey))
@@ -127,7 +131,6 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     }
     return returnValue;
   }
-
 
   void addHolidays(Map eventData) {
     DateTime roundDown(DateTime date) =>
@@ -230,6 +233,18 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
 //    return super.data.labelColorMap;
 //  }
 
+  Map associatedEventsByDate(DateTime date) {
+    Map tempMap = {};
+    super.data.eachEvent.forEach((key, value) {
+      DateTime start = value['start'];
+      DateTime end = value['end'].subtract(Duration(microseconds: 1));
+      if ((start.isBefore(date) && end.isAfter(date))||start.compareTo(date)==0) {
+        tempMap.addAll({key: value});
+      }
+    });
+    return tempMap;
+  }
+
   Color getLabelColor(String colorKey) {
     if (colorKey != null && super.data.labelColorMap.containsKey(colorKey))
       return super.data.labelColorMap[colorKey]["color"];
@@ -318,9 +333,14 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     dateList.forEach((element) {
       if (super.data.eventsByDate.containsKey(element)) {
         for (int i = 0; i < super.data.eventsByDate[element].length; i++) {
-          String key = super.data.eventsByDate[element][i];
-          if (keyList.contains(key))
-            super.data.eventsByDate[element].remove(key);
+//<<<<<<< HEAD
+//          String key = super.data.eventsByDate[element][i];
+//          if (keyList.contains(key))
+//            super.data.eventsByDate[element].remove(key);
+//=======
+          String key = super.data.eventsByDate[element].toList()[i];
+          if (keyList.contains(key)) super.data.eventsByDate[element].remove(
+              key);
         }
       } else {
         print("error in here : " + element.toString());
