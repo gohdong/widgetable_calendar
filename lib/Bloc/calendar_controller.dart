@@ -240,11 +240,11 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
       tempValue.addAll(value);
       DateTime start = value['start'];
       DateTime end = value['end'].subtract(Duration(microseconds: 1));
-      if (start.hour != 0){
+      if (start.hour != 0 || start.minute != 0){
         start = start.subtract(Duration(hours: start.hour, minutes: start.minute));
         tempValue['start'] = start;
       }
-      if (value['end'].hour != 0){
+      if (value['end'].hour != 0 || value['end'].minute != 0){
         end = value['end'].subtract(Duration(hours: value['end'].hour, minutes: value['end'].minute)).add(Duration(days: 1));
         tempValue['end'] = end;
       }
@@ -257,11 +257,11 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
       tempValue.addAll(value);
       DateTime start = value['start'];
       DateTime end = value['end'].subtract(Duration(microseconds: 1));
-      if (start.hour != 0){
+      if (start.hour != 0 || start.minute != 0){
         start = start.subtract(Duration(hours: start.hour, minutes: start.minute));
         tempValue['start'] = start;
       }
-      if (value['end'].hour != 0){
+      if (value['end'].hour != 0 || value['end'].minute != 0){
         end = value['end'].subtract(Duration(hours: value['end'].hour, minutes: value['end'].minute)).add(Duration(days: 1));
         tempValue['end'] = end;
       }
