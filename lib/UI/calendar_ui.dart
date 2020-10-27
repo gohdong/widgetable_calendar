@@ -420,7 +420,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                     'end': snapshot['selectDate'].add(Duration(days: 2)),
                     'recurrence': null,
                     'labelColor': colorKey
-                  }
+                  },
                 },
               );
               Navigator.of(context).pop();

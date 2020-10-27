@@ -77,6 +77,22 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   }
 
   Widget _buildCalendar() {
+    Map holiday = {
+      DateTime(2020,10,3).microsecondsSinceEpoch.toString(): {
+        'summary': 'National Foundation Day',
+        'start': DateTime(2020,10,3),
+        'end': DateTime(2020,10,3).add(Duration(days: 1)),
+        'recurrence': null,
+        'labelColor': "holiday"
+      },
+      DateTime(2020,10,9).microsecondsSinceEpoch.toString(): {
+        'summary': 'Hangul Day',
+        'start': DateTime(2020,10,9),
+        'end': DateTime(2020,10,9).add(Duration(days: 1)),
+        'recurrence': null,
+        'labelColor': "holiday"
+      },
+    };
     return WidgetableCalendar(
       // calendarController: _calendarController,
       calendarController: calendarController,
@@ -88,15 +104,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       todayTextColor: Colors.greenAccent,
       highlightBackgroundColor: Colors.pink,
       highlightTextColor: Colors.deepOrangeAccent,
-      holiday: {
-        DateTime.now().microsecondsSinceEpoch.toString(): {
-          'summary': 'holiday test',
-          'start': DateTime.now(),
-          'end': DateTime.now().add(Duration(days: 1)),
-          'recurrence': null,
-          'labelColor': "holiday"
-        }
-      },
+      holiday: holiday,
       headerEnable: true,
     );
   }

@@ -72,22 +72,40 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
 //    print(eventData);
 
     super.data.eachEvent.addAll(Map.from(eventData));
-    String eid = eventData.keys.first;
-    DateTime start = super.data.eachEvent[eid]['start'];
-    DateTime end = super.data.eachEvent[eid]['end'];
-    DateTime temp = roundDown(start);
-    while (true) {
-      if (super.data.eventsByDate[temp] == null) {
-        super.data.eventsByDate[temp] = [eid];
-      } else {
-        super.data.eventsByDate[temp].add(eid);
-      }
+    eventData.forEach((eid, value) {
+//      String eid = key;
+      DateTime start = value['start'];
+      DateTime end = value['end'];
+      DateTime temp = roundDown(start);
+      while (true) {
+        if (super.data.eventsByDate[temp] == null) {
+          super.data.eventsByDate[temp] = [eid];
+        } else {
+          super.data.eventsByDate[temp].add(eid);
+        }
 
-      temp = temp.add(Duration(days: 1));
-      if (temp.isAfter(roundDown(end.subtract(Duration(microseconds: 1))))) {
-        break;
+        temp = temp.add(Duration(days: 1));
+        if (temp.isAfter(roundDown(end.subtract(Duration(microseconds: 1))))) {
+          break;
+        }
       }
-    }
+    });
+//    String eid = eventData.keys.first;
+//    DateTime start = super.data.eachEvent[eid]['start'];
+//    DateTime end = super.data.eachEvent[eid]['end'];
+//    DateTime temp = roundDown(start);
+//    while (true) {
+//      if (super.data.eventsByDate[temp] == null) {
+//        super.data.eventsByDate[temp] = [eid];
+//      } else {
+//        super.data.eventsByDate[temp].add(eid);
+//      }
+//
+//      temp = temp.add(Duration(days: 1));
+//      if (temp.isAfter(roundDown(end.subtract(Duration(microseconds: 1))))) {
+//        break;
+//      }
+//    }
 
     super.streamSink();
   }
@@ -117,22 +135,40 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
 //    print(eventData);
 
     super.data.eachHoliday.addAll(Map.from(eventData));
-    String eid = eventData.keys.first;
-    DateTime start = super.data.eachHoliday[eid]['start'];
-    DateTime end = super.data.eachHoliday[eid]['end'];
-    DateTime temp = roundDown(start);
-    while (true) {
-      if (super.data.holidaysByDate[temp] == null) {
-        super.data.holidaysByDate[temp] = [eid];
-      } else {
-        super.data.holidaysByDate[temp].add(eid);
-      }
+    eventData.forEach((eid, value) {
+//      String eid = key;
+      DateTime start = value['start'];
+      DateTime end = value['end'];
+      DateTime temp = roundDown(start);
+      while (true) {
+        if (super.data.holidaysByDate[temp] == null) {
+          super.data.holidaysByDate[temp] = [eid];
+        } else {
+          super.data.holidaysByDate[temp].add(eid);
+        }
 
-      temp = temp.add(Duration(days: 1));
-      if (temp.isAfter(roundDown(end.subtract(Duration(microseconds: 1))))) {
-        break;
+        temp = temp.add(Duration(days: 1));
+        if (temp.isAfter(roundDown(end.subtract(Duration(microseconds: 1))))) {
+          break;
+        }
       }
-    }
+    });
+//    String eid = eventData.keys.first;
+//    DateTime start = super.data.eachHoliday[eid]['start'];
+//    DateTime end = super.data.eachHoliday[eid]['end'];
+//    DateTime temp = roundDown(start);
+//    while (true) {
+//      if (super.data.holidaysByDate[temp] == null) {
+//        super.data.holidaysByDate[temp] = [eid];
+//      } else {
+//        super.data.holidaysByDate[temp].add(eid);
+//      }
+//
+//      temp = temp.add(Duration(days: 1));
+//      if (temp.isAfter(roundDown(end.subtract(Duration(microseconds: 1))))) {
+//        break;
+//      }
+//    }
     super.streamSink();
   }
 
