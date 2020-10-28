@@ -74,18 +74,20 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     List returnValue = [];
 
     if (super.data.eventsByDate.containsKey(date)) {
-      List temp = super.data.eventsByDate[date].toList();
+      List temp = super.data.eventsByDate[date];
       temp.forEach((element) {
-        returnValue
-            .add({"id": element, "content": super.data.eachEvent[element]});
         if (super.data.eachEvent.containsKey(element)) {
           String colorKey = super.data.eachEvent[element]["labelColor"];
           if (this.getLabelColorToggle(colorKey))
-            returnValue
-                .add({"id": element, "content": super.data.eachEvent[element]});
+            returnValue.add({
+              "id": element,
+              "content": super.data.eachEvent[element],
+              "type": "event"
+            });
         }
       });
     }
+
     return returnValue;
   }
 
@@ -124,23 +126,6 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
         if (super.data.eachHoliday.containsKey(element)) {
           String colorKey = super.data.eachHoliday[element]["labelColor"];
           if (this.getLabelColorToggle(colorKey))
-            returnValue.add(
-                {"id": element, "content": super.data.eachHoliday[element]});
-        }
-      });
-    }
-    return returnValue;
-  }
-
-  List findAllEvents(DateTime date) {
-    List returnValue = [];
-
-    if (super.data.holidaysByDate.containsKey(date)) {
-      List temp = super.data.holidaysByDate[date];
-      temp.forEach((element) {
-        if (super.data.eachHoliday.containsKey(element)) {
-          String colorKey = super.data.eachHoliday[element]["labelColor"];
-          if (this.getLabelColorToggle(colorKey))
             returnValue.add({
               "id": element,
               "content": super.data.eachHoliday[element],
@@ -149,26 +134,21 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
         }
       });
     }
-    if (super.data.eventsByDate.containsKey(date)) {
-      List temp = super.data.eventsByDate[date];
-      temp.forEach((element) {
-        if (super.data.eachEvent.containsKey(element)) {
-          String colorKey = super.data.eachEvent[element]["labelColor"];
-          if (this.getLabelColorToggle(colorKey))
-            returnValue.add({
-              "id": element,
-              "content": super.data.eachEvent[element],
-              "type": "event"
-            });
-        }
-      });
-    }
+    return returnValue;
+  }
+
+  List findAllEvents(DateTime date) {
+    List returnValue = [];
+    returnValue = findHolidays(date) + findEvents(date);
+
+//    print(date.toString() + " : " + returnValue.toString());
 
     return returnValue;
   }
 
   bool findHolidaysBool(DateTime date) {
-    if (super.data.holidaysByDate.containsKey(date))
+    if (super.data.holidaysByDate.containsKey(date) &&
+        super.data.holidaysByDate[date].length > 0)
       return true;
     else
       return false;
@@ -179,69 +159,41 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     DateTime roundDown(DateTime date) =>
         DateTime(date.year, date.month, date.day);
     Map tempMap = {};
+    Map byDate = {};
 
     if (type == "event") {
-      print("event");
       tempMap.addAll(super.data.eachEvent[eventKey]);
       super.data.eachEvent.remove(eventKey);
-
-      // make associated dateList
-      DateTime start = tempMap["start"];
-      DateTime end = tempMap["end"];
-      DateTime temp = roundDown(start);
-
-      while (true) {
-        dateList.add(temp);
-        temp = temp.add(Duration(days: 1));
-        if (temp.isAfter(roundDown(end.subtract(Duration(microseconds: 1)))))
-          break;
-      }
-      // make associated dateList
-
-      // delete eventKey in eventsByDate MAP
-      dateList.forEach((element) {
-        if (super.data.eventsByDate.containsKey(element)) {
-          if (super.data.eventsByDate[element].toList().contains(eventKey))
-            super.data.eventsByDate[element].remove(eventKey);
-        } else {
-          print("error in here : " + element.toString());
-        }
-      });
-      // delete eventKey in eventsByDate MAP
-
-//      print("\n"+super.data.eventsByDate.toString()+"\n");
-
+      byDate = super.data.eventsByDate;
     } else if (type == "holiday") {
-      print("holiday");
       tempMap.addAll(super.data.eachHoliday[eventKey]);
       super.data.eachHoliday.remove(eventKey);
-
-      // make associated dateList
-      DateTime start = tempMap["start"];
-      DateTime end = tempMap["end"];
-      DateTime temp = roundDown(start);
-
-      while (true) {
-        dateList.add(temp);
-        temp = temp.add(Duration(days: 1));
-        if (temp.isAfter(roundDown(end.subtract(Duration(microseconds: 1)))))
-          break;
-      }
-      // make associated dateList
-
-      // delete eventKey in eventsByDate MAP
-      dateList.forEach((element) {
-        if (super.data.holidaysByDate.containsKey(element)) {
-          if (super.data.holidaysByDate[element].toList().contains(eventKey))
-            super.data.holidaysByDate[element].remove(eventKey);
-        } else {
-          print("error in here : " + element.toString());
-        }
-      });
-      // delete eventKey in eventsByDate MAP
-
-//      print("\n" + super.data.holidaysByDate.toString() + "\n");
+      byDate = super.data.holidaysByDate;
     }
+
+    // make associated dateList
+    DateTime start = tempMap["start"];
+    DateTime end = tempMap["end"];
+    DateTime temp = roundDown(start);
+
+    while (true) {
+      dateList.add(temp);
+      temp = temp.add(Duration(days: 1));
+      if (temp.isAfter(roundDown(end.subtract(Duration(microseconds: 1)))))
+        break;
+    }
+    // make associated dateList
+
+    // delete eventKey in eventsByDate or holidaysByDate MAP
+    dateList.forEach((element) {
+      if (byDate.containsKey(element)) {
+        if (byDate[element].toList().contains(eventKey))
+          byDate[element].remove(eventKey);
+      } else {
+        print("error in here : " + element.toString());
+      }
+    });
+    // delete eventKey in eventsByDate or holidaysByDate MAP
 
     super.streamSink();
   }

@@ -103,7 +103,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       todayTextColor: Colors.greenAccent,
       highlightBackgroundColor: Colors.pink,
       highlightTextColor: Colors.deepOrangeAccent,
-      weekStartIndex: 1,
+      weekStartIndex: 0,
       weekList: ["일","월","화","수","목","금","토"],
       holiday: holiday,
       headerEnable: true,
