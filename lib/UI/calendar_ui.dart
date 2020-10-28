@@ -582,12 +582,12 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
           ),
         ),
       ),
-      IconButton(
-        icon: Icon(Icons.weekend),
-        onPressed: () {
-          widget.calendarController.toggleCalendarFormat();
-        },
-      ),
+//      IconButton(
+//        icon: Icon(Icons.weekend),
+//        onPressed: () {
+//          widget.calendarController.toggleCalendarFormat();
+//        },
+//      ),
       IconButton(
         icon: Icon(Icons.arrow_forward_ios),
         onPressed: () {

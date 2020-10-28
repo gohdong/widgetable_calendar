@@ -48,19 +48,18 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   WidgetableCalendarController calendarController =
       WidgetableCalendarController();
 
-  List<Map> _events;
 
   @override
   void initState() {
     super.initState();
-    final _selectedDay = DateTime.now();
-
-    _events = [];
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(child: Icon(Icons.check),onPressed:(){
+        calendarController.toggleCalendarFormat();
+      },),
       appBar: AppBar(
         title: Text(widget.title),
         actions: [
