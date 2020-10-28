@@ -48,19 +48,18 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   WidgetableCalendarController calendarController =
       WidgetableCalendarController();
 
-  List<Map> _events;
 
   @override
   void initState() {
     super.initState();
-    final _selectedDay = DateTime.now();
-
-    _events = [];
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(child: Icon(Icons.check),onPressed:(){
+        calendarController.toggleCalendarFormat();
+      },),
       appBar: AppBar(
         title: Text(widget.title),
         actions: [
@@ -77,6 +76,22 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   }
 
   Widget _buildCalendar() {
+    Map holiday = {
+      DateTime(2020,10,3).microsecondsSinceEpoch.toString(): {
+        'summary': 'National Foundation Day',
+        'start': DateTime(2020,10,3),
+        'end': DateTime(2020,10,3).add(Duration(days: 1)),
+        'recurrence': null,
+        'labelColor': "holiday"
+      },
+      DateTime(2020,10,9).microsecondsSinceEpoch.toString(): {
+        'summary': 'Hangul Day',
+        'start': DateTime(2020,10,9),
+        'end': DateTime(2020,10,9).add(Duration(days: 1)),
+        'recurrence': null,
+        'labelColor': "holiday"
+      },
+    };
     return WidgetableCalendar(
       // calendarController: _calendarController,
       calendarController: calendarController,
@@ -88,6 +103,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       todayTextColor: Colors.greenAccent,
       highlightBackgroundColor: Colors.pink,
       highlightTextColor: Colors.deepOrangeAccent,
+      weekStartIndex: 1,
+      weekList: ["일","월","화","수","목","금","토"],
+      holiday: holiday,
+      headerEnable: true,
     );
   }
 }

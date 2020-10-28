@@ -5,6 +5,7 @@ typedef void OnDaySelected(DateTime day, List events, List holidays);
 
 enum CalendarFormat { Month, Week }
 
+
 class WidgetableCalendarUI extends StatefulWidget {
   final Color weekDayColor;
   final Color sundayColor;
@@ -16,12 +17,18 @@ class WidgetableCalendarUI extends StatefulWidget {
   final Color highlightBackgroundColor;
   final Color highlightTextColor;
 
-  final List holidays;
-  final List events;
+//  final List holidays;
+//  final List events;
+  final Map holiday;
 
   final WidgetableCalendarController calendarController;
 
   final CalendarFormat calendarFormat;
+
+  final int weekStartIndex;
+
+  final List weekList;
+  final bool headerEnable;
 
   WidgetableCalendarUI(
       {Key key,
@@ -31,13 +38,17 @@ class WidgetableCalendarUI extends StatefulWidget {
       this.saturdayColor = Colors.blue,
       this.backgroundColor = Colors.white,
       this.lineColor = Colors.black,
-      this.holidays,
-      this.events,
+//      this.holidays,
+//      this.events,
+      this.holiday,
       this.todayBackgroundColor = Colors.black26,
       this.todayTextColor = Colors.white,
       this.highlightBackgroundColor = Colors.red,
       this.highlightTextColor = Colors.white,
-      this.calendarFormat})
+      this.calendarFormat,
+      this.weekStartIndex,
+      this.weekList,
+      this.headerEnable})
       : super(key: key);
 
   _WidgetableCalendarUIState createState() => _WidgetableCalendarUIState();
@@ -48,9 +59,14 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   @override
   void initState() {
     // _buildEachWeek2(DateTime.now().add(Duration(days: 3)));
-    widget.calendarController.init(calendarFormat: widget.calendarFormat);
+    widget.calendarController.init(
+        calendarFormat: widget.calendarFormat,
+        holidayData: widget.holiday,
+        headerEnable: widget.headerEnable);
     super.initState();
   }
+
+  Function eq = const MapEquality().equals;
 
   @override
   void dispose() {
@@ -79,6 +95,9 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   int selectYear = 0;
   int selectMonth = 0;
   int selectMonthDate = 0;
+
+  List eventList = [];
+  bool isSAMSAM = false;
 
   // Page Controller - animation
   final PageController pageController = PageController(
@@ -120,18 +139,17 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
         for (int i = -1; i < 2; i++) {
           children.add(
             Container(
-              child: Column(
-                children: [
-                  Expanded(child: _buildCalendarContent(snapshot.data, i)),
-                ],
-              ),
+              height: 1000,
+              child: _buildCalendarContent(snapshot.data, i),
             ),
           );
         }
 
         return Column(
           children: [
-            _buildHeader(snapshot.data),
+            snapshot.data['headerEnable']
+                ? _buildHeader(snapshot.data)
+                : Container(),
             Table(
               children: [
                 _buildDaysOfWeek(),
@@ -185,7 +203,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                         final children = <Widget>[];
 
                         entireColorMap.forEach((key, value) {
-                          if (key != "empty") {
+                          if (key != "empty" && key != "holiday") {
                             children.add(
                               _buildColorFlatButton(snapshot.data, key, 0),
                             );
@@ -197,10 +215,15 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                             children: <Widget>[
                               Expanded(
                                 flex: 1,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: children,
-                                ),
+                                child: ListView(
+                                    scrollDirection: Axis.horizontal,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: children,
+                                      ),
+                                    ]),
                               ),
                             ],
                           ),
@@ -208,6 +231,22 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                       });
                 },
                 child: Text("ADD EVENTS - Color")),
+            FlatButton(
+                onPressed: () {
+                  widget.calendarController.addHolidays(
+                    {
+                      DateTime.now().microsecondsSinceEpoch.toString(): {
+                        'summary': 'TEST',
+                        'start': snapshot.data['selectDate'],
+                        'end':
+                            snapshot.data['selectDate'].add(Duration(days: 2)),
+                        'recurrence': null,
+                        'labelColor': "holiday"
+                      }
+                    },
+                  );
+                },
+                child: Text("ADD HOLIDAY")),
             FlatButton(
                 onPressed: () {
                   showModalBottomSheet(
@@ -231,10 +270,15 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                             children: <Widget>[
                               Expanded(
                                 flex: 1,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: children,
-                                ),
+                                child: ListView(
+                                    scrollDirection: Axis.horizontal,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: children,
+                                      ),
+                                    ]),
                               ),
                             ],
                           ),
@@ -300,7 +344,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                         final children = <Widget>[];
 
                         entireColorMap.forEach((key, value) {
-                          if (key != "empty") {
+                          if (key != "empty" && key != "holiday") {
                             children.add(
                               _buildColorFlatButton(snapshot.data, key, 3),
                             );
@@ -312,10 +356,15 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                             children: <Widget>[
                               Expanded(
                                 flex: 1,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: children,
-                                ),
+                                child: ListView(
+                                    scrollDirection: Axis.horizontal,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: children,
+                                      ),
+                                    ]),
                               ),
                             ],
                           ),
@@ -345,10 +394,15 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                             children: <Widget>[
                               Expanded(
                                 flex: 1,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: children,
-                                ),
+                                child: ListView(
+                                    scrollDirection: Axis.horizontal,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: children,
+                                      ),
+                                    ]),
                               ),
                             ],
                           ),
@@ -381,7 +435,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                     'end': snapshot['selectDate'].add(Duration(days: 2)),
                     'recurrence': null,
                     'labelColor': colorKey
-                  }
+                  },
                 },
               );
               Navigator.of(context).pop();
@@ -528,12 +582,12 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
           ),
         ),
       ),
-      IconButton(
-        icon: Icon(Icons.weekend),
-        onPressed: () {
-          widget.calendarController.toggleCalendarFormat();
-        },
-      ),
+//      IconButton(
+//        icon: Icon(Icons.weekend),
+//        onPressed: () {
+//          widget.calendarController.toggleCalendarFormat();
+//        },
+//      ),
       IconButton(
         icon: Icon(Icons.arrow_forward_ios),
         onPressed: () {
@@ -564,42 +618,80 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   }
 
   Widget _buildCalendarContent(Map snapshot, int type) {
-    final children = <TableRow>[];
+    final children = <Widget>[];
 
     switch (snapshot['calendarFormat']) {
       case CalendarFormat.Week:
         if (type == -1)
-          children.add(_buildEachWeek(
-              snapshot, snapshot['selectDate'].subtract(Duration(days: 7)), 0));
+          children.add(Stack(
+            children: [
+              Table(
+                children: [
+                  _buildEachWeek(snapshot,
+                      snapshot['selectDate'].subtract(Duration(days: 7)), 0)
+                ],
+              ),
+            ],
+          ));
         if (type == 0)
-          children.add(_buildEachWeek(snapshot, snapshot['selectDate'], 0));
+          children.add(Stack(
+            children: [
+              Table(
+                children: [_buildEachWeek(snapshot, snapshot['selectDate'], 0)],
+              ),
+            ],
+          ));
+
         if (type == 1)
-          children.add(_buildEachWeek(
-              snapshot, snapshot['selectDate'].add(Duration(days: 7)), 0));
+          children.add(Stack(
+            children: [
+              Table(
+                children: [
+                  _buildEachWeek(snapshot,
+                      snapshot['selectDate'].add(Duration(days: 7)), 0)
+                ],
+              ),
+            ],
+          ));
         break;
       default:
         DateTime thisMonthFirstDate = DateTime(
             snapshot['selectDate'].year, snapshot['selectDate'].month + type);
 
         for (int i = 0; i < 6; i++) {
-          children.add(_buildEachWeek(
-              snapshot, thisMonthFirstDate.add(Duration(days: i * 7)), type));
+          children.add(Stack(
+            children: [
+              Table(
+                children: [
+                  _buildEachWeek(snapshot,
+                      thisMonthFirstDate.add(Duration(days: i * 7)), type)
+                ],
+              ),
+              ddi(snapshot, thisMonthFirstDate.add(Duration(days: i * 7)), type)
+            ],
+          ));
         }
     }
 
-    return Table(
+    return Column(
       children: children,
     );
   }
 
   TableRow _buildEachWeek(Map snapshot, DateTime baseDate, int type) {
-//    print(snapshot['selectDate'].toString());
     final children = <TableCell>[];
-    int baseDay = (baseDate.weekday) % 7;
+
+    int baseDay = (baseDate.weekday) % 7-widget.weekStartIndex;
+    if(baseDay<0){
+      baseDay += 7;
+    }
+
     DateTime tempDate = baseDate.subtract(Duration(days: baseDay));
     for (int i = 0; i < 7; i++) {
       DateTime eachDate = tempDate.add(Duration(days: i));
-      List events = widget.calendarController.findEvents(eachDate);
+//      List events = widget.calendarController.findEvents(eachDate);
+//      List holidays = widget.calendarController.findHolidays(eachDate);
+      List allEvents = widget.calendarController.findAllEvents(eachDate);
       children.add(
         TableCell(
           child: InkWell(
@@ -628,16 +720,18 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                       : null,
               height: 50,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  SizedBox(
-                    height: 10,
-                  ),
+                  // SizedBox(
+                  //   height: 10,
+                  // ),
                   Text(
                     "${eachDate.month}/${eachDate.day}",
                     style:
                         TextStyle(color: dateColor(snapshot, eachDate, type)),
                   ),
-                  _buildEventDot(events),
+//                  _buildEventDot(events,holidays),
+                  _buildEventDot(allEvents),
                 ],
               ),
             ),
@@ -649,10 +743,11 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     return TableRow(children: children);
   }
 
-  Widget _buildEventDot(List events) {
+  Widget _buildEventDot(List allEvents) {
     final children = <Widget>[];
-    for (int i = 0; i < events.length && i < 3; i++) {
-      Map eventMap = events[i]["content"];
+
+    for (int i = 0; i < allEvents.length && i < 3; i++) {
+      Map eventMap = allEvents[i]["content"];
       Color labelColor =
           widget.calendarController.getLabelColor(eventMap["labelColor"]);
       bool toggle = widget.calendarController
@@ -693,60 +788,84 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   }
 
   Widget _buildEventList(Map snapshot) {
-    List selectDateEvent =
-        widget.calendarController.findEvents(snapshot['selectDate']);
+//    List selectDateHoliday =
+//        widget.calendarController.findHolidays(snapshot['selectDate']);
+//    List selectDateEvent =
+//        widget.calendarController.findEvents(snapshot['selectDate']);
+
+    List selectDateAllEvent =
+        widget.calendarController.findAllEvents(snapshot['selectDate']);
     Map entireColorMap = snapshot['labelColorMap'];
 
     return ListView.builder(
-      itemCount: selectDateEvent != null ? selectDateEvent.length : 0,
-      itemBuilder: (context, index) {
-        Map eventInfo = selectDateEvent[index]["content"];
-        String eventKeyValue = selectDateEvent[index]["id"];
-        return Container(
-          decoration: BoxDecoration(
-            border: Border.all(width: 0.8),
-            borderRadius: BorderRadius.circular(12.0),
-          ),
-          margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-          child: ListTile(
-            title: Text("$eventInfo"),
-            onTap: () {
-              print('${eventInfo['summary']} tapped! Label Color Change!');
-              final children = <Widget>[];
+//        itemCount: selectDateHoliday != null && selectDateEvent != null
+//            ? selectDateHoliday.length + selectDateEvent.length
+//            : 0,
+        itemCount: selectDateAllEvent != null ? selectDateAllEvent.length : 0,
+        itemBuilder: (context, index) {
+//          Map eventInfo = {};
+//          String eventKeyValue = "";
+//          if (index < selectDateHoliday.length) {
+//            eventInfo = selectDateHoliday[index]["content"];
+//            eventKeyValue = selectDateHoliday[index]["id"];
+//          } else {
+//            eventInfo = selectDateEvent[index-selectDateHoliday.length]["content"];
+//            eventKeyValue = selectDateEvent[index-selectDateHoliday.length]["id"];
+//          }
 
-              entireColorMap.forEach((key, value) {
-                if (key != "empty") {
-                  children.add(
-                    _buildColorFlatButton(snapshot, key, 1,
-                        eventKey: eventKeyValue),
-                  );
-                }
-              });
-              showModalBottomSheet(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return Container(
-                      height: MediaQuery.of(context).size.height * 0.25,
-                      child: Column(
-                        children: <Widget>[
-                          Expanded(
-                            flex: 1,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: children,
-                            ),
-                          ),
-                        ],
-                      ),
+          Map eventInfo = selectDateAllEvent[index]["content"];
+          ;
+          String eventKeyValue = selectDateAllEvent[index]["id"];
+//
+          return Container(
+            decoration: BoxDecoration(
+              border: Border.all(width: 0.8),
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+            margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+            child: ListTile(
+              title: Text("$eventInfo"),
+              onTap: () {
+                print('${eventInfo['summary']} tapped! Label Color Change!');
+                final children = <Widget>[];
+
+                entireColorMap.forEach((key, value) {
+                  if (key != "empty") {
+                    children.add(
+                      _buildColorFlatButton(snapshot, key, 1,
+                          eventKey: eventKeyValue),
                     );
-                  });
+                  }
+                });
+                showModalBottomSheet(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Container(
+                        height: MediaQuery.of(context).size.height * 0.25,
+                        child: Column(
+                          children: <Widget>[
+                            Expanded(
+                              flex: 1,
+                              child: ListView(
+                                  scrollDirection: Axis.horizontal,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: children,
+                                    ),
+                                  ]),
+                            ),
+                          ],
+                        ),
+                      );
+                    });
 //              widget.calendarController
 //                  .changeEventsLabelColor("2", keyValue);
-            },
-          ),
-        );
-      },
-    );
+              },
+            ),
+          );
+        });
   }
 
 //  bool _isToday(int date, DateTime focusDate, int type) {
@@ -772,18 +891,14 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
 
 //
   TableRow _buildDaysOfWeek() {
-    List dayList = [
-      "SUN",
-      "MON",
-      "TUE",
-      "WED",
-      "THU",
-      "FRI",
-      "SAT",
-    ];
+
+    List dayList = widget.weekList;
     final children = <TableCell>[];
 
-    for (int i = 0; i < dayList.length; i++) {
+    int index = widget.weekStartIndex%7;
+
+
+    for (int i = index; i < dayList.length; i++) {
       children.add(
         TableCell(
           child: Container(
@@ -809,12 +924,42 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
         ),
       );
     }
+    for (int i = 0; i < index; i++) {
+      children.add(
+        TableCell(
+          child: Container(
+            width: double.infinity,
+            height: 50,
+            child: Center(
+              child: i == 0
+                  ? Text(
+                dayList[i],
+                style: TextStyle(color: widget.sundayColor),
+              )
+                  : i == 6
+                  ? Text(
+                dayList[i],
+                style: TextStyle(color: widget.saturdayColor),
+              )
+                  : Text(
+                dayList[i],
+                style: TextStyle(color: widget.weekDayColor),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     // return Calendar
     return TableRow(children: children);
   }
 
   Color dateColor(Map snapshot, DateTime eachDate, int type) {
-    if (snapshot['selectDate'].month + type != eachDate.month &&
+    int temp = snapshot['selectDate'].month + type;
+    temp = temp==13?1:temp==0?12:snapshot['selectDate'].month + type; //해가 넘어갈 때
+
+    if (temp != eachDate.month &&
         snapshot['calendarFormat'] == CalendarFormat.Month) {
       return Colors.grey;
     } else if (eachDate == snapshot['selectDate']) {
@@ -823,6 +968,8 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
         DateTime(
             DateTime.now().year, DateTime.now().month, DateTime.now().day)) {
       return widget.todayTextColor;
+    } else if (widget.calendarController.findHolidaysBool(eachDate)) {
+      return widget.sundayColor;
     } else if (eachDate.weekday == 7) {
       return widget.sundayColor;
     } else if (eachDate.weekday == 6) {
@@ -830,5 +977,205 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
     }
 
     return widget.weekDayColor;
+  }
+
+  Widget ddi(Map snapshot, DateTime baseDate, int type) {
+    List<List<Widget>> rowChildren = [[], [], [], []];
+
+    int baseDay = (baseDate.weekday) % 7-widget.weekStartIndex;
+    if(baseDay<0){
+      baseDay += 7;
+    }
+    DateTime thisWeekFirstDate = baseDate.subtract(Duration(days: baseDay));
+    DateTime thisWeekLastDate = thisWeekFirstDate.add(Duration(days: 6));
+
+    Map thisWeekEvents = {};
+    //
+    // int thisWeekEventsCount ;
+    // int maxCount =0;
+
+    // 해당 주에 관련있는 이벤트 가져오기
+    for (int i = 0; i < 7; i++) {
+      DateTime eachDate = thisWeekFirstDate.add(Duration(days: i));
+      thisWeekEvents
+          .addAll(widget.calendarController.associatedEventsByDate(eachDate));
+    }
+    eventList.clear();
+
+    thisWeekEvents.forEach((key, value) {
+      String summary = value['summary'];
+      DateTime start = value['start'];
+      DateTime end = value['end'];
+      start = start.isBefore(thisWeekFirstDate) ? thisWeekFirstDate : start;
+      end = end.isAfter(thisWeekLastDate)
+          ? thisWeekLastDate.add(Duration(days: 1))
+          : end;
+
+      eventList.add({
+        "id": key,
+        "summary": summary,
+        "start": start,
+        "end": end,
+        "length": end.difference(start).inDays,
+        "labelColor": value['labelColor'],
+      });
+    });
+    // 이벤트들을 길이 순으로 정렬하기
+    eventList.sort((a, b) => b['length'].compareTo(a['length']));
+
+    for (int i = 0; i < 4; i++) {
+      if (eventList.isEmpty) {
+        break;
+      }
+
+      rowChildren[i] = ddiRecursion(thisWeekFirstDate, thisWeekLastDate,
+          thisWeekFirstDate, thisWeekLastDate);
+    }
+
+    List<Widget> columnChildren = [
+      Container(
+        margin: EdgeInsets.only(top: 10),
+        height: 10,
+        width: MediaQuery.of(context).size.width,
+        child: Stack(
+          children: rowChildren[0],
+        ),
+      ),
+      Container(
+        height: 10,
+        width: MediaQuery.of(context).size.width,
+        child: Stack(
+          children: rowChildren[1],
+        ),
+      ),
+      Container(
+        height: 10,
+        width: MediaQuery.of(context).size.width,
+        child: Stack(
+          children: rowChildren[2],
+        ),
+      ),
+      Container(
+        height: 10,
+        width: MediaQuery.of(context).size.width,
+        child: Stack(
+          children: rowChildren[3],
+        ),
+      ),
+    ];
+
+    return Column(
+      children: columnChildren,
+    );
+  }
+
+  List<Widget> ddiRecursion(DateTime startDate, DateTime endDate,
+      DateTime thisWeekFirstDate, DateTime thisWeekLastDate) {
+    List<Widget> result = [];
+
+    Map thisDurationEvents = {};
+    Map temp = {};
+    List tempEventsList = [];
+    List tempEventsList2 = [];
+
+    if (endDate.compareTo(startDate) >= 0) {
+      for (int i = 0; i < endDate.difference(startDate).inDays + 1; i++) {
+        DateTime eachDate = startDate.add(Duration(days: i));
+        thisDurationEvents
+            .addAll(widget.calendarController.associatedEventsByDate(eachDate));
+      }
+
+      thisDurationEvents.forEach((key, value) {
+        String summary = value['summary'];
+        DateTime start = value['start'];
+        DateTime end = value['end'];
+        start = start.isBefore(startDate) ? startDate : start;
+        end = end.isAfter(endDate) ? endDate.add(Duration(days: 1)) : end;
+
+        tempEventsList.add({
+          "id": key,
+          "summary": summary,
+          "start": start,
+          "end": end,
+          "length": end.difference(start).inDays,
+          "labelColor": value['labelColor'],
+        });
+      });
+      tempEventsList.forEach((element) {
+        eventList.forEach((element1) {
+          if (eq(element, element1)) {
+            tempEventsList2.add(element);
+          }
+        });
+      });
+
+      if (tempEventsList2.isNotEmpty) {
+        tempEventsList2.sort((a, b) => b['length'].compareTo(a['length']));
+        for (int i = 0; i < tempEventsList2.length; i++) {
+          DateTime tempStart = tempEventsList2[i]['start'];
+          DateTime tempEnd = tempEventsList2[i]['end'];
+          if (!isSAMSAM && (endDate == thisWeekLastDate)) {
+            if ((tempStart.isAfter(startDate) ||
+                    tempStart.isAtSameMomentAs(startDate)) &&
+                (tempEnd.isBefore(endDate.add(Duration(days: 1))) ||
+                    tempEnd.isAtSameMomentAs(endDate.add(Duration(days: 1))))) {
+              temp = tempEventsList2[i];
+              isSAMSAM = true;
+              break;
+            }
+          } else {
+            if ((tempStart.isAfter(startDate) ||
+                    tempStart.isAtSameMomentAs(startDate)) &&
+                (tempEnd.isBefore(endDate) ||
+                    tempEnd.isAtSameMomentAs(endDate))) {
+              temp = tempEventsList2[i];
+              break;
+            }
+          }
+        }
+
+        bool toggle =
+            widget.calendarController.getLabelColorToggle(temp['labelColor']) ??
+                false;
+        if (temp.isNotEmpty) {
+          result.add(Positioned(
+            left: (temp['start'].difference(thisWeekFirstDate).inDays) *
+                (MediaQuery.of(context).size.width / 7),
+            top: 1,
+            child: Container(
+              margin: EdgeInsets.only(left: 1, right: 1),
+              height: 10,
+              width:
+                  (MediaQuery.of(context).size.width * temp['length'] / 7) - 1,
+//              color: Colors.black
+//                .withOpacity((endDate.difference(startDate).inDays + 1) / 7),
+              color:
+                  widget.calendarController.getLabelColor(temp['labelColor']),
+              child: Text(
+                "${temp['summary']}",
+                style: TextStyle(fontSize: 7, color: Colors.white),
+              ),
+            ),
+          ));
+          // eventList.remove(temp);
+          eventList.removeWhere((element) => eq(element, temp));
+          if (eventList.isNotEmpty) {
+            result.addAll(ddiRecursion(
+                startDate, temp['start'], thisWeekFirstDate, thisWeekLastDate));
+            result.addAll(ddiRecursion(
+                temp['end'], endDate, thisWeekFirstDate, thisWeekLastDate));
+          }
+        }
+      }
+    }
+    isSAMSAM = false;
+
+    return result;
+  }
+
+  EdgeInsets ddiMargin(Map event, DateTime eachDate) {
+    print(event);
+
+    return EdgeInsets.only(top: 1, bottom: 1, right: 1, left: 1);
   }
 }
