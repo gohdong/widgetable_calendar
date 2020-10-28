@@ -814,8 +814,9 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
 //          }
 
           Map eventInfo = selectDateAllEvent[index]["content"];
-          ;
+
           String eventKeyValue = selectDateAllEvent[index]["id"];
+          String type = selectDateAllEvent[index]["type"];
 //
           return Container(
             decoration: BoxDecoration(
@@ -845,7 +846,35 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                         child: Column(
                           children: <Widget>[
                             Expanded(
-                              flex: 1,
+                              flex: 2,
+                              child: FlatButton(
+                                child: Text("DELETE EVENT", style: TextStyle(color: Colors.red),),
+                                onPressed: (){
+                                  Navigator.of(context).pop();
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text("Really?"),
+                                        content: Text("Really Delete?"),
+                                        actions: [
+                                          FlatButton(
+                                            child: Text('Ok'),
+                                            onPressed: () {
+                                              widget.calendarController.deleteEvents(eventKeyValue, type);
+                                              Navigator.of(context).pop();
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+
+                                },
+                              ),
+                            ),
+                            Expanded(
+                              flex: 9,
                               child: ListView(
                                   scrollDirection: Axis.horizontal,
                                   children: [
