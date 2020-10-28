@@ -956,7 +956,10 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
   }
 
   Color dateColor(Map snapshot, DateTime eachDate, int type) {
-    if (snapshot['selectDate'].month + type != eachDate.month &&
+    int temp = snapshot['selectDate'].month + type;
+    temp = temp==13?1:temp==0?12:snapshot['selectDate'].month + type; //해가 넘어갈 때
+
+    if (temp != eachDate.month &&
         snapshot['calendarFormat'] == CalendarFormat.Month) {
       return Colors.grey;
     } else if (eachDate == snapshot['selectDate']) {
