@@ -247,170 +247,170 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
                   );
                 },
                 child: Text("ADD HOLIDAY")),
-            FlatButton(
-                onPressed: () {
-                  showModalBottomSheet(
-                      context: context,
-                      builder: (BuildContext context) {
-//                        Map entireColorMap =
-//                            widget.calendarController.getLabelColorMap();
-                        Map entireColorMap = snapshot.data['labelColorMap'];
-                        final children = <Widget>[];
-
-                        entireColorMap.forEach((key, value) {
-                          if (key != "empty") {
-                            children.add(
-                              _buildColorFlatButton(snapshot.data, key, 2),
-                            );
-                          }
-                        });
-                        return Container(
-                          height: MediaQuery.of(context).size.height * 0.25,
-                          child: Column(
-                            children: <Widget>[
-                              Expanded(
-                                flex: 1,
-                                child: ListView(
-                                    scrollDirection: Axis.horizontal,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: children,
-                                      ),
-                                    ]),
-                              ),
-                            ],
-                          ),
-                        );
-                      });
-                },
-//                => widget.calendarController.changeEntireLabelColor("0", Colors.black),
-                child: Text("Label Color Change")),
-            FlatButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      Color resultColor = Colors.black;
-                      return AlertDialog(
-                        titlePadding: const EdgeInsets.all(0.0),
-                        contentPadding: const EdgeInsets.all(0.0),
-                        content: SingleChildScrollView(
-                          child: SlidePicker(
-                            pickerColor: Colors.black,
-                            onColorChanged: (Color change) {
-                              resultColor = change;
-                            },
-                            paletteType: PaletteType.rgb,
-                            enableAlpha: false,
-                            displayThumbColor: true,
-                            showLabel: false,
-                            showIndicator: true,
-                            indicatorBorderRadius: const BorderRadius.vertical(
-                              top: const Radius.circular(25.0),
-                            ),
-                          ),
-                        ),
-                        actions: [
-                          FlatButton(
-                            child: Text('Ok'),
-                            onPressed: () {
-                              // { colorKey(random value string) : { "name" : customName, "color" : customColor, "toggle" : true or false }  }
-                              widget.calendarController.addLabel({
-                                DateTime.now()
-                                    .microsecondsSinceEpoch
-                                    .toString(): {
-                                  "name": "testLabel",
-                                  "color": resultColor,
-                                  "toggle": true,
-                                }
-                              });
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-                child: Text("ADD Label")),
-            FlatButton(
-                onPressed: () {
-                  showModalBottomSheet(
-                      context: context,
-                      builder: (BuildContext context) {
-                        Map entireColorMap = snapshot.data['labelColorMap'];
-                        final children = <Widget>[];
-
-                        entireColorMap.forEach((key, value) {
-                          if (key != "empty" && key != "holiday") {
-                            children.add(
-                              _buildColorFlatButton(snapshot.data, key, 3),
-                            );
-                          }
-                        });
-                        return Container(
-                          height: MediaQuery.of(context).size.height * 0.25,
-                          child: Column(
-                            children: <Widget>[
-                              Expanded(
-                                flex: 1,
-                                child: ListView(
-                                    scrollDirection: Axis.horizontal,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: children,
-                                      ),
-                                    ]),
-                              ),
-                            ],
-                          ),
-                        );
-                      });
-                },
-//                => widget.calendarController.changeEntireLabelColor("0", Colors.black),
-                child: Text("Delete Label")),
-            FlatButton(
-                onPressed: () {
-                  showModalBottomSheet(
-                      context: context,
-                      builder: (BuildContext context) {
-                        Map entireColorMap = snapshot.data['labelColorMap'];
-                        final children = <Widget>[];
-
-                        entireColorMap.forEach((key, value) {
-                          if (key != "empty") {
-                            children.add(
-                              _buildColorFlatButton(snapshot.data, key, 4),
-                            );
-                          }
-                        });
-                        return Container(
-                          height: MediaQuery.of(context).size.height * 0.25,
-                          child: Column(
-                            children: <Widget>[
-                              Expanded(
-                                flex: 1,
-                                child: ListView(
-                                    scrollDirection: Axis.horizontal,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: children,
-                                      ),
-                                    ]),
-                              ),
-                            ],
-                          ),
-                        );
-                      });
-                },
-//                => widget.calendarController.changeEntireLabelColor("0", Colors.black),
-                child: Text("Toggle Label")),
+//            FlatButton(
+//                onPressed: () {
+//                  showModalBottomSheet(
+//                      context: context,
+//                      builder: (BuildContext context) {
+////                        Map entireColorMap =
+////                            widget.calendarController.getLabelColorMap();
+//                        Map entireColorMap = snapshot.data['labelColorMap'];
+//                        final children = <Widget>[];
+//
+//                        entireColorMap.forEach((key, value) {
+//                          if (key != "empty") {
+//                            children.add(
+//                              _buildColorFlatButton(snapshot.data, key, 2),
+//                            );
+//                          }
+//                        });
+//                        return Container(
+//                          height: MediaQuery.of(context).size.height * 0.25,
+//                          child: Column(
+//                            children: <Widget>[
+//                              Expanded(
+//                                flex: 1,
+//                                child: ListView(
+//                                    scrollDirection: Axis.horizontal,
+//                                    children: [
+//                                      Row(
+//                                        mainAxisAlignment:
+//                                            MainAxisAlignment.center,
+//                                        children: children,
+//                                      ),
+//                                    ]),
+//                              ),
+//                            ],
+//                          ),
+//                        );
+//                      });
+//                },
+////                => widget.calendarController.changeEntireLabelColor("0", Colors.black),
+//                child: Text("Label Color Change")),
+//            FlatButton(
+//                onPressed: () {
+//                  showDialog(
+//                    context: context,
+//                    builder: (BuildContext context) {
+//                      Color resultColor = Colors.black;
+//                      return AlertDialog(
+//                        titlePadding: const EdgeInsets.all(0.0),
+//                        contentPadding: const EdgeInsets.all(0.0),
+//                        content: SingleChildScrollView(
+//                          child: SlidePicker(
+//                            pickerColor: Colors.black,
+//                            onColorChanged: (Color change) {
+//                              resultColor = change;
+//                            },
+//                            paletteType: PaletteType.rgb,
+//                            enableAlpha: false,
+//                            displayThumbColor: true,
+//                            showLabel: false,
+//                            showIndicator: true,
+//                            indicatorBorderRadius: const BorderRadius.vertical(
+//                              top: const Radius.circular(25.0),
+//                            ),
+//                          ),
+//                        ),
+//                        actions: [
+//                          FlatButton(
+//                            child: Text('Ok'),
+//                            onPressed: () {
+//                              // { colorKey(random value string) : { "name" : customName, "color" : customColor, "toggle" : true or false }  }
+//                              widget.calendarController.addLabel({
+//                                DateTime.now()
+//                                    .microsecondsSinceEpoch
+//                                    .toString(): {
+//                                  "name": "testLabel",
+//                                  "color": resultColor,
+//                                  "toggle": true,
+//                                }
+//                              });
+//                              Navigator.of(context).pop();
+//                            },
+//                          ),
+//                        ],
+//                      );
+//                    },
+//                  );
+//                },
+//                child: Text("ADD Label")),
+//            FlatButton(
+//                onPressed: () {
+//                  showModalBottomSheet(
+//                      context: context,
+//                      builder: (BuildContext context) {
+//                        Map entireColorMap = snapshot.data['labelColorMap'];
+//                        final children = <Widget>[];
+//
+//                        entireColorMap.forEach((key, value) {
+//                          if (key != "empty" && key != "holiday") {
+//                            children.add(
+//                              _buildColorFlatButton(snapshot.data, key, 3),
+//                            );
+//                          }
+//                        });
+//                        return Container(
+//                          height: MediaQuery.of(context).size.height * 0.25,
+//                          child: Column(
+//                            children: <Widget>[
+//                              Expanded(
+//                                flex: 1,
+//                                child: ListView(
+//                                    scrollDirection: Axis.horizontal,
+//                                    children: [
+//                                      Row(
+//                                        mainAxisAlignment:
+//                                            MainAxisAlignment.center,
+//                                        children: children,
+//                                      ),
+//                                    ]),
+//                              ),
+//                            ],
+//                          ),
+//                        );
+//                      });
+//                },
+////                => widget.calendarController.changeEntireLabelColor("0", Colors.black),
+//                child: Text("Delete Label")),
+//            FlatButton(
+//                onPressed: () {
+//                  showModalBottomSheet(
+//                      context: context,
+//                      builder: (BuildContext context) {
+//                        Map entireColorMap = snapshot.data['labelColorMap'];
+//                        final children = <Widget>[];
+//
+//                        entireColorMap.forEach((key, value) {
+//                          if (key != "empty") {
+//                            children.add(
+//                              _buildColorFlatButton(snapshot.data, key, 4),
+//                            );
+//                          }
+//                        });
+//                        return Container(
+//                          height: MediaQuery.of(context).size.height * 0.25,
+//                          child: Column(
+//                            children: <Widget>[
+//                              Expanded(
+//                                flex: 1,
+//                                child: ListView(
+//                                    scrollDirection: Axis.horizontal,
+//                                    children: [
+//                                      Row(
+//                                        mainAxisAlignment:
+//                                            MainAxisAlignment.center,
+//                                        children: children,
+//                                      ),
+//                                    ]),
+//                              ),
+//                            ],
+//                          ),
+//                        );
+//                      });
+//                },
+////                => widget.calendarController.changeEntireLabelColor("0", Colors.black),
+//                child: Text("Toggle Label")),
             _buildEvents(snapshot.data),
           ],
         );

@@ -261,6 +261,10 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
       return false;
   }
 
+  Map getLabelColorMap() {
+    return super.data.labelColorMap;
+  }
+
   void changeEventsLabelColor(String colorKey, String eventKey) {
     if (super.data.eachEvent.containsKey(eventKey)) {
       super.data.eachEvent[eventKey]["labelColor"] = colorKey;

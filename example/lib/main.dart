@@ -5,6 +5,7 @@ import 'package:googleapis_auth/auth_io.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:widgetable_calendar/widgetable_calendar.dart';
 import 'package:widgetable_calendar/Bloc/calendar_controller.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 final _credentials = new ServiceAccountCredentials.fromJson(r'''
 {
@@ -60,8 +61,15 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       floatingActionButton: FloatingActionButton(child: Icon(Icons.check),onPressed:(){
         calendarController.toggleCalendarFormat();
       },),
+      drawer: _buildDrawer(),
       appBar: AppBar(
         title: Text(widget.title),
+//        leading: IconButton(
+//          icon: Icon(Icons.menu),
+//          onPressed: (){
+//            _buildDrawer();
+//          },
+//        ),
         actions: [
           IconButton(
               icon: Icon(Icons.add),
@@ -107,6 +115,286 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       weekList: ["일","월","화","수","목","금","토"],
       holiday: holiday,
       headerEnable: true,
+    );
+  }
+
+  Widget _buildDrawer(){
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          DrawerHeader(
+            child: Text(
+              'Label Example',
+              style: TextStyle(color: Colors.white, fontSize: 25),
+            ),
+            decoration: BoxDecoration(
+              color: Colors.blue,
+            ),
+          ),
+          FlatButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                showModalBottomSheet(
+                    context: context,
+                    builder: (BuildContext context) {
+                        Map entireColorMap =
+                            calendarController.getLabelColorMap();
+//                      Map entireColorMap = snapshot.data['labelColorMap'];
+                      final children = <Widget>[];
+
+                      entireColorMap.forEach((key, value) {
+                        if (key != "empty") {
+                          children.add(
+                            _buildColorFlatButton(key, 2),
+                          );
+                        }
+                      });
+                      return Container(
+                        height: MediaQuery.of(context).size.height * 0.25,
+                        child: Column(
+                          children: <Widget>[
+                            Expanded(
+                              flex: 1,
+                              child: ListView(
+                                  scrollDirection: Axis.horizontal,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.center,
+                                      children: children,
+                                    ),
+                                  ]),
+                            ),
+                          ],
+                        ),
+                      );
+                    });
+              },
+//                => widget.calendarController.changeEntireLabelColor("0", Colors.black),
+              child: Text("Label Color Change")),
+          FlatButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    Color resultColor = Colors.black;
+                    return AlertDialog(
+                      titlePadding: const EdgeInsets.all(0.0),
+                      contentPadding: const EdgeInsets.all(0.0),
+                      content: SingleChildScrollView(
+                        child: SlidePicker(
+                          pickerColor: Colors.black,
+                          onColorChanged: (Color change) {
+                            resultColor = change;
+                          },
+                          paletteType: PaletteType.rgb,
+                          enableAlpha: false,
+                          displayThumbColor: true,
+                          showLabel: false,
+                          showIndicator: true,
+                          indicatorBorderRadius: const BorderRadius.vertical(
+                            top: const Radius.circular(25.0),
+                          ),
+                        ),
+                      ),
+                      actions: [
+                        FlatButton(
+                          child: Text('Ok'),
+                          onPressed: () {
+                            // { colorKey(random value string) : { "name" : customName, "color" : customColor, "toggle" : true or false }  }
+                            calendarController.addLabel({
+                              DateTime.now()
+                                  .microsecondsSinceEpoch
+                                  .toString(): {
+                                "name": "testLabel",
+                                "color": resultColor,
+                                "toggle": true,
+                              }
+                            });
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              child: Text("ADD Label")),
+          FlatButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                showModalBottomSheet(
+                    context: context,
+                    builder: (BuildContext context) {
+                      Map entireColorMap =
+                      calendarController.getLabelColorMap();
+//                      Map entireColorMap = snapshot.data['labelColorMap'];
+                      final children = <Widget>[];
+
+                      entireColorMap.forEach((key, value) {
+                        if (key != "empty" && key != "holiday") {
+                          children.add(
+                            _buildColorFlatButton(key, 3),
+                          );
+                        }
+                      });
+                      return Container(
+                        height: MediaQuery.of(context).size.height * 0.25,
+                        child: Column(
+                          children: <Widget>[
+                            Expanded(
+                              flex: 1,
+                              child: ListView(
+                                  scrollDirection: Axis.horizontal,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.center,
+                                      children: children,
+                                    ),
+                                  ]),
+                            ),
+                          ],
+                        ),
+                      );
+                    });
+              },
+//                => widget.calendarController.changeEntireLabelColor("0", Colors.black),
+              child: Text("Delete Label")),
+          FlatButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                showModalBottomSheet(
+                    context: context,
+                    builder: (BuildContext context) {
+                      Map entireColorMap =
+                      calendarController.getLabelColorMap();
+//                      Map entireColorMap = snapshot.data['labelColorMap'];
+                      final children = <Widget>[];
+
+                      entireColorMap.forEach((key, value) {
+                        if (key != "empty") {
+                          children.add(
+                            _buildColorFlatButton(key, 4),
+                          );
+                        }
+                      });
+                      return Container(
+                        height: MediaQuery.of(context).size.height * 0.25,
+                        child: Column(
+                          children: <Widget>[
+                            Expanded(
+                              flex: 1,
+                              child: ListView(
+                                  scrollDirection: Axis.horizontal,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.center,
+                                      children: children,
+                                    ),
+                                  ]),
+                            ),
+                          ],
+                        ),
+                      );
+                    });
+              },
+//                => widget.calendarController.changeEntireLabelColor("0", Colors.black),
+              child: Text("Toggle Label")),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildColorFlatButton(String colorKey, int type,
+      {String eventKey}) {
+    Map entireColorMap =
+    calendarController.getLabelColorMap();
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(entireColorMap[colorKey]['name'].toString()),
+        FlatButton(
+          onPressed: () async {
+            if (type == 0) {
+//              calendarController.addEvents(
+//                {
+//                  DateTime.now().microsecondsSinceEpoch.toString(): {
+//                    'summary': 'TEST',
+//                    'start': snapshot['selectDate'],
+//                    'end': snapshot['selectDate'].add(Duration(days: 2)),
+//                    'recurrence': null,
+//                    'labelColor': colorKey
+//                  },
+//                },
+//              );
+//              Navigator.of(context).pop();
+            } else if (type == 1) {
+              calendarController
+                  .changeEventsLabelColor(colorKey, eventKey);
+              Navigator.of(context).pop();
+            } else if (type == 2) {
+              Navigator.of(context).pop();
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  Color resultColor;
+                  return AlertDialog(
+                    titlePadding: const EdgeInsets.all(0.0),
+                    contentPadding: const EdgeInsets.all(0.0),
+                    content: SingleChildScrollView(
+                      child: SlidePicker(
+                        pickerColor:
+                        calendarController.getLabelColor(colorKey),
+                        onColorChanged: (Color change) {
+                          resultColor = change;
+                        },
+                        paletteType: PaletteType.rgb,
+                        enableAlpha: false,
+                        displayThumbColor: true,
+                        showLabel: false,
+                        showIndicator: true,
+                        indicatorBorderRadius: const BorderRadius.vertical(
+                          top: const Radius.circular(25.0),
+                        ),
+                      ),
+                    ),
+                    actions: [
+                      FlatButton(
+                        child: Text('Ok'),
+                        onPressed: () {
+                          calendarController
+                              .changeEntireLabelColor(colorKey, resultColor);
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            } else if (type == 3) {
+              await calendarController.deleteLabel(colorKey);
+              Navigator.of(context).pop();
+            } else if (type == 4) {
+              calendarController.toggleLabel(colorKey);
+              Navigator.of(context).pop();
+            }
+          },
+          child: Container(
+            height: 25,
+            width: 25,
+//        color: widget.calendarController.getLabelColor(colorKey) ?? Colors.grey
+            color: calendarController.getLabelColorToggle(colorKey)
+                ? calendarController.getLabelColor(colorKey)
+                : calendarController
+                .getLabelColor(colorKey)
+                .withOpacity(0.3),
+          ),
+        ),
+      ],
     );
   }
 }
