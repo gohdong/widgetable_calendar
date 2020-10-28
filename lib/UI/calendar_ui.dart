@@ -1114,9 +1114,12 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
         for (int i = 0; i < tempEventsList2.length; i++) {
           DateTime tempStart = tempEventsList2[i]['start'];
           DateTime tempEnd = tempEventsList2[i]['end'];
+          bool toggle =
+              widget.calendarController.getLabelColorToggle(tempEventsList2[i]['labelColor']) ??
+                  false;
           if (!isSAMSAM && (endDate == thisWeekLastDate)) {
             if ((tempStart.isAfter(startDate) ||
-                    tempStart.isAtSameMomentAs(startDate)) &&
+                    tempStart.isAtSameMomentAs(startDate)) && toggle &&
                 (tempEnd.isBefore(endDate.add(Duration(days: 1))) ||
                     tempEnd.isAtSameMomentAs(endDate.add(Duration(days: 1))))) {
               temp = tempEventsList2[i];
@@ -1125,7 +1128,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
             }
           } else {
             if ((tempStart.isAfter(startDate) ||
-                    tempStart.isAtSameMomentAs(startDate)) &&
+                    tempStart.isAtSameMomentAs(startDate)) && toggle &&
                 (tempEnd.isBefore(endDate) ||
                     tempEnd.isAtSameMomentAs(endDate))) {
               temp = tempEventsList2[i];
@@ -1134,9 +1137,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
           }
         }
 
-        bool toggle =
-            widget.calendarController.getLabelColorToggle(temp['labelColor']) ??
-                false;
+
         if (temp.isNotEmpty) {
           result.add(Positioned(
             left: (temp['start'].difference(thisWeekFirstDate).inDays) *
