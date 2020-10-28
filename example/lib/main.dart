@@ -118,8 +118,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     );
   }
 
-
-
   Widget _buildDrawer() {
     return Drawer(
       child: ListView(
@@ -135,47 +133,47 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             ),
           ),
           _buildLabels(),
-          
-          FlatButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                showModalBottomSheet(
-                    context: context,
-                    builder: (BuildContext context) {
-                        Map entireColorMap =
-                            calendarController.getLabelColorMap();
-                      final children = <Widget>[];
 
-                      entireColorMap.forEach((key, value) {
-                        if (key != "empty") {
-                          children.add(
-                            _buildColorFlatButton(key, 2),
-                          );
-                        }
-                      });
-                      return Container(
-                        height: MediaQuery.of(context).size.height * 0.25,
-                        child: Column(
-                          children: <Widget>[
-                            Expanded(
-                              flex: 1,
-                              child: ListView(
-                                  scrollDirection: Axis.horizontal,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.center,
-                                      children: children,
-                                    ),
-                                  ]),
-                            ),
-                          ],
-                        ),
-                      );
-                    });
-              },
-//                => widget.calendarController.changeEntireLabelColor("0", Colors.black),
-              child: Text("Label Color Change")),
+//          FlatButton(
+//              onPressed: () {
+//                Navigator.of(context).pop();
+//                showModalBottomSheet(
+//                    context: context,
+//                    builder: (BuildContext context) {
+//                      Map entireColorMap =
+//                          calendarController.getLabelColorMap();
+//                      final children = <Widget>[];
+//
+//                      entireColorMap.forEach((key, value) {
+//                        if (key != "empty") {
+//                          children.add(
+//                            _buildColorFlatButton(key, 2),
+//                          );
+//                        }
+//                      });
+//                      return Container(
+//                        height: MediaQuery.of(context).size.height * 0.25,
+//                        child: Column(
+//                          children: <Widget>[
+//                            Expanded(
+//                              flex: 1,
+//                              child: ListView(
+//                                  scrollDirection: Axis.horizontal,
+//                                  children: [
+//                                    Row(
+//                                      mainAxisAlignment:
+//                                          MainAxisAlignment.center,
+//                                      children: children,
+//                                    ),
+//                                  ]),
+//                            ),
+//                          ],
+//                        ),
+//                      );
+//                    });
+//              },
+////                => widget.calendarController.changeEntireLabelColor("0", Colors.black),
+//              child: Text("Label Color Change")),
 //          FlatButton(
 //              onPressed: () {
 //                Navigator.of(context).pop();
@@ -232,7 +230,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                     context: context,
                     builder: (BuildContext context) {
                       Map entireColorMap =
-                      calendarController.getLabelColorMap();
+                          calendarController.getLabelColorMap();
 //                      Map entireColorMap = snapshot.data['labelColorMap'];
                       final children = <Widget>[];
 
@@ -254,7 +252,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                                   children: [
                                     Row(
                                       mainAxisAlignment:
-                                      MainAxisAlignment.center,
+                                          MainAxisAlignment.center,
                                       children: children,
                                     ),
                                   ]),
@@ -266,80 +264,97 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               },
 //                => widget.calendarController.changeEntireLabelColor("0", Colors.black),
               child: Text("Delete Label")),
-          FlatButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                showModalBottomSheet(
-                    context: context,
-                    builder: (BuildContext context) {
-                      Map entireColorMap =
-                      calendarController.getLabelColorMap();
-//                      Map entireColorMap = snapshot.data['labelColorMap'];
-                      final children = <Widget>[];
-
-                      entireColorMap.forEach((key, value) {
-                        if (key != "empty") {
-                          children.add(
-                            _buildColorFlatButton(key, 4),
-                          );
-                        }
-                      });
-                      return Container(
-                        height: MediaQuery.of(context).size.height * 0.25,
-                        child: Column(
-                          children: <Widget>[
-                            Expanded(
-                              flex: 1,
-                              child: ListView(
-                                  scrollDirection: Axis.horizontal,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.center,
-                                      children: children,
-                                    ),
-                                  ]),
-                            ),
-                          ],
-                        ),
-                      );
-                    });
-              },
-//                => widget.calendarController.changeEntireLabelColor("0", Colors.black),
-              child: Text("Toggle Label")),
+//          FlatButton(
+//              onPressed: () {
+//                Navigator.of(context).pop();
+//                showModalBottomSheet(
+//                    context: context,
+//                    builder: (BuildContext context) {
+//                      Map entireColorMap =
+//                      calendarController.getLabelColorMap();
+////                      Map entireColorMap = snapshot.data['labelColorMap'];
+//                      final children = <Widget>[];
+//
+//                      entireColorMap.forEach((key, value) {
+//                        if (key != "empty") {
+//                          children.add(
+//                            _buildColorFlatButton(key, 4),
+//                          );
+//                        }
+//                      });
+//                      return Container(
+//                        height: MediaQuery.of(context).size.height * 0.25,
+//                        child: Column(
+//                          children: <Widget>[
+//                            Expanded(
+//                              flex: 1,
+//                              child: ListView(
+//                                  scrollDirection: Axis.horizontal,
+//                                  children: [
+//                                    Row(
+//                                      mainAxisAlignment:
+//                                      MainAxisAlignment.center,
+//                                      children: children,
+//                                    ),
+//                                  ]),
+//                            ),
+//                          ],
+//                        ),
+//                      );
+//                    });
+//              },
+////                => widget.calendarController.changeEntireLabelColor("0", Colors.black),
+//              child: Text("Toggle Label")),
         ],
       ),
     );
   }
 
-  Widget _buildLabels(){
+  Widget _buildLabels() {
     var children = <Widget>[];
     entireColorMap = calendarController.getLabelColorMap();
     if (entireColorMap != null) {
       children = <Widget>[];
       entireColorMap.forEach((key, value) {
         if (key != "empty") {
-          print(key.toString());
-          children.add(
+          Color labelColor = calendarController.getLabelColor(key);
+          bool toggle = calendarController.getLabelColorToggle(key);
+          children.add(Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
               Row(
                 children: [
                   FlatButton(
                     child: Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: Container(
-                        height: 50,
-                        width: 50,
-                        color: value['color'],
+                        height: 40,
+                        width: 40,
+                        color:
+                            toggle ? labelColor : labelColor.withOpacity(0.3),
                       ),
                     ),
-                    onPressed: (){
+                    onPressed: () {
                       calendarController.toggleLabel(key);
+                      setState(() {});
                     },
                   ),
-                  Text(value['name'].toString(),textScaleFactor: 1.3,),
+                  Text(
+                    value['name'].toString().toUpperCase(),
+                    textScaleFactor: 1.2,
+                    style: TextStyle(
+                        color: toggle
+                            ? Colors.black
+                            : Colors.black.withOpacity(0.3)),
+                  ),
                 ],
-              )
-          );
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: changeLabelWidget(key),
+              ),
+            ],
+          ));
         }
       });
     }
@@ -349,57 +364,72 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     );
   }
 
-  Widget addLabelWidget(){
+  Widget addLabelWidget() {
     return IconButton(
       icon: Icon(Icons.add),
-      onPressed: (){
+      onPressed: () {
         Navigator.of(context).pop();
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            Color resultColor = Colors.black;
-            return AlertDialog(
-              titlePadding: const EdgeInsets.all(0.0),
-              contentPadding: const EdgeInsets.all(0.0),
-              content: SingleChildScrollView(
-                child: SlidePicker(
-                  pickerColor: Colors.black,
-                  onColorChanged: (Color change) {
-                    resultColor = change;
-                  },
-                  paletteType: PaletteType.rgb,
-                  enableAlpha: false,
-                  displayThumbColor: true,
-                  showLabel: false,
-                  showIndicator: true,
-                  indicatorBorderRadius: const BorderRadius.vertical(
-                    top: const Radius.circular(25.0),
-                  ),
-                ),
+        colorSlider(0);
+      },
+    );
+  }
+
+  Widget changeLabelWidget(String key) {
+    return IconButton(
+        icon: Icon(Icons.settings),
+        onPressed: () {
+          Navigator.of(context).pop();
+          colorSlider(1, key: key);
+        });
+  }
+
+  void colorSlider(int type, {String key}) {
+    Color origin;
+    if (key != null) origin = calendarController.getLabelColor(key);
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        Color resultColor = Colors.black;
+        return AlertDialog(
+          titlePadding: const EdgeInsets.all(0.0),
+          contentPadding: const EdgeInsets.all(0.0),
+          content: SingleChildScrollView(
+            child: SlidePicker(
+              pickerColor: type == 0 ? Colors.black : origin,
+              onColorChanged: (Color change) {
+                resultColor = change;
+              },
+              paletteType: PaletteType.rgb,
+              enableAlpha: false,
+              displayThumbColor: true,
+              showLabel: false,
+              showIndicator: true,
+              indicatorBorderRadius: const BorderRadius.vertical(
+                top: const Radius.circular(25.0),
               ),
-              actions: [
-                FlatButton(
-                  child: Text('Ok'),
-                  onPressed: () {
-                    // { colorKey(random value string) : { "name" : customName, "color" : customColor, "toggle" : true or false }  }
-                    calendarController.addLabel({
-                      DateTime.now()
-                          .microsecondsSinceEpoch
-                          .toString(): {
-                        "name": "testLabel",
-                        "color": resultColor,
-                        "toggle": true,
-                      }
-                    });
-                    setState(() {
-                      entireColorMap = calendarController.getLabelColorMap();
-                    });
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
+            ),
+          ),
+          actions: [
+            FlatButton(
+              child: Text('Ok'),
+              onPressed: () {
+                if (type == 0) {
+                  // { colorKey(random value string) : { "name" : customName, "color" : customColor, "toggle" : true or false }  }
+                  calendarController.addLabel({
+                    DateTime.now().microsecondsSinceEpoch.toString(): {
+                      "name": "testLabel",
+                      "color": resultColor,
+                      "toggle": true,
+                    }
+                  });
+                } else if (type == 1) {
+                  calendarController.changeEntireLabelColor(key, resultColor);
+                }
+                setState(() {});
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
         );
       },
     );
@@ -474,6 +504,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               calendarController.toggleLabel(colorKey);
               Navigator.of(context).pop();
             }
+            setState(() {});
           },
           child: Container(
             height: 25,
