@@ -182,9 +182,20 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     );
   }
 
+  Future<void> getMap() async{
+    Map some = await calendarController.getLabelColorMap();
+    setState(() {
+      entireColorMap = some;
+    });
+  }
+
   Widget _buildLabels() {
     var children = <Widget>[];
     entireColorMap = calendarController.getLabelColorMap();
+
+    if (entireColorMap == null){
+      getMap();
+    }
     if (entireColorMap != null) {
       children = <Widget>[];
       entireColorMap.forEach((key, value) {
