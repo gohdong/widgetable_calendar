@@ -54,8 +54,15 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   @override
   void initState() {
+    getLabelColorMap();
     super.initState();
-    entireColorMap = calendarController.getLabelColorMap();
+  }
+
+  Future<void> getLabelColorMap() async{
+    Map temp = await calendarController.getLabelColorMap();
+    setState(() {
+      entireColorMap = temp;
+    });
   }
 
   @override
@@ -65,6 +72,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         child: Icon(Icons.check),
         onPressed: () {
           calendarController.toggleCalendarFormat();
+
         },
       ),
       drawer: _buildDrawer(),
@@ -76,6 +84,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               onPressed: () {
                 calendarController.sinkWithGoogleCalendar(
                     "364414010667-vkomcbi60k5glgt7bo5ntig2f18ikhcm.apps.googleusercontent.com");
+                setState(() {});
               })
         ],
       ),
@@ -133,68 +142,16 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             ),
           ),
           _buildLabels(),
-
-
-          // TODO need to refactor
-          FlatButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                showModalBottomSheet(
-                    context: context,
-                    builder: (BuildContext context) {
-                      Map entireColorMap =
-                          calendarController.getLabelColorMap();
-//                      Map entireColorMap = snapshot.data['labelColorMap'];
-                      final children = <Widget>[];
-
-                      entireColorMap.forEach((key, value) {
-                        if (key != "empty" && key != "holiday") {
-                          children.add(
-                            _buildColorFlatButton(key, 3),
-                          );
-                        }
-                      });
-                      return Container(
-                        height: MediaQuery.of(context).size.height * 0.25,
-                        child: Column(
-                          children: <Widget>[
-                            Expanded(
-                              flex: 1,
-                              child: ListView(
-                                  scrollDirection: Axis.horizontal,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: children,
-                                    ),
-                                  ]),
-                            ),
-                          ],
-                        ),
-                      );
-                    });
-              },
-//                => widget.calendarController.changeEntireLabelColor("0", Colors.black),
-              child: Text("Delete Label")),
         ],
       ),
     );
   }
 
-  Future<void> getMap() async{
-    Map some = await calendarController.getLabelColorMap();
-    setState(() {
-      entireColorMap = some;
-    });
-  }
-
   Widget _buildLabels() {
     var children = <Widget>[];
-    entireColorMap = calendarController.getLabelColorMap();
 
     if (entireColorMap == null){
-      getMap();
+      getLabelColorMap();
     }
     if (entireColorMap != null) {
       children = <Widget>[];
@@ -211,8 +168,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                     child: Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: Container(
-                        height: 40,
-                        width: 40,
+                        height: 30,
+                        width: 30,
                         color:
                             toggle ? labelColor : labelColor.withOpacity(0.3),
                       ),
@@ -224,7 +181,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   ),
                   Text(
                     value['name'].toString().toUpperCase(),
-                    textScaleFactor: 1.2,
+                    textScaleFactor: 1.1,
                     style: TextStyle(
                         color: toggle
                             ? Colors.black
@@ -232,9 +189,15 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   ),
                 ],
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: changeLabelWidget(key),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  key != "holiday" ? deleteLabelWidget(key) : Container(),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: changeLabelWidget(key),
+                  ),
+                ],
               ),
             ],
           ));
@@ -263,6 +226,33 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         onPressed: () {
           Navigator.of(context).pop();
           colorSlider(1, key: key);
+        });
+  }
+
+  Widget deleteLabelWidget(String key){
+    return IconButton(
+        icon: Icon(Icons.delete),
+        onPressed: () {
+          Navigator.of(context).pop();
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text("Really?"),
+                content: Text("Really Delete?"),
+                actions: [
+                  FlatButton(
+                    child: Text('Ok'),
+                    onPressed: () async {
+                      await calendarController.deleteLabel(key);
+                      setState(() {});
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
         });
   }
 
@@ -315,35 +305,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           ],
         );
       },
-    );
-  }
-
-
-  // TODO need to refactor
-  Widget _buildColorFlatButton(String colorKey, int type, {String eventKey}) {
-    Map entireColorMap = calendarController.getLabelColorMap();
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(entireColorMap[colorKey]['name'].toString()),
-        FlatButton(
-          onPressed: () async {
-            if (type == 3) {
-              await calendarController.deleteLabel(colorKey);
-              Navigator.of(context).pop();
-            }
-            setState(() {});
-          },
-          child: Container(
-            height: 25,
-            width: 25,
-//        color: widget.calendarController.getLabelColor(colorKey) ?? Colors.grey
-            color: calendarController.getLabelColorToggle(colorKey)
-                ? calendarController.getLabelColor(colorKey)
-                : calendarController.getLabelColor(colorKey).withOpacity(0.3),
-          ),
-        ),
-      ],
     );
   }
 }
