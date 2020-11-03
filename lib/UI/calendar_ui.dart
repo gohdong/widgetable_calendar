@@ -411,7 +411,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
 //                },
 ////                => widget.calendarController.changeEntireLabelColor("0", Colors.black),
 //                child: Text("Toggle Label")),
-            _buildEvents(snapshot.data),
+//            _buildEvents(snapshot.data),
           ],
         );
       },
@@ -697,6 +697,7 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
           child: InkWell(
             onTap: () {
               widget.calendarController.setSelectDate(eachDate);
+              
               //nextMonth 일때 작아지는 경우는 12->1 뿐.
 //              if (snapshot['selectDate'].year * 100 +
 //                      snapshot['selectDate'].month >

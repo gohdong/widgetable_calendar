@@ -58,7 +58,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     super.initState();
   }
 
-  Future<void> getLabelColorMap() async{
+  Future<void> getLabelColorMap() async {
     Map temp = await calendarController.getLabelColorMap();
     setState(() {
       entireColorMap = temp;
@@ -72,7 +72,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         child: Icon(Icons.check),
         onPressed: () {
           calendarController.toggleCalendarFormat();
-
         },
       ),
       drawer: _buildDrawer(),
@@ -82,13 +81,28 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           IconButton(
               icon: Icon(Icons.add),
               onPressed: () {
-                calendarController.sinkWithGoogleCalendar(
-                    "364414010667-vkomcbi60k5glgt7bo5ntig2f18ikhcm.apps.googleusercontent.com");
+//                calendarController.sinkWithGoogleCalendar(
+//                    "364414010667-vkomcbi60k5glgt7bo5ntig2f18ikhcm.apps.googleusercontent.com");
                 setState(() {});
               })
         ],
       ),
-      body: _buildCalendar(),
+      body: Column(
+        children: [
+          Container(height: 500, child: _buildCalendar()),
+          StreamBuilder(
+              stream: calendarController.stream,
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+                return _buildEvents(snapshot.data);
+              })
+//          _buildEvents(),
+        ],
+      ),
     );
   }
 
@@ -150,7 +164,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   Widget _buildLabels() {
     var children = <Widget>[];
 
-    if (entireColorMap == null){
+    if (entireColorMap == null) {
       getLabelColorMap();
     }
     if (entireColorMap != null) {
@@ -229,7 +243,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         });
   }
 
-  Widget deleteLabelWidget(String key){
+  Widget deleteLabelWidget(String key) {
     return IconButton(
         icon: Icon(Icons.delete),
         onPressed: () {
@@ -306,5 +320,118 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         );
       },
     );
+  }
+
+  Widget _buildEvents(Map snapshot) {
+    final children = <Widget>[
+      Divider(
+        thickness: 5,
+      ),
+      Expanded(child: _buildEventList(snapshot)),
+    ];
+
+    return Expanded(
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        children: children,
+      ),
+    );
+  }
+
+  Widget _buildEventList(Map snapshot) {
+
+    List selectDateAllEvent =
+        calendarController.findAllEvents(snapshot['selectDate']);
+    Map entireColorMap = snapshot['labelColorMap'];
+
+    return ListView.builder(
+        itemCount: selectDateAllEvent != null ? selectDateAllEvent.length : 0,
+        itemBuilder: (context, index) {
+
+          Map eventInfo = selectDateAllEvent[index]["content"];
+
+          String eventKeyValue = selectDateAllEvent[index]["id"];
+          String type = selectDateAllEvent[index]["type"];
+//
+          return Container(
+            decoration: BoxDecoration(
+              border: Border.all(width: 0.8),
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+            margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+            child: ListTile(
+              title: Text("$eventInfo"),
+              onTap: () {
+                print('${eventInfo['summary']} tapped! Label Color Change!');
+                final children = <Widget>[];
+
+//                entireColorMap.forEach((key, value) {
+//                  if (key != "empty") {
+//                    children.add(
+//                      _buildColorFlatButton(snapshot, key, 1,
+//                          eventKey: eventKeyValue),
+//                    );
+//                  }
+//                });
+                showModalBottomSheet(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Container(
+                        height: MediaQuery.of(context).size.height * 0.25,
+                        child: Column(
+                          children: <Widget>[
+                            Expanded(
+                              flex: 2,
+                              child: FlatButton(
+                                child: Text(
+                                  "DELETE EVENT",
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text("Really?"),
+                                        content: Text("Really Delete?"),
+                                        actions: [
+                                          FlatButton(
+                                            child: Text('Ok'),
+                                            onPressed: () {
+                                              calendarController.deleteEvents(
+                                                  eventKeyValue, type);
+                                              Navigator.of(context).pop();
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
+                            Expanded(
+                              flex: 9,
+                              child: ListView(
+                                  scrollDirection: Axis.horizontal,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: children,
+                                    ),
+                                  ]),
+                            ),
+                          ],
+                        ),
+                      );
+                    });
+//              widget.calendarController
+//                  .changeEventsLabelColor("2", keyValue);
+              },
+            ),
+          );
+        });
   }
 }

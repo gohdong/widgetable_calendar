@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:widgetable_calendar/Data/calendar_data.dart';
+import 'package:rxdart/rxdart.dart';
 
 class WidgetableCalendarBloc {
   // WidgetableCalendarData calendar = WidgetableCalendarData(calendarController: null);
-  StreamController<Map> _controller = StreamController();
+//  StreamController<Map> _controller = StreamController();
+  StreamController<Map> _controller = BehaviorSubject<Map>();
   final WidgetableCalendarData data = WidgetableCalendarData();
 
   WidgetableCalendarBloc();

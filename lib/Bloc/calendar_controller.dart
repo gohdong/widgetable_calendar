@@ -43,6 +43,12 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     super.streamSink();
   }
 
+  void listen(){
+    super.streams.listen((data) {
+      print("DataReceived: " + data.toString());
+    });
+  }
+
   void addEvents(Map eventData) {
     DateTime roundDown(DateTime date) =>
         DateTime(date.year, date.month, date.day);
@@ -139,7 +145,8 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
 
   List findAllEvents(DateTime date) {
     List returnValue = [];
-    returnValue = findHolidays(date) + findEvents(date);
+    if (super.data.holidaysByDate != null && super.data.eventsByDate != null)
+      returnValue = findHolidays(date) + findEvents(date);
 
 //    print(date.toString() + " : " + returnValue.toString());
 
@@ -358,9 +365,15 @@ class WidgetableCalendarController extends WidgetableCalendarBloc {
     return DateTime(value.year, value.month, value.day);
   }
 
+  DateTime getSelectDate(){
+    return super.data.selectDate;
+  }
+
+
   void setSelectDate(DateTime day) {
     super.data.selectDate = day;
     super.streamSink();
+//    this.listen();
   }
 
   void toggleCalendarFormat() {
