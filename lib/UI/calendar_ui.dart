@@ -126,127 +126,129 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
 //  }
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: widget.calendarController.stream,
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-        final children = <Widget>[];
+    return Container(
+      height: 400,
+      child: StreamBuilder(
+        stream: widget.calendarController.stream,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          final children = <Widget>[];
 
-        for (int i = -1; i < 2; i++) {
-          children.add(
-            Container(
-              height: 1000,
-              child: _buildCalendarContent(snapshot.data, i),
-            ),
-          );
-        }
-
-        return Column(
-          children: [
-            snapshot.data['headerEnable']
-                ? _buildHeader(snapshot.data)
-                : Container(),
-            Table(
-              children: [
-                _buildDaysOfWeek(),
-              ],
-            ),
-            Container(
-              height: snapshot.data['calendarFormat'] == CalendarFormat.Week
-                  ? 50
-                  : 300,
-              child: PageView(
-                controller: pageController,
-                onPageChanged: (pageId) async {
-                  if (pageId == 2) {
-                    await pageController.animateToPage(
-                      2,
-                      duration: const Duration(milliseconds: 250),
-                      curve: Curves.ease,
-                    );
-                    if (snapshot.data['calendarFormat'] == CalendarFormat.Month)
-                      widget.calendarController.changeMonth(1);
-                    else
-                      widget.calendarController.changeWeek(1);
-                    pageController.jumpToPage(1);
-                  }
-                  if (pageId == 0) {
-                    await pageController.animateToPage(
-                      0,
-                      duration: const Duration(milliseconds: 250),
-                      curve: Curves.ease,
-                    );
-                    if (snapshot.data['calendarFormat'] == CalendarFormat.Month)
-                      widget.calendarController.changeMonth(-1);
-                    else
-                      widget.calendarController.changeWeek(-1);
-                    pageController.jumpToPage(1);
-                  }
-                },
-                children: children,
+          for (int i = -1; i < 2; i++) {
+            children.add(
+              Container(
+                height: 1000,
+                child: _buildCalendarContent(snapshot.data, i),
               ),
-            ),
+            );
+          }
 
-            // FlatButtons - For Test
-            FlatButton(
-                onPressed: () {
-                  showModalBottomSheet(
-                      context: context,
-                      builder: (BuildContext context) {
-//                        Map entireColorMap =
-//                            widget.calendarController.getLabelColorMap();
-                        Map entireColorMap = snapshot.data['labelColorMap'];
-                        final children = <Widget>[];
+          return Column(
+            children: [
+              snapshot.data['headerEnable']
+                  ? _buildHeader(snapshot.data)
+                  : Container(),
+              Table(
+                children: [
+                  _buildDaysOfWeek(),
+                ],
+              ),
+              Container(
+                height: snapshot.data['calendarFormat'] == CalendarFormat.Week
+                    ? 50
+                    : 300,
+                child: PageView(
+                  controller: pageController,
+                  onPageChanged: (pageId) async {
+                    if (pageId == 2) {
+                      await pageController.animateToPage(
+                        2,
+                        duration: const Duration(milliseconds: 250),
+                        curve: Curves.ease,
+                      );
+                      if (snapshot.data['calendarFormat'] == CalendarFormat.Month)
+                        widget.calendarController.changeMonth(1);
+                      else
+                        widget.calendarController.changeWeek(1);
+                      pageController.jumpToPage(1);
+                    }
+                    if (pageId == 0) {
+                      await pageController.animateToPage(
+                        0,
+                        duration: const Duration(milliseconds: 250),
+                        curve: Curves.ease,
+                      );
+                      if (snapshot.data['calendarFormat'] == CalendarFormat.Month)
+                        widget.calendarController.changeMonth(-1);
+                      else
+                        widget.calendarController.changeWeek(-1);
+                      pageController.jumpToPage(1);
+                    }
+                  },
+                  children: children,
+                ),
+              ),
 
-                        entireColorMap.forEach((key, value) {
-                          if (key != "empty" && key != "holiday") {
-                            children.add(
-                              _buildColorFlatButton(snapshot.data, key, 0),
-                            );
-                          }
-                        });
-                        return Container(
-                          height: MediaQuery.of(context).size.height * 0.25,
-                          child: Column(
-                            children: <Widget>[
-                              Expanded(
-                                flex: 1,
-                                child: ListView(
-                                    scrollDirection: Axis.horizontal,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: children,
-                                      ),
-                                    ]),
-                              ),
-                            ],
-                          ),
-                        );
-                      });
-                },
-                child: Text("ADD EVENTS - Color")),
-            FlatButton(
-                onPressed: () {
-                  widget.calendarController.addHolidays(
-                    {
-                      DateTime.now().microsecondsSinceEpoch.toString(): {
-                        'summary': 'TEST',
-                        'start': snapshot.data['selectDate'],
-                        'end':
-                            snapshot.data['selectDate'].add(Duration(days: 2)),
-                        'recurrence': null,
-                        'labelColor': "holiday"
-                      }
-                    },
-                  );
-                },
-                child: Text("ADD HOLIDAY")),
+              // FlatButtons - For Test
+//            FlatButton(
+//                onPressed: () {
+//                  showModalBottomSheet(
+//                      context: context,
+//                      builder: (BuildContext context) {
+////                        Map entireColorMap =
+////                            widget.calendarController.getLabelColorMap();
+//                        Map entireColorMap = snapshot.data['labelColorMap'];
+//                        final children = <Widget>[];
+//
+//                        entireColorMap.forEach((key, value) {
+//                          if (key != "empty" && key != "holiday") {
+//                            children.add(
+//                              _buildColorFlatButton(snapshot.data, key, 0),
+//                            );
+//                          }
+//                        });
+//                        return Container(
+//                          height: MediaQuery.of(context).size.height * 0.25,
+//                          child: Column(
+//                            children: <Widget>[
+//                              Expanded(
+//                                flex: 1,
+//                                child: ListView(
+//                                    scrollDirection: Axis.horizontal,
+//                                    children: [
+//                                      Row(
+//                                        mainAxisAlignment:
+//                                            MainAxisAlignment.center,
+//                                        children: children,
+//                                      ),
+//                                    ]),
+//                              ),
+//                            ],
+//                          ),
+//                        );
+//                      });
+//                },
+//                child: Text("ADD EVENTS - Color")),
+//            FlatButton(
+//                onPressed: () {
+//                  widget.calendarController.addHolidays(
+//                    {
+//                      DateTime.now().microsecondsSinceEpoch.toString(): {
+//                        'summary': 'TEST',
+//                        'start': snapshot.data['selectDate'],
+//                        'end':
+//                            snapshot.data['selectDate'].add(Duration(days: 2)),
+//                        'recurrence': null,
+//                        'labelColor': "holiday"
+//                      }
+//                    },
+//                  );
+//                },
+//                child: Text("ADD HOLIDAY")),
 //            FlatButton(
 //                onPressed: () {
 //                  showModalBottomSheet(
@@ -412,9 +414,10 @@ class _WidgetableCalendarUIState extends State<WidgetableCalendarUI>
 ////                => widget.calendarController.changeEntireLabelColor("0", Colors.black),
 //                child: Text("Toggle Label")),
 //            _buildEvents(snapshot.data),
-          ],
-        );
-      },
+            ],
+          );
+        },
+      ),
     );
   }
 

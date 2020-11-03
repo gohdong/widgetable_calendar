@@ -89,7 +89,63 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       ),
       body: Column(
         children: [
-          Container(height: 500, child: _buildCalendar()),
+          _buildCalendar(),
+//          FlatButton(
+//              onPressed: () {
+//                showModalBottomSheet(
+//                    context: context,
+//                    builder: (BuildContext context) {
+////                        Map entireColorMap =
+////                            widget.calendarController.getLabelColorMap();
+//                      Map entireColorMap = snapshot.data['labelColorMap'];
+//                      final children = <Widget>[];
+//
+//                      entireColorMap.forEach((key, value) {
+//                        if (key != "empty" && key != "holiday") {
+//                          children.add(
+//                            _buildColorFlatButton(snapshot.data, key, 0),
+//                          );
+//                        }
+//                      });
+//                      return Container(
+//                        height: MediaQuery.of(context).size.height * 0.25,
+//                        child: Column(
+//                          children: <Widget>[
+//                            Expanded(
+//                              flex: 1,
+//                              child: ListView(
+//                                  scrollDirection: Axis.horizontal,
+//                                  children: [
+//                                    Row(
+//                                      mainAxisAlignment:
+//                                      MainAxisAlignment.center,
+//                                      children: children,
+//                                    ),
+//                                  ]),
+//                            ),
+//                          ],
+//                        ),
+//                      );
+//                    });
+//              },
+//              child: Text("ADD EVENTS - Color")),
+          FlatButton(
+              onPressed: () {
+                calendarController.addHolidays(
+                  {
+                    DateTime.now().microsecondsSinceEpoch.toString(): {
+                      'summary': 'TEST',
+                      'start': calendarController.getSelectDate(),
+                      'end': calendarController
+                          .getSelectDate()
+                          .add(Duration(days: 2)),
+                      'recurrence': null,
+                      'labelColor': "holiday"
+                    }
+                  },
+                );
+              },
+              child: Text("ADD HOLIDAY")),
           StreamBuilder(
               stream: calendarController.stream,
               builder: (context, snapshot) {
@@ -339,7 +395,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   }
 
   Widget _buildEventList(Map snapshot) {
-
     List selectDateAllEvent =
         calendarController.findAllEvents(snapshot['selectDate']);
     Map entireColorMap = snapshot['labelColorMap'];
@@ -347,7 +402,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     return ListView.builder(
         itemCount: selectDateAllEvent != null ? selectDateAllEvent.length : 0,
         itemBuilder: (context, index) {
-
           Map eventInfo = selectDateAllEvent[index]["content"];
 
           String eventKeyValue = selectDateAllEvent[index]["id"];
